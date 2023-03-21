@@ -26,28 +26,23 @@ The main advantage of this approach is that there will be one single code reposi
 The separation of code and configuration supports DevOps key concepts for operations design, change management, pipelines.
 
 ## CIS OCI Foundations Benchmark Modules Collection
-
- <br />
+<br />
 
 This repository is part of a broader collection of repositories containing modules that help customers align their OCI implementations with the CIS OCI Foundations Benchmark recommendations:
-
- <br />
+<br />
 
 - [Identity & Access Management ](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam)
 - [Networking](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking) - current repository
 - [Governance](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-governance)
 - Security (coming soon)
 - Observability & Monitoring (coming soon)
-
- <br />
+<br />
 
 The modules in this collection are designed for flexibility, are straightforward to use, and enforce CIS OCI Foundations Benchmark recommendations when possible.
-
- <br />
+<br />
 
 Using these modules does not require a user extensive knowledge of Terraform or OCI resource types usage. Users declare a JSON object describing the OCI resources according to each module’s specification and minimal Terraform code to invoke the modules. The modules generate outputs that can be consumed by other modules as inputs, allowing for the creation of independently managed operational stacks to automate your entire OCI infrastructure.
-
- <br />
+<br />
 
 ## Requirements
 
