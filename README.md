@@ -26,7 +26,6 @@ The main advantage of this approach is that there will be one single code reposi
 The separation of code and configuration supports DevOps key concepts for operations design, change management, pipelines.
 
 ## CIS OCI Foundations Benchmark Modules Collection
-<br />
 
 This repository is part of a broader collection of repositories containing modules that help customers align their OCI implementations with the CIS OCI Foundations Benchmark recommendations:
 <br />
@@ -36,7 +35,6 @@ This repository is part of a broader collection of repositories containing modul
 - [Governance](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-governance)
 - Security (coming soon)
 - Observability & Monitoring (coming soon)
-<br />
 
 The modules in this collection are designed for flexibility, are straightforward to use, and enforce CIS OCI Foundations Benchmark recommendations when possible.
 <br />
