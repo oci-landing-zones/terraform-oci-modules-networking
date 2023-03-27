@@ -21,6 +21,7 @@ output "provisioned_networking_resources" {
     internet_gateways                              = local.provisioned_internet_gateways
     dynamic_routing_gateways                       = local.provisioned_dynamic_gateways
     drg_route_tables                               = local.provisioned_drg_route_tables
+    drg_route_table_route_rules                    = local.provisioned_drg_route_tables_route_rules
     drg_route_distributions                        = local.provisioned_drg_route_distributions
     drg_route_distributions_statements             = local.provisioned_drg_route_distributions_statements
     drg_attachments                                = local.provisioned_drg_attachments

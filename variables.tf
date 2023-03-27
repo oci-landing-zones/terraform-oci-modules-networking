@@ -389,7 +389,13 @@ variable "network_configuration" {
             display_name                     = optional(string),
             freeform_tags                    = optional(map(string)),
             import_drg_route_distribution_id = optional(string),
-            is_ecmp_enabled                  = optional(bool)
+            is_ecmp_enabled                  = optional(bool),
+            route_rules = optional(map(object({
+              destination                 = string,
+              destination_type            = string,
+              next_hop_drg_attachment_id  = string,
+              next_hop_drg_attachment_key = string,
+            })))
           })))
 
           drg_route_distributions = optional(map(object({
@@ -443,7 +449,13 @@ variable "network_configuration" {
             display_name                     = optional(string),
             freeform_tags                    = optional(map(string)),
             import_drg_route_distribution_id = optional(string),
-            is_ecmp_enabled                  = optional(bool)
+            is_ecmp_enabled                  = optional(bool),
+            route_rules = optional(map(object({
+              destination                 = string,
+              destination_type            = string,
+              next_hop_drg_attachment_id  = string,
+              next_hop_drg_attachment_key = string,
+            })))
           })))
 
           drg_route_distributions = optional(map(object({

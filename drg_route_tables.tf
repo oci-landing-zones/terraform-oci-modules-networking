@@ -18,6 +18,7 @@ locals {
           is_ecmp_enabled                  = drgrt_value.is_ecmp_enabled
           network_configuration_category   = drg_value.network_configuration_category
           drgrt_key                        = drgrt_key
+          route_rules                      = drgrt_value.route_rules
         }
       ] : [] : []
     ]) : flat_drgrts.drgrt_key => flat_drgrts
@@ -38,6 +39,7 @@ locals {
           is_ecmp_enabled                  = drgrt_value.is_ecmp_enabled
           network_configuration_category   = drg_value.network_configuration_category
           drgrt_key                        = drgrt_key
+          route_rules                      = drgrt_value.route_rules
         }
       ] : [] : []
     ]) : flat_drgrts.drgrt_key => flat_drgrts
@@ -62,6 +64,7 @@ locals {
       timeouts                         = drgrt_value.timeouts
       network_configuration_category   = local.one_dimension_processed_drg_route_tables[drgrt_key].network_configuration_category
       drgrt_key                        = drgrt_key
+      route_rules                      = local.one_dimension_processed_drg_route_tables[drgrt_key].route_rules
     }
   }
 }
