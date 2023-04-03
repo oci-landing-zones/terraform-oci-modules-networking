@@ -14,7 +14,8 @@ locals {
           drg_name                         = drg_value.display_name
           drg_key                          = drg_key
           display_name                     = drgrt_value.display_name
-          import_drg_route_distribution_id = drgrt_value.import_drg_route_distribution_id
+          import_drg_route_distribution_id = drgrt_value.import_drg_route_distribution_id != null ? drgrt_value.import_drg_route_distribution_id : drgrt_value.import_drg_route_distribution_key != null ? local.provisioned_drg_route_distributions[drgrt_value.import_drg_route_distribution_key].id : null
+          import_drg_route_distribution_key = drgrt_value.import_drg_route_distribution_key
           is_ecmp_enabled                  = drgrt_value.is_ecmp_enabled
           network_configuration_category   = drg_value.network_configuration_category
           drgrt_key                        = drgrt_key
@@ -35,7 +36,8 @@ locals {
           drg_name                         = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
           drg_key                          = drg_key
           display_name                     = drgrt_value.display_name
-          import_drg_route_distribution_id = drgrt_value.import_drg_route_distribution_id
+          import_drg_route_distribution_id = drgrt_value.import_drg_route_distribution_id != null ? drgrt_value.import_drg_route_distribution_id : drgrt_value.import_drg_route_distribution_key != null ? local.provisioned_drg_route_distributions[drgrt_value.import_drg_route_distribution_key].id : null
+          import_drg_route_distribution_key= drgrt_value.import_drg_route_distribution_key
           is_ecmp_enabled                  = drgrt_value.is_ecmp_enabled
           network_configuration_category   = drg_value.network_configuration_category
           drgrt_key                        = drgrt_key
@@ -57,6 +59,7 @@ locals {
       freeform_tags                    = drgrt_value.freeform_tags
       id                               = drgrt_value.id
       import_drg_route_distribution_id = drgrt_value.import_drg_route_distribution_id
+      import_drg_route_distribution_key= local.one_dimension_processed_drg_route_tables[drgrt_key].import_drg_route_distribution_key != null ? local.one_dimension_processed_drg_route_tables[drgrt_key].import_drg_route_distribution_key : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
       is_ecmp_enabled                  = drgrt_value.is_ecmp_enabled
       remove_import_trigger            = drgrt_value.remove_import_trigger
       state                            = drgrt_value.state
