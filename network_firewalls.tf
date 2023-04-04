@@ -4,6 +4,13 @@ data "oci_identity_availability_domains" "these" {
   compartment_id = each.value.compartment_id
 }
 
+data "oci_core_private_ips" "these-nfws-private-ips" {
+  for_each = oci_network_firewall_network_firewall.these
+  #Optional
+  ip_address = each.value.ipv4address
+  subnet_id  = each.value.subnet_id
+}
+
 locals {
 
   aux_one_dimension_network_firewalls = local.one_dimension_processed_non_vcn_specific_gateways != null ? {
@@ -64,6 +71,8 @@ locals {
       freeform_tags               = nfw_value.freeform_tags
       id                          = nfw_value.id
       ipv4address                 = nfw_value.ipv4address
+      ipv4address_ocid            = data.oci_core_private_ips.these-nfws-private-ips[nfw_key].private_ips[0].id
+      ipv4address_vnic_id         = data.oci_core_private_ips.these-nfws-private-ips[nfw_key].private_ips[0].vnic_id
       ipv6address                 = nfw_value.ipv6address
       lifecycle_details           = nfw_value.lifecycle_details
       network_firewall_policy_id  = nfw_value.network_firewall_policy_id

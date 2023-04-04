@@ -8,18 +8,18 @@ locals {
       for drg_key, drg_value in local.one_dimension_dynamic_routing_gateways :
       drg_value.drg_route_tables != null ? length(drg_value.drg_route_tables) > 0 ? [
         for drgrt_key, drgrt_value in drg_value.drg_route_tables : {
-          defined_tags                     = merge(drgrt_value.defined_tags, drg_value.category_defined_tags, drg_value.default_defined_tags)
-          freeform_tags                    = merge(drgrt_value.freeform_tags, drg_value.category_freeform_tags, drg_value.default_freeform_tags)
-          drg_id                           = oci_core_drg.these[drg_key].id
-          drg_name                         = drg_value.display_name
-          drg_key                          = drg_key
-          display_name                     = drgrt_value.display_name
-          import_drg_route_distribution_id = drgrt_value.import_drg_route_distribution_id != null ? drgrt_value.import_drg_route_distribution_id : drgrt_value.import_drg_route_distribution_key != null ? local.provisioned_drg_route_distributions[drgrt_value.import_drg_route_distribution_key].id : null
+          defined_tags                      = merge(drgrt_value.defined_tags, drg_value.category_defined_tags, drg_value.default_defined_tags)
+          freeform_tags                     = merge(drgrt_value.freeform_tags, drg_value.category_freeform_tags, drg_value.default_freeform_tags)
+          drg_id                            = oci_core_drg.these[drg_key].id
+          drg_name                          = drg_value.display_name
+          drg_key                           = drg_key
+          display_name                      = drgrt_value.display_name
+          import_drg_route_distribution_id  = drgrt_value.import_drg_route_distribution_id != null ? drgrt_value.import_drg_route_distribution_id : drgrt_value.import_drg_route_distribution_key != null ? local.provisioned_drg_route_distributions[drgrt_value.import_drg_route_distribution_key].id : null
           import_drg_route_distribution_key = drgrt_value.import_drg_route_distribution_key
-          is_ecmp_enabled                  = drgrt_value.is_ecmp_enabled
-          network_configuration_category   = drg_value.network_configuration_category
-          drgrt_key                        = drgrt_key
-          route_rules                      = drgrt_value.route_rules
+          is_ecmp_enabled                   = drgrt_value.is_ecmp_enabled
+          network_configuration_category    = drg_value.network_configuration_category
+          drgrt_key                         = drgrt_key
+          route_rules                       = drgrt_value.route_rules
         }
       ] : [] : []
     ]) : flat_drgrts.drgrt_key => flat_drgrts
@@ -30,18 +30,18 @@ locals {
       for drg_key, drg_value in local.one_dimension_inject_into_existing_drgs :
       drg_value.drg_route_tables != null ? length(drg_value.drg_route_tables) > 0 ? [
         for drgrt_key, drgrt_value in drg_value.drg_route_tables : {
-          defined_tags                     = drgrt_value.defined_tags
-          freeform_tags                    = drgrt_value.freeform_tags
-          drg_id                           = drg_value.drg_id
-          drg_name                         = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
-          drg_key                          = drg_key
-          display_name                     = drgrt_value.display_name
-          import_drg_route_distribution_id = drgrt_value.import_drg_route_distribution_id != null ? drgrt_value.import_drg_route_distribution_id : drgrt_value.import_drg_route_distribution_key != null ? local.provisioned_drg_route_distributions[drgrt_value.import_drg_route_distribution_key].id : null
-          import_drg_route_distribution_key= drgrt_value.import_drg_route_distribution_key
-          is_ecmp_enabled                  = drgrt_value.is_ecmp_enabled
-          network_configuration_category   = drg_value.network_configuration_category
-          drgrt_key                        = drgrt_key
-          route_rules                      = drgrt_value.route_rules
+          defined_tags                      = drgrt_value.defined_tags
+          freeform_tags                     = drgrt_value.freeform_tags
+          drg_id                            = drg_value.drg_id
+          drg_name                          = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+          drg_key                           = drg_key
+          display_name                      = drgrt_value.display_name
+          import_drg_route_distribution_id  = drgrt_value.import_drg_route_distribution_id != null ? drgrt_value.import_drg_route_distribution_id : drgrt_value.import_drg_route_distribution_key != null ? local.provisioned_drg_route_distributions[drgrt_value.import_drg_route_distribution_key].id : null
+          import_drg_route_distribution_key = drgrt_value.import_drg_route_distribution_key
+          is_ecmp_enabled                   = drgrt_value.is_ecmp_enabled
+          network_configuration_category    = drg_value.network_configuration_category
+          drgrt_key                         = drgrt_key
+          route_rules                       = drgrt_value.route_rules
         }
       ] : [] : []
     ]) : flat_drgrts.drgrt_key => flat_drgrts
@@ -51,23 +51,23 @@ locals {
 
   provisioned_drg_route_tables = {
     for drgrt_key, drgrt_value in oci_core_drg_route_table.these : drgrt_key => {
-      compartment_id                   = drgrt_value.compartment_id
-      defined_tags                     = drgrt_value.defined_tags
-      display_name                     = drgrt_value.display_name
-      drg_id                           = drgrt_value.drg_id
-      drg_name                         = local.one_dimension_processed_drg_route_tables[drgrt_key].drg_name
-      freeform_tags                    = drgrt_value.freeform_tags
-      id                               = drgrt_value.id
-      import_drg_route_distribution_id = drgrt_value.import_drg_route_distribution_id
-      import_drg_route_distribution_key= local.one_dimension_processed_drg_route_tables[drgrt_key].import_drg_route_distribution_key != null ? local.one_dimension_processed_drg_route_tables[drgrt_key].import_drg_route_distribution_key : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
-      is_ecmp_enabled                  = drgrt_value.is_ecmp_enabled
-      remove_import_trigger            = drgrt_value.remove_import_trigger
-      state                            = drgrt_value.state
-      time_created                     = drgrt_value.time_created
-      timeouts                         = drgrt_value.timeouts
-      network_configuration_category   = local.one_dimension_processed_drg_route_tables[drgrt_key].network_configuration_category
-      drgrt_key                        = drgrt_key
-      route_rules                      = local.one_dimension_processed_drg_route_tables[drgrt_key].route_rules
+      compartment_id                    = drgrt_value.compartment_id
+      defined_tags                      = drgrt_value.defined_tags
+      display_name                      = drgrt_value.display_name
+      drg_id                            = drgrt_value.drg_id
+      drg_name                          = local.one_dimension_processed_drg_route_tables[drgrt_key].drg_name
+      freeform_tags                     = drgrt_value.freeform_tags
+      id                                = drgrt_value.id
+      import_drg_route_distribution_id  = drgrt_value.import_drg_route_distribution_id
+      import_drg_route_distribution_key = local.one_dimension_processed_drg_route_tables[drgrt_key].import_drg_route_distribution_key != null ? local.one_dimension_processed_drg_route_tables[drgrt_key].import_drg_route_distribution_key : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+      is_ecmp_enabled                   = drgrt_value.is_ecmp_enabled
+      remove_import_trigger             = drgrt_value.remove_import_trigger
+      state                             = drgrt_value.state
+      time_created                      = drgrt_value.time_created
+      timeouts                          = drgrt_value.timeouts
+      network_configuration_category    = local.one_dimension_processed_drg_route_tables[drgrt_key].network_configuration_category
+      drgrt_key                         = drgrt_key
+      route_rules                       = local.one_dimension_processed_drg_route_tables[drgrt_key].route_rules
     }
   }
 }

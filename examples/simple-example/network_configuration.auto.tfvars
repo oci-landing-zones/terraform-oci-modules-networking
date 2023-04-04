@@ -1,5 +1,5 @@
 network_configuration = {
-  default_compartment_id = "ocid1.compartment.oc1. ..."
+  default_compartment_id = "ocid1.compartment.oc1...."
   default_freeform_tags = {
     "vision-environment" = "vision"
   }

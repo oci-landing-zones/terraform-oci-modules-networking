@@ -1,4 +1,46 @@
+
+data "oci_core_route_tables" "these_default_route_tables_new_vcns" {
+  for_each = local.provisioned_vcns
+  #Required
+  compartment_id = each.value.compartment_id
+
+  #Optional
+  display_name = "Default Route Table for ${each.value.display_name}"
+  vcn_id       = each.value.id
+}
+
+data "oci_core_route_tables" "these_default_route_tables_existing_vcns" {
+  for_each = local.one_dimension_processed_existing_vcns
+  #Required
+  compartment_id = each.value.compartment_id
+
+  #Optional
+  display_name = "Default Route Table for ${each.value.vcn_name}"
+  vcn_id       = each.value.vcn_id
+}
+
 locals {
+
+  default_route_tables = {
+    for default_rt_key, default_rt_value in merge(
+      data.oci_core_route_tables.these_default_route_tables_new_vcns,
+    data.oci_core_route_tables.these_default_route_tables_existing_vcns) :
+    replace(upper("${default_rt_value.route_tables[0].display_name}-KEY"), " ", "_") => {
+      compartment_id                 = default_rt_value.route_tables[0].compartment_id
+      defined_tags                   = default_rt_value.route_tables[0].defined_tags
+      display_name                   = default_rt_value.route_tables[0].display_name
+      freeform_tags                  = default_rt_value.route_tables[0].freeform_tags
+      id                             = default_rt_value.route_tables[0].id
+      route_rules                    = default_rt_value.route_tables[0].route_rules
+      state                          = default_rt_value.route_tables[0].state
+      time_created                   = default_rt_value.route_tables[0].time_created
+      vcn_id                         = default_rt_value.route_tables[0].vcn_id
+      vcn_key                        = [for vcn_key, vcn_value in local.provisioned_vcns : vcn_value.vcn_key if vcn_value.id == default_rt_value.route_tables[0].vcn_id][0]
+      vcn_name                       = [for vcn_key, vcn_value in local.provisioned_vcns : vcn_value.display_name if vcn_value.id == default_rt_value.route_tables[0].vcn_id][0]
+      network_configuration_category = [for vcn_key, vcn_value in local.provisioned_vcns : vcn_value.network_configuration_category if vcn_value.id == default_rt_value.route_tables[0].vcn_id][0]
+      route_table_key                = replace(upper("${default_rt_value.route_tables[0].display_name}-KEY"), " ", "_")
+    }
+  }
   one_dimension_processed_route_tables = local.one_dimension_processed_vcns != null ? {
     for flat_route_table in flatten([
       for vcn_key, vcn_value in local.one_dimension_processed_vcns : vcn_value.route_tables != null ? length(vcn_value.route_tables) > 0 ? [
@@ -65,7 +107,12 @@ locals {
     oci_core_service_gateway.these,
     oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways,
     oci_core_local_peering_gateway.oci_requestor_local_peering_gateways,
-    oci_core_drg.these
+    oci_core_drg.these,
+    {
+      for nfw_key, nfw_value in local.provisioned_oci_network_firewall_network_firewalls : nfw_key => {
+        id = nfw_value.ipv4address_ocid
+      }
+    }
   )
 
   network_entities_no_drg = merge(
@@ -73,7 +120,12 @@ locals {
     oci_core_nat_gateway.these,
     oci_core_service_gateway.these,
     oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways,
-    oci_core_local_peering_gateway.oci_requestor_local_peering_gateways
+    oci_core_local_peering_gateway.oci_requestor_local_peering_gateways,
+    {
+      for nfw_key, nfw_value in local.provisioned_oci_network_firewall_network_firewalls : nfw_key => {
+        id = nfw_value.ipv4address_ocid
+      }
+    }
   )
 
   network_entities_attached_route_tables = [
@@ -100,25 +152,28 @@ locals {
     for rt_key, rt_value in local.merged_one_dimension_processed_route_tables : rt_key => rt_value if contains(local.drg_attachment_attached_route_tables, rt_key)
   }
 
-  provisioned_route_tables = {
-    for route_table_key, route_value in merge(oci_core_route_table.these_gw_attached,
-      oci_core_route_table.these_no_gw_attached, oci_core_route_table.these_drg_attached) : route_table_key => {
-      compartment_id                 = route_value.compartment_id
-      defined_tags                   = route_value.defined_tags
-      display_name                   = route_value.display_name
-      freeform_tags                  = route_value.freeform_tags
-      id                             = route_value.id
-      route_rules                    = route_value.route_rules
-      state                          = route_value.state
-      time_created                   = route_value.time_created
-      timeouts                       = route_value.timeouts
-      vcn_id                         = route_value.vcn_id
-      vcn_key                        = local.merged_one_dimension_processed_route_tables[route_table_key].vcn_key
-      vcn_name                       = local.merged_one_dimension_processed_route_tables[route_table_key].vcn_name
-      network_configuration_category = local.merged_one_dimension_processed_route_tables[route_table_key].network_configuration_category
-      route_table_key                = route_table_key
+  provisioned_route_tables = merge(
+    local.default_route_tables,
+    {
+      for route_table_key, route_value in merge(oci_core_route_table.these_gw_attached,
+        oci_core_route_table.these_no_gw_attached, oci_core_route_table.these_drg_attached) : route_table_key => {
+        compartment_id                 = route_value.compartment_id
+        defined_tags                   = route_value.defined_tags
+        display_name                   = route_value.display_name
+        freeform_tags                  = route_value.freeform_tags
+        id                             = route_value.id
+        route_rules                    = route_value.route_rules
+        state                          = route_value.state
+        time_created                   = route_value.time_created
+        timeouts                       = route_value.timeouts
+        vcn_id                         = route_value.vcn_id
+        vcn_key                        = local.merged_one_dimension_processed_route_tables[route_table_key].vcn_key
+        vcn_name                       = local.merged_one_dimension_processed_route_tables[route_table_key].vcn_name
+        network_configuration_category = local.merged_one_dimension_processed_route_tables[route_table_key].network_configuration_category
+        route_table_key                = route_table_key
+      }
     }
-  }
+  )
 
   provisioned_route_tables_attachments = {
     for rta_key, rta_value in oci_core_route_table_attachment.these : rta_key => {
@@ -229,5 +284,5 @@ resource "oci_core_route_table" "these_drg_attached" {
 resource "oci_core_route_table_attachment" "these" {
   for_each       = oci_core_subnet.these
   subnet_id      = each.value.id
-  route_table_id = each.value.route_table_id
+  route_table_id = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[each.key].route_table_key != null ? merge(oci_core_route_table.these_gw_attached, oci_core_route_table.these_no_gw_attached, local.default_route_tables)[merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[each.key].route_table_key].id : each.value.route_table_id
 }

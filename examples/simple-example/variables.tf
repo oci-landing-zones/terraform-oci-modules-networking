@@ -392,11 +392,12 @@ variable "network_configuration" {
           })))
 
           drg_route_tables = optional(map(object({
-            defined_tags                     = optional(map(string)),
-            display_name                     = optional(string),
-            freeform_tags                    = optional(map(string)),
-            import_drg_route_distribution_id = optional(string),
-            is_ecmp_enabled                  = optional(bool),
+            defined_tags                      = optional(map(string)),
+            display_name                      = optional(string),
+            freeform_tags                     = optional(map(string)),
+            import_drg_route_distribution_id  = optional(string),
+            import_drg_route_distribution_key = optional(string),
+            is_ecmp_enabled                   = optional(bool),
             route_rules = optional(map(object({
               destination                 = string,
               destination_type            = string,
@@ -452,11 +453,12 @@ variable "network_configuration" {
           })))
 
           drg_route_tables = optional(map(object({
-            defined_tags                     = optional(map(string)),
-            display_name                     = optional(string),
-            freeform_tags                    = optional(map(string)),
-            import_drg_route_distribution_id = optional(string),
-            is_ecmp_enabled                  = optional(bool),
+            defined_tags                      = optional(map(string)),
+            display_name                      = optional(string),
+            freeform_tags                     = optional(map(string)),
+            import_drg_route_distribution_id  = optional(string),
+            import_drg_route_distribution_key = optional(string),
+            is_ecmp_enabled                   = optional(bool),
             route_rules = optional(map(object({
               destination                 = string,
               destination_type            = string,

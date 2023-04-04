@@ -26,9 +26,9 @@
 # 4. $ terraform apply
 
 # Get this from the bottom of the OCI screen (after logging in, after Tenancy ID: heading)
-tenancy_id="<tenancy OCID"
+tenancy_ocid="<tenancy OCID"
 # Get this from OCI > Identity > Users (for your user account)
-user_id="<user OCID>"
+user_ocid="<user OCID>"
 
 # the fingerprint can be gathered from your user account (OCI > Identity > Users > click your username > API Keys fingerprint (select it, copy it and paste it below))
 fingerprint="<PEM key fingerprint>"

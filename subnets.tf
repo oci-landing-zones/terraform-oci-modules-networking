@@ -37,8 +37,9 @@ locals {
           prohibit_internet_ingress  = subnet_value.prohibit_internet_ingress
           prohibit_public_ip_on_vnic = subnet_value.prohibit_public_ip_on_vnic
           route_table_key            = subnet_value.route_table_key
-          route_table_id             = subnet_value.route_table_key != null ? merge(oci_core_route_table.these_gw_attached, oci_core_route_table.these_no_gw_attached)[subnet_value.route_table_key].id : null
-          security_list_keys         = subnet_value.security_list_keys
+          route_table_id             = null
+          #route_table_id             = subnet_value.route_table_key != null ? merge(oci_core_route_table.these_gw_attached, oci_core_route_table.these_no_gw_attached, local.default_route_tables)[subnet_value.route_table_key].id : null
+          security_list_keys = subnet_value.security_list_keys
           security_list_ids = subnet_value.security_list_keys != null ? length(subnet_value.security_list_keys) > 0 ? [
             for seclistname in subnet_value.security_list_keys : oci_core_security_list.these[seclistname].id
           ] : [] : []
@@ -91,8 +92,9 @@ locals {
           prohibit_internet_ingress  = subnet_value.prohibit_internet_ingress
           prohibit_public_ip_on_vnic = subnet_value.prohibit_public_ip_on_vnic
           route_table_key            = subnet_value.route_table_key
-          route_table_id             = subnet_value.route_table_id != null ? subnet_value.route_table_id : subnet_value.route_table_key != null ? merge(oci_core_route_table.these_gw_attached, oci_core_route_table.these_no_gw_attached)[subnet_value.route_table_key].id : null
-          security_list_keys         = subnet_value.security_list_keys
+          route_table_id             = null
+          #route_table_id             = subnet_value.route_table_id != null ? subnet_value.route_table_id : subnet_value.route_table_key != null ? merge(oci_core_route_table.these_gw_attached, oci_core_route_table.these_no_gw_attached, local.default_route_tables)[subnet_value.route_table_key].id : null
+          security_list_keys = subnet_value.security_list_keys
           security_list_ids = concat(
             subnet_value.security_list_keys != null ? [
               for seclistname in subnet_value.security_list_keys : oci_core_security_list.these[seclistname].id
@@ -183,7 +185,7 @@ locals {
       prohibit_public_ip_on_vnic = subnet_value.prohibit_public_ip_on_vnic
       route_table_id             = subnet_value.route_table_id
       route_table_key            = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
-      route_table_name           = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key != null ? merge(oci_core_route_table.these_gw_attached, oci_core_route_table.these_no_gw_attached)[merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key].display_name : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+      route_table_name           = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key != null ? merge(oci_core_route_table.these_gw_attached, oci_core_route_table.these_no_gw_attached, local.default_route_tables)[merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key].display_name : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
       security_lists = {
         for sec_list in subnet_value.security_lists : sec_list.sec_list_id => {
           display_name = sec_list.display_name
@@ -223,6 +225,6 @@ resource "oci_core_subnet" "these" {
   ipv6cidr_blocks            = each.value.ipv6cidr_blocks
   prohibit_internet_ingress  = each.value.prohibit_internet_ingress
   prohibit_public_ip_on_vnic = each.value.prohibit_public_ip_on_vnic
-  route_table_id             = each.value.route_table_id
-  security_list_ids          = each.value.security_list_ids
+  #route_table_id             = data.oci_core_route_tables.these_default_route_tables[each.value.vcn_key].id
+  security_list_ids = each.value.security_list_ids
 }
