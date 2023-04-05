@@ -284,5 +284,5 @@ resource "oci_core_route_table" "these_drg_attached" {
 resource "oci_core_route_table_attachment" "these" {
   for_each       = oci_core_subnet.these
   subnet_id      = each.value.id
-  route_table_id = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[each.key].route_table_key != null ? merge(oci_core_route_table.these_gw_attached, oci_core_route_table.these_no_gw_attached, local.default_route_tables)[merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[each.key].route_table_key].id : each.value.route_table_id
+  route_table_id = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[each.key].route_table_id != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[each.key].route_table_id : merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[each.key].route_table_key != null ? merge(oci_core_route_table.these_gw_attached, oci_core_route_table.these_no_gw_attached, local.default_route_tables)[merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[each.key].route_table_key].id : [for drt_key, drt_value in local.default_route_tables : drt_value.id if drt_value.vcn_id == each.value.vcn_id][0]
 }

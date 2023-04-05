@@ -187,6 +187,7 @@ network_configuration = {
               ipv6cidr_blocks            = []
               prohibit_internet_ingress  = true
               prohibit_public_ip_on_vnic = true
+              route_table_id             = null
               route_table_key            = "RT-02-KEY"
               security_list_keys         = ["SECLIST-DB-KEY"]
             }

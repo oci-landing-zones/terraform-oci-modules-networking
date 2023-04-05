@@ -183,9 +183,10 @@ locals {
       ipv6virtual_router_ip      = subnet_value.ipv6virtual_router_ip
       prohibit_internet_ingress  = subnet_value.prohibit_internet_ingress
       prohibit_public_ip_on_vnic = subnet_value.prohibit_public_ip_on_vnic
-      route_table_id             = subnet_value.route_table_id
-      route_table_key            = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
-      route_table_name           = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key != null ? merge(oci_core_route_table.these_gw_attached, oci_core_route_table.these_no_gw_attached, local.default_route_tables)[merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key].display_name : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+      #route_table_id             = subnet_value.route_table_id
+      route_table_id   = oci_core_route_table_attachment.these[subnet_key].route_table_id
+      route_table_key  = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+      route_table_name = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key != null ? merge(oci_core_route_table.these_gw_attached, oci_core_route_table.these_no_gw_attached, local.default_route_tables)[merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key].display_name : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
       security_lists = {
         for sec_list in subnet_value.security_lists : sec_list.sec_list_id => {
           display_name = sec_list.display_name
