@@ -101,6 +101,12 @@ locals {
 
   merged_one_dimension_processed_route_tables = merge(local.one_dimension_processed_route_tables, local.one_dimension_processed_injected_route_tables)
 
+  network_firewalls_private_IPs_OCIDS = {
+    for nfw_key, nfw_value in local.provisioned_oci_network_firewall_network_firewalls : nfw_key => {
+      id = nfw_value.ipv4address_ocid
+    }
+  }
+
   network_entities = merge(
     oci_core_internet_gateway.these,
     oci_core_nat_gateway.these,
@@ -108,11 +114,7 @@ locals {
     oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways,
     oci_core_local_peering_gateway.oci_requestor_local_peering_gateways,
     oci_core_drg.these,
-    {
-      for nfw_key, nfw_value in local.provisioned_oci_network_firewall_network_firewalls : nfw_key => {
-        id = nfw_value.ipv4address_ocid
-      }
-    }
+    local.network_firewalls_private_IPs_OCIDS
   )
 
   network_entities_no_drg = merge(
@@ -121,11 +123,7 @@ locals {
     oci_core_service_gateway.these,
     oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways,
     oci_core_local_peering_gateway.oci_requestor_local_peering_gateways,
-    {
-      for nfw_key, nfw_value in local.provisioned_oci_network_firewall_network_firewalls : nfw_key => {
-        id = nfw_value.ipv4address_ocid
-      }
-    }
+    local.network_firewalls_private_IPs_OCIDS
   )
 
   network_entities_attached_route_tables = [
@@ -244,9 +242,8 @@ resource "oci_core_route_table" "these_gw_attached" {
     content {
       destination       = rule.value.destination
       destination_type  = rule.value.destination_type
-      network_entity_id = rule.value.network_entity_id
-      #network_entity_id = rule.value.network_entity_id != null ? rule.value.network_entity_id : local.network_entities[rule.value.network_entity_name].id
-      description = rule.value.description
+      network_entity_id = rule.value.network_entity_id != null ? rule.value.network_entity_id : local.network_firewalls_private_IPs_OCIDS[rule.value.network_entity_key].id
+      description       = rule.value.description
     }
   }
 }
