@@ -24,8 +24,6 @@ locals {
           default_freeform_tags            = var.network_configuration.default_freeform_tags
           category_freeform_tags           = network_configuration_category_value.category_freeform_tags
           ipv6private_cidr_blocks          = vcn_value.ipv6private_cidr_blocks
-          is_attach_drg                    = vcn_value.is_attach_drg
-          is_create_igw                    = vcn_value.is_create_igw
           is_ipv6enabled                   = vcn_value.is_ipv6enabled
           is_oracle_gua_allocation_enabled = vcn_value.is_oracle_gua_allocation_enabled
           vcn_key                          = vcn_key

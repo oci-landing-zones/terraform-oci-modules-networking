@@ -29,8 +29,6 @@ variable "network_configuration" {
         is_oracle_gua_allocation_enabled = optional(bool),
         cidr_blocks                      = optional(list(string)),
         dns_label                        = optional(string),
-        is_create_igw                    = optional(bool),
-        is_attach_drg                    = optional(bool),
         block_nat_traffic                = optional(bool),
         defined_tags                     = optional(map(string)),
         freeform_tags                    = optional(map(string)),
