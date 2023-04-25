@@ -36,8 +36,6 @@ variable "network_configuration" {
         is_oracle_gua_allocation_enabled = optional(bool),
         cidr_blocks                      = optional(list(string)),
         dns_label                        = optional(string),
-        is_create_igw                    = optional(bool),
-        is_attach_drg                    = optional(bool),
         block_nat_traffic                = optional(bool),
         defined_tags                     = optional(map(string)),
         freeform_tags                    = optional(map(string)),
@@ -357,6 +355,29 @@ variable "network_configuration" {
         }))
       })))
 
+      IPs = optional(object({
+
+        public_ips_pools = optional(map(object({
+          compartment_id = optional(string),
+          defined_tags   = optional(map(string)),
+          display_name   = optional(string),
+          freeform_tags  = optional(map(string)),
+        })))
+
+        public_ips = optional(map(object({
+          compartment_id     = optional(string),
+          lifetime           = string,
+          defined_tags       = optional(map(string)),
+          display_name       = optional(string),
+          freeform_tags      = optional(map(string)),
+          private_ip_id      = optional(string),
+          public_ip_pool_id  = optional(string),
+          public_ip_pool_key = optional(string)
+        })))
+      }))
+
+
+
       non_vcn_specific_gateways = optional(object({
 
         dynamic_routing_gateways = optional(map(object({
@@ -569,6 +590,25 @@ variable "network_configuration" {
             })))
           })))
         }))
+        l7_load_balancers = optional(map(object({
+          compartment_id              = optional(string),
+          display_name                = string,
+          shape                       = string,
+          subnet_ids                  = list(string),
+          subnet_keys                 = list(string),
+          defined_tags                = optional(map(string)),
+          freeform_tags               = optional(map(string)),
+          ip_mode                     = optional(string),
+          is_private                  = optional(bool),
+          network_security_group_ids  = optional(list(string)),
+          network_security_group_keys = optional(list(string)),
+          reserved_ips_ids            = optional(list(string)),
+          reserved_ips_keys           = optional(list(string))
+          shape_details = optional(object({
+            maximum_bandwidth_in_mbps = number,
+            minimum_bandwidth_in_mbps = number
+          }))
+        })))
       }))
       }
     )))

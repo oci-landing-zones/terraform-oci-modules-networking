@@ -1,0 +1,11 @@
+[31m╷[0m[0m
+[31m│[0m [0m[1m[31mError: [0m[0m[1mExperiment has concluded[0m
+[31m│[0m [0m
+[31m│[0m [0m[0m  on providers.tf line 11, in terraform:
+[31m│[0m [0m  11:   experiments = [[4mmodule_variable_optional_attrs[0m][0m
+[31m│[0m [0m
+[31m│[0m [0mExperiment "module_variable_optional_attrs" is no longer available. The
+[31m│[0m [0mfinal feature corresponding to this experiment differs from the
+[31m│[0m [0mexperimental form and is available in the Terraform language from Terraform
+[31m│[0m [0mv1.3.0 onwards.
+[31m╵[0m[0m

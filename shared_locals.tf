@@ -67,6 +67,7 @@ locals {
         default_freeform_tags           = var.network_configuration.default_freeform_tags
         category_freeform_tags          = network_configuration_category_value.category_freeform_tags
         network_firewalls_configuration = network_configuration_category_value.non_vcn_specific_gateways.network_firewalls_configuration
+        l7_load_balancers               = network_configuration_category_value.non_vcn_specific_gateways.l7_load_balancers
       } if network_configuration_category_value.non_vcn_specific_gateways != null
     ] : "${vcn_non_specific_gw.network_configuration_category}_gateways" => vcn_non_specific_gw
   } : {} : {} : {}
@@ -135,8 +136,24 @@ locals {
       ] : [] : []
     ]) : flat_vcn.vcn_key => flat_vcn
   } : {} : {} : {}
-}
 
+  one_dimension_processed_IPs = var.network_configuration != null ? var.network_configuration.network_configuration_categories != null ? length(var.network_configuration.network_configuration_categories) > 0 ? {
+    for IPs in [
+      for network_configuration_category_key, network_configuration_category_value in var.network_configuration.network_configuration_categories : {
+        public_ips_pools               = network_configuration_category_value.IPs.public_ips_pools
+        public_ips                     = network_configuration_category_value.IPs.public_ips
+        network_configuration_category = network_configuration_category_key
+        default_compartment_id         = var.network_configuration.default_compartment_id
+        category_compartment_id        = network_configuration_category_value.category_compartment_id
+        default_defined_tags           = var.network_configuration.default_defined_tags
+        category_defined_tags          = network_configuration_category_value.category_defined_tags
+        default_freeform_tags          = var.network_configuration.default_freeform_tags
+        category_freeform_tags         = network_configuration_category_value.category_freeform_tags
+      } if network_configuration_category_value.IPs != null
+    ] : "${IPs.network_configuration_category}_IPs" => IPs
+  } : {} : {} : {}
+
+}
 
 
 
