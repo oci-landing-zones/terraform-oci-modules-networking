@@ -59,10 +59,93 @@ locals {
       ip_mode                    = l7lb_value.ip_mode
       is_private                 = l7lb_value.is_private
       network_security_group_ids = l7lb_value.network_security_group_ids
-      reserved_ips               = l7lb_value.reserved_ips
-      shape                      = l7lb_value.shape
-      shape_details              = l7lb_value.shape_details
-      subnet_ids                 = l7lb_value.subnet_ids
+
+      network_security_groups = {
+        for nsg in flatten(l7lb_value.network_security_group_ids != null ? [
+          for nsg_id in l7lb_value.network_security_group_ids : contains([
+            for nsg_key, nsg_value in local.provisioned_network_security_groups : nsg_value.id
+            ],
+
+            nsg_id) ? [
+            for nsg_key, nsg_value in local.provisioned_network_security_groups : {
+              display_name = nsg_value.display_name
+              nsg_key      = nsg_key
+              nsg_id       = nsg_id
+            } if nsg_value.id == nsg_id] : [
+            {
+              display_name = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+              nsg_key      = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+              nsg_id       = nsg_id
+            }
+          ]
+          ] : []) : nsg.nsg_id => {
+          display_name = nsg.display_name
+          nsg_key      = nsg.nsg_key
+          nsg_id       = nsg.nsg_id
+        }
+      }
+
+      reserved_ips = l7lb_value.reserved_ips
+      reserved_public_ips = {
+        for rpip in flatten(l7lb_value.reserved_ips != null ? [
+          for rpip_id in l7lb_value.reserved_ips : contains([
+            for rpip_id_key, rpip_id_value in local.provisioned_oci_core_public_ips : rpip_id_value.id
+            ],
+
+            rpip_id) ? [
+            for rpip_id_key, rpip_id_value in local.provisioned_oci_core_public_ips : {
+              display_name = rpip_id_value.display_name
+              rpip_id_key  = rpip_id_key
+              rpip_id      = rpip_id
+            } if rpip_id_value.id == rpip_id] : [
+            {
+              display_name = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+              rpip_id_key  = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+              rpip_id      = rpip_id
+            }
+          ]
+          ] : []) : rpip.rpip_id => {
+          display_name = rpip.display_name
+          rpip_id_key  = rpip.rpip_id_key
+          rpip_id      = rpip.rpip_id
+        }
+      }
+      shape         = l7lb_value.shape
+      shape_details = l7lb_value.shape_details
+      subnet_ids    = l7lb_value.subnet_ids
+      subnets = {
+        for subnet in flatten(l7lb_value.subnet_ids != null ? [
+          for subnet_id in l7lb_value.subnet_ids : contains([
+            for subnet_key, subnet_value in local.provisioned_subnets : subnet_value.id
+            ],
+            subnet_id) ? [
+            for subnet_key, subnet_value in local.provisioned_subnets : {
+              display_name = subnet_value.display_name
+              subnet_key   = subnet_key
+              subnet_id    = subnet_id
+              vcn_key      = subnet_value.vcn_key
+              vcn_name     = subnet_value.vcn_name
+              vcn_id       = subnet_value.vcn_id
+            } if subnet_value.id == subnet_id] : [
+            {
+              display_name = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+              subnet_key   = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+              subnet_id    = subnet_id
+              vcn_key      = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+              vcn_name     = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+              vcn_id       = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+            }
+          ]
+          ] : []) : subnet.subnet_id => {
+          display_name = subnet.display_name
+          subnet_key   = subnet.subnet_key
+          subnet_id    = subnet.subnet_id
+          vcn_key      = subnet.vcn_key
+          vcn_name     = subnet.vcn_name
+          vcn_id       = subnet.vcn_id
+        }
+      }
+      network_configuration_category = local.one_dimension_processed_l7_load_balancers[l7lb_key].network_configuration_category
     }
   }
 }
@@ -92,20 +175,3 @@ resource "oci_load_balancer_load_balancer" "these" {
     minimum_bandwidth_in_mbps = each.value.minimum_bandwidth_in_mbps
   }
 }
-
-/*
-output "l7_load_balancers_input" {
-  description = "load_balancers_input"
-  value = {
-    load_balancers_input = local.one_dimension_processed_l7_load_balancers
-  }
-}
-*/
-/*
-output "provisioned_l7_load_balancers" {
-  description = "provisioned_l7_load_balancers"
-  value = {
-    load_balancers_input = oci_load_balancer_load_balancer.l7_load_balancers
-  }
-}
-*/
