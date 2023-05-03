@@ -601,6 +601,46 @@ variable "network_configuration" {
             maximum_bandwidth_in_mbps = number,
             minimum_bandwidth_in_mbps = number
           }))
+          backend_sets = optional(map(object({
+            health_checker = object({
+              protocol            = string,
+              interval_ms         = number,
+              is_force_plain_text = bool,
+              port                = number,
+              response_body_regex = optional(string),
+              retries             = number,
+              return_code         = number,
+              timeout_in_millis   = number,
+              url_path            = optional(string)
+            })
+            name   = string,
+            policy = string,
+            lb_cookie_session_persistence_configuration = optional(object({
+              cookie_name        = optional(string),
+              disable_fallback   = optional(bool),
+              domain             = optional(string),
+              is_http_only       = optional(bool),
+              is_secure          = optional(bool),
+              max_age_in_seconds = optional(number),
+              path               = optional(string),
+            }))
+            session_persistence_configuration = optional(object({
+              cookie_name      = string,
+              disable_fallback = optional(bool)
+            }))
+            ssl_configuration = optional(object({
+              certificate_ids                    = optional(list(string)),
+              certificate_keys                   = optional(list(string)),
+              certificate_name                   = optional(string),
+              cipher_suite_name                  = optional(string),
+              protocols                          = optional(list(string)),
+              server_order_preference            = optional(string),
+              trusted_certificate_authority_ids  = optional(list(string)),
+              trusted_certificate_authority_keys = optional(list(string)),
+              verify_depth                       = optional(number),
+              verify_peer_certificate            = optional(bool),
+            }))
+          })))
         })))
       }))
       }

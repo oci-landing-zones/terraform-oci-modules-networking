@@ -45,6 +45,7 @@ locals {
           minimum_bandwidth_in_mbps      = l7lb_value.shape_details.minimum_bandwidth_in_mbps
           network_configuration_category = vcn_non_specific_gw_value.network_configuration_category
           l7lb_key                       = l7lb_key
+          backend_sets                   = l7lb_value.backend_sets
         }
       ] : [] : []
     ]) : flat_l7lb.l7lb_key => flat_l7lb
@@ -59,6 +60,7 @@ locals {
       ip_mode                    = l7lb_value.ip_mode
       is_private                 = l7lb_value.is_private
       network_security_group_ids = l7lb_value.network_security_group_ids
+      id                         = l7lb_value.id
 
       network_security_groups = {
         for nsg in flatten(l7lb_value.network_security_group_ids != null ? [
