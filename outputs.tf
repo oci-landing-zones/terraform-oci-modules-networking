@@ -26,8 +26,9 @@ output "provisioned_networking_resources" {
     drg_route_distributions_statements             = local.provisioned_drg_route_distributions_statements
     drg_attachments                                = local.provisioned_drg_attachments
     dhcp_options                                   = local.provisioned_dhcp_options
-    z1_l7_load_balancers                           = local.one_dimension_processed_non_vcn_specific_gateways
-    z2_l7_lb_backend_sets                          = local.provisioned_l7_lbs_backend_sets
+    l7_load_balancers                              = local.provisioned_l7_lbs
+    l7_lb_backend_sets                             = local.provisioned_l7_lbs_backend_sets
+    l7_lb_back_ends                                = local.provisioned_l7_lb_backends
     public_ips_pools                               = local.provisioned_oci_core_public_ip_pools
     public_ips                                     = local.provisioned_oci_core_public_ips
   }

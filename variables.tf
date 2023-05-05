@@ -640,6 +640,14 @@ variable "network_configuration" {
               verify_depth                       = optional(number),
               verify_peer_certificate            = optional(bool),
             }))
+            backends = optional(map(object({
+              ip_address = string,
+              port       = number,
+              backup     = optional(bool),
+              drain      = optional(bool),
+              offline    = optional(bool),
+              weight     = optional(number)
+            })))
           })))
         })))
       }))

@@ -21,6 +21,7 @@ locals {
             verify_depth                       = l7lb_be_value.ssl_configuration.verify_depth
             verify_peer_certificate            = l7lb_be_value.ssl_configuration.verify_peer_certificate
           } : null
+          backends                       = l7lb_be_value.backends
           l7lb_be_key                    = l7lb_be_key
           l7lb_name                      = l7lb_value.display_name
           l7lb_id                        = local.provisioned_l7_lbs[l7lb_key].id
