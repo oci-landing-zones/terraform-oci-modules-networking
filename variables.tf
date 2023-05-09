@@ -649,6 +649,10 @@ variable "network_configuration" {
               weight     = optional(number)
             })))
           })))
+          cipher_suites = optional(map(object({
+            ciphers = list(string),
+            name    = string
+          })))
         })))
       }))
       }

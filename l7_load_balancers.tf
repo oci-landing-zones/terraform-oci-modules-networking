@@ -46,6 +46,7 @@ locals {
           network_configuration_category = vcn_non_specific_gw_value.network_configuration_category
           l7lb_key                       = l7lb_key
           backend_sets                   = l7lb_value.backend_sets
+          cipher_suites                  = l7lb_value.cipher_suites
         }
       ] : [] : []
     ]) : flat_l7lb.l7lb_key => flat_l7lb
