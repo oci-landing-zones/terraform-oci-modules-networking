@@ -653,6 +653,16 @@ variable "network_configuration" {
             ciphers = list(string),
             name    = string
           })))
+          path_route_sets = optional(map(object({
+            name = string,
+            path_routes = map(object({
+              backend_set_name = string,
+              path             = string,
+              path_match_type = object({
+                match_type = string
+              })
+            }))
+          })))
         })))
       }))
       }
