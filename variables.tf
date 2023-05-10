@@ -663,6 +663,10 @@ variable "network_configuration" {
               })
             }))
           })))
+          host_names = optional(map(object({
+            hostname = string,
+            name     = string
+          })))
         })))
       }))
       }
