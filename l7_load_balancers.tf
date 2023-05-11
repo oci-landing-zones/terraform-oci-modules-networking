@@ -50,6 +50,7 @@ locals {
           path_route_sets                = l7lb_value.path_route_sets
           host_names                     = l7lb_value.host_names
           routing_policies               = l7lb_value.routing_policies
+          rule_sets                      = l7lb_value.rule_sets
         }
       ] : [] : []
     ]) : flat_l7lb.l7lb_key => flat_l7lb

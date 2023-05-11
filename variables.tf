@@ -679,6 +679,34 @@ variable "network_configuration" {
               name      = string
             }))
           })))
+          rule_sets = optional(map(object({
+            name = string,
+            items = map(object({
+              action                         = string,
+              allowed_methods                = optional(list(string)),
+              are_invalid_characters_allowed = optional(bool),
+              conditions = optional(map(object({
+                attribute_name  = string,
+                attribute_value = string,
+                operator        = optional(string)
+              })))
+              description                  = optional(string),
+              header                       = optional(string),
+              http_large_header_size_in_kb = optional(number),
+              prefix                       = optional(string),
+              redirect_uri = optional(object({
+                host     = optional(string, )
+                path     = optional(string),
+                port     = optional(number),
+                protocol = optional(string),
+                query    = optional(string)
+              }))
+              response_code = optional(number)
+              status_code   = optional(number),
+              suffix        = optional(string),
+              value         = optional(string)
+            }))
+          })))
         })))
       }))
       }
