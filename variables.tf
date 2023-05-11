@@ -667,6 +667,18 @@ variable "network_configuration" {
             hostname = string,
             name     = string
           })))
+          routing_policies = optional(map(object({
+            condition_language_version = string,
+            name                       = string,
+            rules = map(object({
+              actions = map(object({
+                backend_set_name = string,
+                name             = string,
+              }))
+              condition = string,
+              name      = string
+            }))
+          })))
         })))
       }))
       }
