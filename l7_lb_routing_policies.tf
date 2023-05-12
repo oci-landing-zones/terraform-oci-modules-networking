@@ -49,7 +49,7 @@ resource "oci_load_balancer_load_balancer_routing_policy" "these" {
         for_each = rules.value.actions != null ? length(rules.value.actions) > 0 ? rules.value.actions : {} : {}
         #Required
         content {
-          backend_set_name = actions.value.backend_set_name
+          backend_set_name = local.one_dimension_processed_l7_lb_backend_sets[actions.value.backend_set_key].name
           name             = actions.value.name
         }
       }

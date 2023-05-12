@@ -43,7 +43,7 @@ resource "oci_load_balancer_path_route_set" "these" {
     for_each = each.value.path_routes != null ? length(each.value.path_routes) > 0 ? each.value.path_routes : {} : {}
     #Required
     content {
-      backend_set_name = path_routes.value.backend_set_name
+      backend_set_name = local.one_dimension_processed_l7_lb_backend_sets[path_routes.value.backend_set_key].name
       path             = path_routes.value.path
       path_match_type {
         match_type = path_routes.value.path_match_type.match_type

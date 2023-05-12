@@ -656,8 +656,8 @@ variable "network_configuration" {
           path_route_sets = optional(map(object({
             name = string,
             path_routes = map(object({
-              backend_set_name = string,
-              path             = string,
+              backend_set_key = string,
+              path            = string,
               path_match_type = object({
                 match_type = string
               })
@@ -672,8 +672,8 @@ variable "network_configuration" {
             name                       = string,
             rules = map(object({
               actions = map(object({
-                backend_set_name = string,
-                name             = string,
+                backend_set_key = string,
+                name            = string,
               }))
               condition = string,
               name      = string
@@ -706,6 +706,15 @@ variable "network_configuration" {
               suffix        = optional(string),
               value         = optional(string)
             }))
+          })))
+          certificates = optional(map(object({
+            #Required
+            certificate_name = string,
+            #Optional
+            ca_certificate     = optional(string),
+            passphrase         = optional(string),
+            private_key        = optional(string),
+            public_certificate = optional(string)
           })))
         })))
       }))
