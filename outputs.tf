@@ -34,7 +34,8 @@ output "provisioned_networking_resources" {
     l7_lb_hostnames                                = local.provisioned_l7_lbs_hostnames
     l7_lb_routing_policies                         = local.provisioned_l7_lbs_path_routing_policies
     l7_lb_rule_sets                                = local.provisioned_l7_lbs_path_rule_sets
-    z_l7_lb_certificates                           = local.provisioned_l7_lbs_certificates
+    l7_lb_certificates                             = local.provisioned_l7_lbs_certificates
+    l7_lb_listeners                              = local.provisioned_l7_lb_listeners
     public_ips_pools                               = local.provisioned_oci_core_public_ip_pools
     public_ips                                     = local.provisioned_oci_core_public_ips
   }

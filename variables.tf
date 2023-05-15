@@ -716,6 +716,30 @@ variable "network_configuration" {
             private_key        = optional(string),
             public_certificate = optional(string)
           })))
+          listeners = optional(map(object({
+            default_backend_set_key = string,
+            name                    = string,
+            port                    = string,
+            protocol                = string,
+            connection_configuration = optional(object({
+              idle_timeout_in_seconds            = number,
+              backend_tcp_proxy_protocol_version = optional(string)
+            }))
+            hostname_keys      = optional(list(string)),
+            path_route_set_key = optional(string),
+            routing_policy_key = optional(string),
+            rule_set_keys      = optional(list(string)),
+            ssl_configuration = optional(object({
+              certificate_key                   = optional(string),
+              certificate_ids                   = optional(list(string)),
+              cipher_suite_key                  = optional(string),
+              protocols                         = optional(list(string)),
+              server_order_preference           = optional(string),
+              trusted_certificate_authority_ids = optional(list(string)),
+              verify_depth                      = optional(number),
+              verify_peer_certificate           = optional(bool)
+            }))
+          })))
         })))
       }))
       }
