@@ -34,7 +34,7 @@ locals {
 }
 
 resource "oci_load_balancer_ssl_cipher_suite" "these" {
-  for_each = local.one_dimension_processed_l7_lb_cipher_suites
+  for_each = local.one_dimension_processed_l7_lb_cipher_suites != null ? local.one_dimension_processed_l7_lb_cipher_suites : {}
   #Required
   ciphers          = each.value.ciphers
   load_balancer_id = each.value.load_balancer_id

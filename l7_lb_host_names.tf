@@ -34,7 +34,7 @@ locals {
 }
 
 resource "oci_load_balancer_hostname" "these" {
-  for_each = local.one_dimension_processed_l7_lb_host_names
+  for_each = local.one_dimension_processed_l7_lb_host_names != null ? local.one_dimension_processed_l7_lb_host_names : {}
   #Required
   hostname         = each.value.hostname
   load_balancer_id = each.value.load_balancer_id

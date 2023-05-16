@@ -40,7 +40,7 @@ locals {
 }
 
 resource "oci_load_balancer_certificate" "these" {
-  for_each = local.one_dimension_processed_l7_lb_certificates
+  for_each = local.one_dimension_processed_l7_lb_certificates != null ? local.one_dimension_processed_l7_lb_certificates : {}
   #Required
   certificate_name = each.value.certificate_name
   load_balancer_id = each.value.load_balancer_id

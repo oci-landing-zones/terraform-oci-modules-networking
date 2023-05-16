@@ -34,7 +34,7 @@ locals {
 }
 
 resource "oci_load_balancer_path_route_set" "these" {
-  for_each = local.one_dimension_processed_l7_lb_path_route_sets
+  for_each = local.one_dimension_processed_l7_lb_path_route_sets != null ? local.one_dimension_processed_l7_lb_path_route_sets : {}
   #Required
   load_balancer_id = each.value.load_balancer_id
   name             = each.value.name

@@ -34,7 +34,7 @@ locals {
 }
 
 resource "oci_load_balancer_rule_set" "these" {
-  for_each = local.one_dimension_processed_l7_lb_rule_sets
+  for_each = local.one_dimension_processed_l7_lb_rule_sets != null ? local.one_dimension_processed_l7_lb_rule_sets : {}
   #Required
   dynamic "items" {
     for_each = each.value.items != null ? length(each.value.items) > 0 ? each.value.items : {} : {}

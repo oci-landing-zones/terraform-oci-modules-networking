@@ -55,7 +55,7 @@ locals {
 }
 
 resource "oci_load_balancer_backend_set" "these" {
-  for_each = local.one_dimension_processed_l7_lb_backend_sets
+  for_each = local.one_dimension_processed_l7_lb_backend_sets != null ? local.one_dimension_processed_l7_lb_backend_sets : {}
 
   dynamic "health_checker" {
     for_each = each.value.health_checker != null ? [1] : []

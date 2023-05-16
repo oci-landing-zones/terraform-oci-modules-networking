@@ -70,7 +70,7 @@ locals {
 }
 
 resource "oci_load_balancer_listener" "these" {
-  for_each = local.one_dimension_processed_l7_lb_listeners
+  for_each = local.one_dimension_processed_l7_lb_listeners != null ? local.one_dimension_processed_l7_lb_listeners : {}
   #Required
   default_backend_set_name = each.value.default_backend_set_name
   load_balancer_id         = each.value.load_balancer_id

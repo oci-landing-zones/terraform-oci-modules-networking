@@ -46,7 +46,7 @@ locals {
 }
 
 resource "oci_load_balancer_backend" "these" {
-  for_each = local.one_dimension_processed_l7_lb_backends
+  for_each = local.one_dimension_processed_l7_lb_backends != null ? local.one_dimension_processed_l7_lb_backends  : {}
   #Required
   backendset_name  = each.value.backendset_name
   ip_address       = each.value.ip_address

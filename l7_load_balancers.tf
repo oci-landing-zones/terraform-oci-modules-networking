@@ -160,7 +160,7 @@ locals {
 }
 
 resource "oci_load_balancer_load_balancer" "these" {
-  for_each = local.one_dimension_processed_l7_load_balancers
+  for_each = local.one_dimension_processed_l7_load_balancers != null ? local.one_dimension_processed_l7_load_balancers : {}
   #Required
   compartment_id = each.value.compartment_id
   display_name   = each.value.display_name

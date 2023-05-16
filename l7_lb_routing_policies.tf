@@ -36,7 +36,7 @@ locals {
 }
 
 resource "oci_load_balancer_load_balancer_routing_policy" "these" {
-  for_each = local.one_dimension_processed_l7_lb_routing_policies
+  for_each = local.one_dimension_processed_l7_lb_routing_policies != null ? local.one_dimension_processed_l7_lb_routing_policies : {}
   #Required
   condition_language_version = each.value.condition_language_version
   load_balancer_id           = each.value.load_balancer_id
