@@ -9,6 +9,7 @@ terraform.tfvars
 
 # log files
 *.log
+*.out
 
 # Local .terraform lock files
 *.lock.*

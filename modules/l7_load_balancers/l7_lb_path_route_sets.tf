@@ -50,4 +50,8 @@ resource "oci_load_balancer_path_route_set" "these" {
       }
     }
   }
+
+  depends_on = [
+    oci_load_balancer_backend_set.these
+  ]
 }

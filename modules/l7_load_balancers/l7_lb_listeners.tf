@@ -107,4 +107,14 @@ resource "oci_load_balancer_listener" "these" {
       verify_peer_certificate           = each.value.ssl_configuration.verify_peer_certificate
     }
   }
+
+  depends_on = [
+    oci_load_balancer_backend_set.these,
+    oci_load_balancer_rule_set.these,
+    oci_load_balancer_load_balancer_routing_policy.these,
+    oci_load_balancer_path_route_set.these,
+    oci_load_balancer_hostname.these,
+    oci_load_balancer_ssl_cipher_suite.these,
+    oci_load_balancer_certificate.these
+  ]
 }

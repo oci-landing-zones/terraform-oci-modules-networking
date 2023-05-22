@@ -79,4 +79,8 @@ resource "oci_load_balancer_rule_set" "these" {
   }
   load_balancer_id = each.value.load_balancer_id
   name             = each.value.name
+
+  depends_on = [
+    oci_load_balancer_backend_set.these
+  ]
 }

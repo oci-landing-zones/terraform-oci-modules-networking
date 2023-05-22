@@ -57,5 +57,10 @@ resource "oci_load_balancer_load_balancer_routing_policy" "these" {
       name      = rules.value.name
     }
   }
+
+  depends_on = [
+    oci_load_balancer_backend_set.these
+  ]
+
 }
 
