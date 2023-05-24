@@ -1,24 +1,27 @@
 <!-- BEGIN_TF_DOCS -->
-# CIS OCI Landing Zone OCI Native Application(L7) Load Balancer(LBaaS) Module
+# CIS OCI Landing Zone Networking Module
 
-![Landing Zone logo](../../images/landing_zone_300.png)
+![Landing Zone logo](./images/landing_zone_300.png)
 
 
-The ```terraform-oci-cis-landing-zone-l7-lbaas``` module is a Terraform layer 7 application load balancer core module that facilitates, in an optional fashion, the provisioning of a CIS compliant set of l7 application load balancers topology for the entire topology or for specific areas of the topology.
+The ```terraform-oci-cis-landing-zone-networking``` module is a Terraform networking core module that facilitates, in an optional fashion, the provisioning of a CIS compliant network topology for the entire topology or for specific areas of the topology.
 
-It aims to facilitate the provisioning of any OCI l7 lbaas topology.
+It aims to facilitate the provisioning of any OCI networking topology, covering the internal OCI networking, entirely, and the edge networking, partially.
 
 Check [module specification](./SPEC.md) for a full description of module requirements, supported variables, managed resources and outputs.
 
+In future releases, it will also cover associated networking services like DNS, Load Balancers, 3rd-party firewalls, etc.
 
 This module uses Terraform complex types and optional attributes, in order to create a new abstraction layer on top of Terraform. 
-This abstraction layer allows the specification of any l7 lbaas topology containing any number of lbaas resources like listeners, hostnames, certificates and others and mapping those on any existing compartments topology.
+This abstraction layer allows the specification of any networking topology containing any number of networking resources like VCNs, subnets, DRGs and others and mapping those on any existing compartments topology.
+
+It allows both creating a complex networking topology from scratch and also injecting resources into any existing networking topology by following the same abstraction layer format. 
 
 The abstraction layer format can be HCL (```*.tfvars``` or ```*.auto.tfvars```) or JSON (```*.tfvars.json``` or ```*.auto.tfvars.json```).
 
 This approach represents an excellent tool for templating. The templating will be made outside of the code, in the configurations files themselves. The ```*.tfvars.*``` can be used as sharable templates that define different and complex topologies.
 
-The main advantage of this approach is that there will be one single code repository for any l7 lbaas configuration. Creation of a new l7 lbaas configuration will not have any impact on the Terraform code, it will just impact the configuration files (```*.tfvars.*``` files).
+The main advantage of this approach is that there will be one single code repository for any networking configuration. Creation of a new networking configuration will not have any impact on the Terraform code, it will just impact the configuration files (```*.tfvars.*``` files).
 
 The separation of code and configuration supports DevOps key concepts for operations design, change management, pipelines.
 
@@ -45,8 +48,9 @@ Using these modules does not require a user extensive knowledge of Terraform or 
 
 This module requires the following OCI IAM permissions:
 ```
-Allow group <group-name> to manage load-balancers in compartment <compartment-name>
+Allow group <group-name> to manage virtual-network-family in compartment <compartment-name>
 
+Allow group <group-name> to manage drgs in compartment <compartment-name>
 ```
 
 ### Terraform Version < 1.3.x and Optional Object Type Attributes
@@ -79,36 +83,22 @@ Terraform modules can be invoked locally or remotely.
 
 For invoking the module locally, just set the module *source* attribute to the module file path (relative path works). The following example assumes the module is two folders up in the file system.
 ```
-module "l7_load_balancers" {
-  source = "./modules/l7_load_balancers"
-  l7_load_balancers_configuration = {
-    dependencies = {
-      public_ips              = local.provisioned_oci_core_public_ips
-      subnets                 = local.provisioned_subnets
-      network_security_groups = local.provisioned_network_security_groups
-    },
-    l7_load_balancers = local.one_dimension_processed_l7_load_balancers
-  }
+module "terraform-oci-cis-landing-zone-networking" {
+  source = "../.."
+  network_configuration = var.network_configuration
 }
 ```
 
 For invoking the module remotely, set the module *source* attribute to the networking module repository, as shown:
 ```
-module "l7_load_balancers" {
-  source = "git@github.com:oracle-quickstart/terraform-oci-cis-landing-zone-networking.git/modules/l7_load_balancers"
-  l7_load_balancers_configuration = {
-    dependencies = {
-      public_ips              = local.provisioned_oci_core_public_ips
-      subnets                 = local.provisioned_subnets
-      network_security_groups = local.provisioned_network_security_groups
-    },
-    l7_load_balancers = local.one_dimension_processed_l7_load_balancers
-  }
+module "terraform-oci-cis-landing-zone-networking" {
+  source = "git@github.com:oracle-quickstart/terraform-oci-cis-landing-zone-networking.git"
+  network_configuration = var.network_configuration
 }
 ```
 For referring to a specific module version, append *ref=\<version\>* to the *source* attribute value, as in:
 ```
-  source = "git@github.com:oracle-quickstart/terraform-oci-cis-landing-zone-networking.git?ref=v0.1.0/modules/l7_load_balancers"
+  source = "git@github.com:oracle-quickstart/terraform-oci-cis-landing-zone-networking.git?ref=v0.1.0"
 ```
 
 ## How to use the module
@@ -217,7 +207,8 @@ When using this module in stand-alone mode, but leave some options, customizatio
 - [Simple Example](examples/simple-example/)
 
 ## Related Documentation
-- [OCI Application Load Balancer Overview](https://docs.oracle.com/en-us/iaas/Content/Balance/home.htm)
+- [OCI Networking Overview](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/overview.htm)
 
 ## Known Issues
 
+- On some corner case situations a ```cycle-graph``` exception might be raised when using route tables attached to GWs. This issue will be addressed in one of the next releases.

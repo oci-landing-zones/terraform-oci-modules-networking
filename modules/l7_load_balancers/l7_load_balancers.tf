@@ -20,10 +20,9 @@ locals {
 
       network_security_groups = {
         for nsg in flatten(l7lb_value.network_security_group_ids != null ? [
-          for nsg_id in l7lb_value.network_security_group_ids : contains([
+          for nsg_id in l7lb_value.network_security_group_ids : contains(local.provisioned_network_security_groups != null ? [
             for nsg_key, nsg_value in local.provisioned_network_security_groups : nsg_value.id
-            ],
-
+            ] :[],
             nsg_id) ? local.provisioned_network_security_groups != null ? [
             for nsg_key, nsg_value in local.provisioned_network_security_groups : {
               display_name = nsg_value.display_name
@@ -85,9 +84,9 @@ locals {
       subnet_ids    = l7lb_value.subnet_ids
       subnets = {
         for subnet in flatten(l7lb_value.subnet_ids != null ? [
-          for subnet_id in l7lb_value.subnet_ids : contains([
+          for subnet_id in l7lb_value.subnet_ids : contains(local.provisioned_subnets != null ? [
             for subnet_key, subnet_value in local.provisioned_subnets : subnet_value.id
-            ],
+            ] : [],
             subnet_id) ? local.provisioned_subnets != null ? [
             for subnet_key, subnet_value in local.provisioned_subnets : {
               display_name = subnet_value.display_name
