@@ -1,5 +1,5 @@
 network_configuration = {
-  default_compartment_id = "ocid1.compartment.oc1..aaaaaaaawwhpzd5kxd7dcd56kiuuxeaa46icb44cnu7osq3mbclo2pnv3dpq"
+  default_compartment_id = "ocid1.compartment.oc1..."
   default_freeform_tags = {
     "vision-environment" = "vision"
   }
@@ -17,10 +17,10 @@ network_configuration = {
             display_name               = "example-01-tst"
             shape                      = "flexible"
             subnet_keys                = null
-            subnet_ids                 = ["ocid1.subnet.oc1.eu-frankfurt-1.aaaaaaaarfak6ybbvej3jlceaqcsuisvijnr5wydqrcvph4vcapppvpr3ymq"]
+            subnet_ids                 = ["ocid1.subnet.oc1..."]
             ip_mode                    = "IPV4",
             is_private                 = false,
-            network_security_group_ids = ["ocid1.networksecuritygroup.oc1.eu-frankfurt-1.aaaaaaaafk3jky5ex2ro55wjflyehdmscyywu2vwxagaklpnivdua46fziwq"],
+            network_security_group_ids = ["ocid1.networksecuritygroup.oc1..."],
             shape_details = {
               maximum_bandwidth_in_mbps = 100,
               minimum_bandwidth_in_mbps = 10

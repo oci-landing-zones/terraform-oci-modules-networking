@@ -22,6 +22,9 @@ This example is leveraging the fully dynamic characteristics of the complex netw
     - one ```certificate```
     - two ```listeners```
 
+
+- It is also creating a ```public_ip``` reservation and attaching it to the ```load balancer```.
+
 __NOTE 1:__ Please note that the entire configuration is a single complex input parameter and you're able to edit it and change the resources names and any of their configuration (like VCN and subnet CIDR blocks, dns labels...) and, also, you're able to change the input configuration topology/structure like adding more categories, more VCNs inside a category, more subnets inside a VCN or inject new resources into existing VCNs and this will reflect into the topology that terraform will provision.
 
 ## Diagram of the provisioned networking topology
