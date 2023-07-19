@@ -22,6 +22,8 @@ The main advantage of this approach is that there will be one single code reposi
 
 The separation of code and configuration supports DevOps key concepts for operations design, change management, pipelines.
 
+![OCI L7 Load Balancer Diagram](images/l7_load_balancer_diagram.jpeg)
+
 ## CIS OCI Foundations Benchmark Modules Collection
 
 This repository is part of a broader collection of repositories containing modules that help customers align their OCI implementations with the CIS OCI Foundations Benchmark recommendations:
@@ -31,7 +33,8 @@ This repository is part of a broader collection of repositories containing modul
 - [Networking](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking) - current repository
 - [Governance](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-governance)
 - Security (coming soon)
-- Observability & Monitoring (coming soon)
+- [Observability & Monitoring](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability)
+
 
 The modules in this collection are designed for flexibility, are straightforward to use, and enforce CIS OCI Foundations Benchmark recommendations when possible.
 <br />
@@ -120,101 +123,53 @@ The input parameters for the module can be divided into two categories, for whic
     - ```fingerprint```
     - ```private_key_path```
     - ```region```
- 2. Network configuration single complex type: ```network_configuration.auto.tfvars``` (HCL) or ```network_configuration.auto.tfvars.json``` (JSON):
-    - ```network_configuration``` 
 
-The ```network_configuration``` complex type can accept any new networking topology together or separated with injecting resources into existing networking topologies, and all those can map on any compartments topology.
-
-The ```network_configuration``` complex type fully supports optional attributes as long as they do not break any dependency imposed by OCI.
-
-
-The ```network_configuration``` is a multidimensional complex object:
-- ```default_compartment_id``` holds the compartment id that will be used if no compartment id has been set at the specific resource or category (see ```network_configuration_categories``` for details) level. 
-- ```default_defined_tags``` and ```default_freeform_tags```  hold the defined_tags and freeform_tags to be used if no specific defined_tags and freeform_tags have been set at the resource or category* level. Those will be merged with the values provided at their higher levels, including the highest level: ```default_defined_tags``` and ```default_freeform_tags```.
-- ```default_enable_cis_checks``` when set to ```true``` the module will validate the entire configuration for CIS compliancy by checking the network security and NSG rules for specific configurations. It can can be overwritten at the category* level. It will default to ```true``` if not set or set to ```null```. Setting this to ```false``` will disable the CIS checks.
-- ```default_ssh_ports_to_check``` defines the ports the CIS validation mechanism will check for. If not set or set to ```null``` it will default to ```[22, 3389]```.
-- ```network_configuration_categories``` represents a construct that will not be directly reflected into OCI but it will have indirect configurations consequences and it will facilitate the grouping of networking resources based on compartments allocation and CIS enablement. This attribte allows any number of catogeries. For each category these attributes can be specified:
-    - ```category_compartment_id``` will override the ```default_compartment_id```.
-    - ```category_defined_tags``` and ```category_freeform_tags``` will be merged with ```default_defined_tags``` and, respectively, with ```default_freeform_tags```.
-    - ```category_enable_cis_checks``` will override the ```default_enable_cis_checks```.
-    - ```category_ssh_ports_to_check``` will override the ```default_ssh_ports_to_check```.
-    - ```vcns``` defines any number of VCNs to be created for this category.will enable one to specify any number of vcns he wants to create under one category. Each ```vcn``` can have any number of:
-      - ```security_lists```,
-      - ```route_tables```, 
-      - ```dhcp_options```, 
-      - ```subnets```, 
-      - ```network_security_groups``` and
-      - ```vcn_specific_gateways``` like: 
-        - ```internet_gateways```,
-        - ```nat_gateways```,
-        - ```service_gateways``` and 
-        - ```local_peering_gateways```. 
-      - All the resources of a ```vcn``` (including the VCN) are created from scratch. To refer to a resource a key is used to refer to the related resource. Here is an example for specifying a security list, attached to a subnet:
-  
-        ```
-              ...
-              security_lists = {
-                SECLIST_LB_KEY = {
-                  display_name = "sl-lb"
-                  ...
-                  }
-                }
-
-              ...
-              subnets = {
-                PUBLIC_LB_SUBNET_KEY = {
-                  ...
-                  security_list_keys = ["SECLIST_LB_KEY"]
-                }
-              ...
-              }
-        ```
-
-        __NOTE:__ *It is strongly recommended* not *to change a resource key after the first provisioning. Once a key has been defined and applied the configuration, changing the key will result in  resource re-creation. As the key does not play any role in the configuration that will be pushed to OCI, it will have no impact on the deployment. To distinguish keys from resource names it is recommended to use this convention (using capital characters): ```{RESOURCE_NAME}-KEY```.*
-
-        There will be one exception to the rule above. For the ```local_peering``` it possible to peer to an existing Local Peering Gateway (LPG) created outside this automation. In this case the ```peer_id``` attribute must be set to the OCID of the acceptor LPG. If no OCID is specified, the acceptor LPG created during the automation must be referred by a key specified in ```peer_key```. The value of ```peer_id``` will be checked first, if null the value of ```peer_key``` will be used. If both values are null, the LPG created will be an acceptor LPG.
-    - ```inject_into_existing_vcns``` this attribute is used similarly to the ```vcns``` attribute. It will not create any new resources but will inject them in existing VCNs.
-        - ```vcn_id``` represents the OCID of a VCN to inject new resources to.
-          - Any number these attributes can be specified:
-            - ```security_lists```, 
-            - ```route_tables```, 
-            - ```dhcp_options```, 
-            - ```subnets```, 
-            - ```network_security_groups``` and
-            - ```vcn_specific_gateways``` like:
-              - ```internet_gateways```, 
-              - ```nat_gateways```, 
-              - ```service_gateways``` or
-              - ```local_peering_gateways```. 
-        - To refer a resource within a resource, the following options are available:
-            1. To use the referend object key when the refered object was created as part of the same automation.
-            2. To use the refered object OCID when the refered object already existed as it was created outside this automation.
+ 2. L7 LBaaS configuration single complex type: ```lbaas_configuration.auto.tfvars``` (HLC) or ```lbaas_configuration.auto.tfvars.json```:
    
-          See the comments above for ```local_peering_gateways``` and extrapolate to other similar models like adding security lists and route tables to subnets, specifying gateways as next hops in route rules, etc.
-    - ```non_vcn_specific_gateways``` allows the configuration of any number of dynamic routing gateways (DRGs), Network Firewalls (NFWs) and inject resources into any number of existing DRGs.
-      - The ```dynamic_routing_gateways``` attribute can have any number of DRGs to be created. Each entry can have any number of
-        - ```remote_peering_connections```,
-        - ```drg_attachments```, 
-        - ```drg_route_tables``` and
-        - ```drg_route_distributions```.
-    - The ```inject_into_existing_drgs``` attribute can inject resources in any number of existing drgs. Any number of the following attributes are supported:
-      - ```remote_peering_connections```,
-      - ```drg_attachments```,
-      - ```drg_route_tables```
-      - ```drg_route_distributions```.
-    - The ```network_firewalls_configuration``` attribute can be used to inject any number of ```network_firewalls``` and/or ```network_firewall_policies```. Existing policies or newly created policies can be specified.
-    When updating an attached network firewall policy, a copy of the attached policy will be created, updated with the new values. When done the copy will replace the existing policy.
+```l7_load_balancers_configuration```:
+
+  The ```l7_load_balancers_configuration``` complex type can accept any new l7 lbaas topology that can map on any compartments topology.
+
+  The ```l7_load_balancers_configuration``` complex type fully supports optional attributes as long as they do not break any dependency imposed by OCI.
+
+- ```dependencies``` attribute is a complex attribute that has the role of providing key-value pairs for the OCI objects that the LBaaS might depend on. This will offer the option to be able to refer to those dependencies not only by OCIDs but also by KEY and thus, facilitating integrationg this with other modules that will be required to pass to the dependencies the outputs of creating the potentials dependenicies like:
+   - ```subnets```
+   - ```public_ips```
+   - ```network_security_groups```
+
+- ```l7_load_balancers``` is a multidimensional attribute that:
+  - ```compartment_id``` holds the compartment id that will be used 
+  - ```display_name``` load balancer displayed name
+  - ```shape``` LBaaS shape
+  - ```subnet_ids``` and ```subnet_keys``` the ocids of the subnets that will be used by the LBaaS. If the ```subnet_ids``` are empty than the automation will try to search the subnets by the provided ```subnet_keys```.
+  - ```defined_tags``` LBaaS defined tags
+  - ```freeform_tags``` LBaaS freeform tags
+  - All the OCI LBaaS resource attributes are supported by this configuration: ```ip_mode```, ```is_private```, ```network_security_group_ids/network_security_group_keys```, ```reserved_ips_ids/reserved_ips_keys``` and ```shape_details```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
+  - ```backend_sets``` represents an optional attribute that allows the definition of zero, one or multiple backend sets that will be associated with the current load balancer. All the OCI ```backend_set attributes``` are covered: ```health_checker```, ```name```, ```policy```, ```lb_cookie_session_persistence_configuration```, ```session_persistence_configuration```, ```ssl_configuration``` and ```backends```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
+  - ```path_route_sets``` represents an optional attribute that allows the definition of zero, one or multiple path route sets that will be associated with the current load balancer. All the OCI ```path_route_sets``` attributes are covered: ```name```, ```path_routes```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
+  - ```host_names``` represents an optional attribute that allows the definition of zero, one or multiple host names that will be associated with the current load balancer. All the OCI ```host_names``` attributes are covered: ```hostname``` and ```name```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
+  - ```routing_policies``` represents an optional attribute that allows the definition of zero, one or multiple routing policies that will be associated with the current load balancer. All the OCI ```routing_policies``` attributes are covered: ```condition_language_version```, ```name```,  and ```condition```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
+  - ```rule_sets``` represents an optional attribute that allows the definition of zero, one or multiple rules sets that will be associated with the current load balancer. All the OCI ```rule_sets``` attributes are covered: ```name``` and ```items```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
+  - ```certificates``` represents an optional attribute that allows the definition of zero, one or multiple certificates that will be associated with the current load balancer. All the OCI ```certificates``` attributes are covered: ```certificate_name```, ```ca_certificate```, ```passphrase```, ```private_key``` and ```public_certificate```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
+  - ```listeners``` represents an optional attribute that allows the definition of zero, one or multiple listeners that will be associated with the current load balancer. All the OCI ```listeners``` attributes are covered: ```default_backend_set_key```, ```name```, ```port```, ```protocol```, ```connection_configuration```, ```hostname_keys```, ```path_route_set_key```, ```routing_policy_key```, ```rule_set_keys``` and ```ssl_configuration```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
+ 
+__NOTE_1:__ To refer to a resource created by this automation the resource key should be used.
+  
+
+__NOTE_2:__ *It is strongly recommended* not *to change a resource key after the first provisioning. Once a key has been defined and applied the configuration, changing the key will result in  resource re-creation. As the key does not play any role in the configuration that will be pushed to OCI, it will have no impact on the deployment. To distinguish keys from resource names it is recommended to use this convention (using capital characters): ```{RESOURCE_NAME}-KEY```.*
+
 
 This module can be used directly by copying one of the provided [examples](examples/) and modify to match the use-case.
 
-It can also be integrated with other core modules into an orchestrated solution. It might be needed to apply some customizations to the complex type.
+It can also be integrated with other core modules into an orchestrated solution. It might be needed to apply some customizations to the complex type. Some examples of orchestrating this module into a more comprehensive solution can be found here:
+  - [Provision a load balancer on top of an existing VCN](../../examples/simple-no_vcn-oci-native-l7-lbaas-example)
+  - [Provision a complete VCN and a load balancer](../../examples/standard-vcn-oci-native-l7-lbaas-example)
 
-When using this module in stand-alone mode, but leave some options, customizations may be required, too.
 
 <a name="howtoexample"></a>
 ### Examples
 
-- [Simple Example](examples/simple-example/)
+- [Simple Example](examples/simple-lbaas-on-existing-vcn/)
 
 ## Related Documentation
 - [OCI Application Load Balancer Overview](https://docs.oracle.com/en-us/iaas/Content/Balance/home.htm)

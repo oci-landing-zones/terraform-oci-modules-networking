@@ -34,7 +34,7 @@ This repository is part of a broader collection of repositories containing modul
 - [Networking](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking) - current repository
 - [Governance](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-governance)
 - Security (coming soon)
-- Observability & Monitoring (coming soon)
+- [Observability & Monitoring](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability)
 
 The modules in this collection are designed for flexibility, are straightforward to use, and enforce CIS OCI Foundations Benchmark recommendations when possible.
 <br />
@@ -187,13 +187,28 @@ The ```network_configuration``` is a multidimensional complex object:
         - ```drg_attachments```, 
         - ```drg_route_tables``` and
         - ```drg_route_distributions```.
-    - The ```inject_into_existing_drgs``` attribute can inject resources in any number of existing drgs. Any number of the following attributes are supported:
-      - ```remote_peering_connections```,
-      - ```drg_attachments```,
-      - ```drg_route_tables```
-      - ```drg_route_distributions```.
-    - The ```network_firewalls_configuration``` attribute can be used to inject any number of ```network_firewalls``` and/or ```network_firewall_policies```. Existing policies or newly created policies can be specified.
-    When updating an attached network firewall policy, a copy of the attached policy will be created, updated with the new values. When done the copy will replace the existing policy.
+      - The ```inject_into_existing_drgs``` attribute can inject resources in any number of existing drgs. Any number of the following attributes are supported:
+        - ```remote_peering_connections```,
+        - ```drg_attachments```,
+        - ```drg_route_tables```
+        - ```drg_route_distributions```.
+      - The ```network_firewalls_configuration``` attribute can be used to inject any number of ```network_firewalls``` and/or ```network_firewall_policies```. Existing policies or newly created policies can be specified.
+      When updating an attached network firewall policy, a copy of the attached policy will be created, updated with the new values. When done the copy will replace the existing policy.
+      - ```l7_load_balancers``` is a multidimensional attribute that:
+        - ```compartment_id``` holds the compartment id that will be used 
+        - ```display_name``` load balancer displayed name
+        - ```shape``` LBaaS shape
+        - ```subnet_ids``` and ```subnet_keys``` the ocids of the subnets that will be used by the LBaaS. If the ```subnet_ids``` are empty than the automation will try to search the subnets by the provided ```subnet_keys```.
+        - ```defined_tags``` LBaaS defined tags
+        - ```freeform_tags``` LBaaS freeform tags
+        - All the OCI LBaaS resource attributes are supported by this configuration: ```ip_mode```, ```is_private```, ```network_security_group_ids/network_security_group_keys```, ```reserved_ips_ids/reserved_ips_keys``` and ```shape_details```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
+        - ```backend_sets``` represents an optional attribute that allows the definition of zero, one or multiple backend sets that will be associated with the current load balancer. All the OCI ```backend_set attributes``` are covered: ```health_checker```, ```name```, ```policy```, ```lb_cookie_session_persistence_configuration```, ```session_persistence_configuration```, ```ssl_configuration``` and ```backends```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
+        - ```path_route_sets``` represents an optional attribute that allows the definition of zero, one or multiple path route sets that will be associated with the current load balancer. All the OCI ```path_route_sets``` attributes are covered: ```name```, ```path_routes```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
+        - ```host_names``` represents an optional attribute that allows the definition of zero, one or multiple host names that will be associated with the current load balancer. All the OCI ```host_names``` attributes are covered: ```hostname``` and ```name```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
+        - ```routing_policies``` represents an optional attribute that allows the definition of zero, one or multiple routing policies that will be associated with the current load balancer. All the OCI ```routing_policies``` attributes are covered: ```condition_language_version```, ```name```,  and ```condition```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
+        - ```rule_sets``` represents an optional attribute that allows the definition of zero, one or multiple rules sets that will be associated with the current load balancer. All the OCI ```rule_sets``` attributes are covered: ```name``` and ```items```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
+        - ```certificates``` represents an optional attribute that allows the definition of zero, one or multiple certificates that will be associated with the current load balancer. All the OCI ```certificates``` attributes are covered: ```certificate_name```, ```ca_certificate```, ```passphrase```, ```private_key``` and ```public_certificate```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
+        - ```listeners``` represents an optional attribute that allows the definition of zero, one or multiple listeners that will be associated with the current load balancer. All the OCI ```listeners``` attributes are covered: ```default_backend_set_key```, ```name```, ```port```, ```protocol```, ```connection_configuration```, ```hostname_keys```, ```path_route_set_key```, ```routing_policy_key```, ```rule_set_keys``` and ```ssl_configuration```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
 
 This module can be used directly by copying one of the provided [examples](examples/) and modify to match the use-case.
 
@@ -205,6 +220,8 @@ When using this module in stand-alone mode, but leave some options, customizatio
 ### Examples
 
 - [Simple Example](examples/simple-example/)
+- [Provision a load balancer on top of an existing VCN](examples/simple-no_vcn-oci-native-l7-lbaas-example)
+- [Provision a complete VCN and a load balancer](examples/standard-vcn-oci-native-l7-lbaas-example)
 
 ## Related Documentation
 - [OCI Networking Overview](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/overview.htm)
