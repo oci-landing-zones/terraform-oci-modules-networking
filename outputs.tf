@@ -29,6 +29,7 @@ output "provisioned_networking_resources" {
     l7_load_balancers                              = module.l7_load_balancers.provisioned_l7_load_balancers
     public_ips_pools                               = local.provisioned_oci_core_public_ip_pools
     public_ips                                     = local.provisioned_oci_core_public_ips
+    customer_premises_equipments                   = local.provisioned_customer_premises_equipments
   }
 }
 

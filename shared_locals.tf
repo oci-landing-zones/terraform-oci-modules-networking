@@ -58,6 +58,7 @@ locals {
     for vcn_non_specific_gw in [
       for network_configuration_category_key, network_configuration_category_value in var.network_configuration.network_configuration_categories : {
         dynamic_routing_gateways        = network_configuration_category_value.non_vcn_specific_gateways.dynamic_routing_gateways
+        customer_premises_equipments    = network_configuration_category_value.non_vcn_specific_gateways.customer_premises_equipments
         inject_into_existing_drgs       = network_configuration_category_value.non_vcn_specific_gateways.inject_into_existing_drgs
         network_configuration_category  = network_configuration_category_key
         default_compartment_id          = var.network_configuration.default_compartment_id
