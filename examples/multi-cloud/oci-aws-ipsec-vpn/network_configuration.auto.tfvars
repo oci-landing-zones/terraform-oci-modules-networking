@@ -343,6 +343,14 @@ network_configuration = {
             display_name = "vision-cpe"
           }
         }
+        ipsecs = {
+          VISION-OCI-AWS-IPSEC-VPN-KEY = {
+            cpe_key       = "VISION-CPE-KEY"
+            drg_key       = "DRG-VISION-KEY",
+            static_routes = ["0.0.0.0/0"]
+            display_name  = "vision-oci-aws-ipsec-vpn"
+          }
+        }
       }
     }
   }

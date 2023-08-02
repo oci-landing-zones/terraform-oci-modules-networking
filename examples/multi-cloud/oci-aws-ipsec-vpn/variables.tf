@@ -454,6 +454,20 @@ variable "network_configuration" {
           cpe_device_shape_vendor_name = optional(string)
         })))
 
+        ipsecs = optional(map(object({
+          compartment_id            = optional(string),
+          cpe_id                    = optional(string),
+          cpe_key                   = optional(string),
+          drg_id                    = optional(string),
+          drg_key                   = optional(string),
+          static_routes             = list(string),
+          cpe_local_identifier      = optional(string),
+          cpe_local_identifier_type = optional(string),
+          defined_tags              = optional(map(string)),
+          display_name              = optional(string),
+          freeform_tags             = optional(map(string)),
+        })))
+
         inject_into_existing_drgs = optional(map(object({
           drg_id = string,
 
