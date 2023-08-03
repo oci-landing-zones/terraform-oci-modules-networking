@@ -466,6 +466,36 @@ variable "network_configuration" {
           defined_tags              = optional(map(string)),
           display_name              = optional(string),
           freeform_tags             = optional(map(string)),
+          tunnels_management = optional(object({
+            tunnel_1 = optional(object({
+              routing = string,
+              bgp_session_info = optional(object({
+                customer_bgp_asn      = optional(string),
+                customer_interface_ip = optional(string),
+                oracle_interface_ip   = optional(string)
+              }))
+              encryption_domain_config = optional(object({
+                cpe_traffic_selector    = optional(string),
+                oracle_traffic_selector = optional(string)
+              }))
+              shared_secret = optional(string),
+              ike_version   = optional(string)
+            })),
+            tunnel_2 = optional(object({
+              routing = string,
+              bgp_session_info = optional(object({
+                customer_bgp_asn      = optional(string),
+                customer_interface_ip = optional(string),
+                oracle_interface_ip   = optional(string)
+              }))
+              encryption_domain_config = optional(object({
+                cpe_traffic_selector    = optional(string),
+                oracle_traffic_selector = optional(string)
+              }))
+              shared_secret = optional(string),
+              ike_version   = optional(string)
+            }))
+          }))
         })))
 
         inject_into_existing_drgs = optional(map(object({

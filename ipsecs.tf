@@ -19,13 +19,16 @@ locals {
           display_name                   = ipsec_value.display_name
           cpe_id                         = ipsec_value.cpe_id != null ? ipsec_value.cpe_id : ipsec_value.cpe_key != null ? local.provisioned_customer_premises_equipments[ipsec_value.cpe_key].id : null
           cpe_key                        = ipsec_value.cpe_key
+          cpe_name                       = ipsec_value.cpe_key != null ? local.provisioned_customer_premises_equipments[ipsec_value.cpe_key].display_name : "Not known as not created by this automation"
           drg_id                         = ipsec_value.drg_id != null ? ipsec_value.drg_id : ipsec_value.drg_key != null ? local.provisioned_dynamic_gateways[ipsec_value.drg_key].id : null
           drg_key                        = ipsec_value.drg_key
+          drg_name                       = ipsec_value.drg_key != null ? local.provisioned_dynamic_gateways[ipsec_value.drg_key].display_name : "Not known as not created by this automation"
           static_routes                  = ipsec_value.static_routes
           cpe_local_identifier           = ipsec_value.cpe_local_identifier
           cpe_local_identifier_type      = ipsec_value.cpe_local_identifier_type
           network_configuration_category = vcn_non_specific_gw_value.network_configuration_category
           ipsec_key                      = ipsec_key
+          tunnels_management             = ipsec_value.tunnels_management
         }
       ] : [] : []
     ]) : flat_ipsec.ipsec_key => flat_ipsec

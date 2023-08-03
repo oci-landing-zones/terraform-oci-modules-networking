@@ -31,6 +31,7 @@ output "provisioned_networking_resources" {
     public_ips                                     = local.provisioned_oci_core_public_ips
     customer_premises_equipments                   = local.provisioned_customer_premises_equipments
     ip_sec_vpns                                    = local.provisioned_ipsecs
+    ipsec_tunnels_management                       = local.provisioned_ipsec_connection_tunnels_management
   }
 }
 

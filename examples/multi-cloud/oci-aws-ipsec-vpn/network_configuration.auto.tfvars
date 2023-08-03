@@ -341,7 +341,11 @@ network_configuration = {
           VISION-CPE-KEY = {
             ip_address   = "203.0.113.2",
             display_name = "vision-cpe"
-          }
+          },
+          VISION-CPE-2-KEY = {
+            ip_address   = "203.0.114.2",
+            display_name = "vision-cpe-2"
+          },
         }
         ipsecs = {
           VISION-OCI-AWS-IPSEC-VPN-KEY = {
@@ -349,6 +353,46 @@ network_configuration = {
             drg_key       = "DRG-VISION-KEY",
             static_routes = ["0.0.0.0/0"]
             display_name  = "vision-oci-aws-ipsec-vpn"
+            tunnels_management = {
+              tunnel_1 = {
+                routing = "BGP",
+                bgp_session_info = {
+                  customer_bgp_asn      = "64512",
+                  customer_interface_ip = "169.254.150.225/30",
+                  oracle_interface_ip   = "169.254.150.226/30"
+                }
+                shared_secret = "test1",
+                ike_version   = "V1"
+              },
+              tunnel_2 = {
+                routing = "BGP",
+                bgp_session_info = {
+                  customer_bgp_asn      = "64512",
+                  customer_interface_ip = "169.254.150.230/30",
+                  oracle_interface_ip   = "169.254.150.229/30"
+                }
+                shared_secret = "test2",
+                ike_version   = "V2"
+              }
+            }
+          },
+          VISION-OCI-AWS-IPSEC-VPN-2-KEY = {
+            cpe_key       = "VISION-CPE-2-KEY"
+            drg_key       = "DRG-VISION-KEY",
+            static_routes = ["0.0.0.0/0"]
+            display_name  = "vision-oci-aws-ipsec-2-vpn"
+            tunnels_management = {
+              tunnel_1 = {
+                routing = "BGP",
+                bgp_session_info = {
+                  customer_bgp_asn      = "64512",
+                  customer_interface_ip = "169.254.150.217/30",
+                  oracle_interface_ip   = "169.254.150.218/30"
+                }
+                shared_secret = "test1",
+                ike_version   = "V1"
+              }
+            }
           }
         }
       }
