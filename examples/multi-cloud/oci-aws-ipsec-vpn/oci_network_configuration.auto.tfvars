@@ -339,13 +339,14 @@ network_configuration = {
         }
         customer_premises_equipments = {
           VISION-CPE-KEY = {
-            ip_address   = "203.0.113.2",
-            display_name = "vision-cpe"
+            ip_address                   = "203.0.113.2",
+            display_name                 = "vision-cpe",
+            cpe_device_shape_vendor_name = "Fortinet"
           },
           VISION-CPE-2-KEY = {
             ip_address   = "203.0.114.2",
             display_name = "vision-cpe-2"
-          },
+          }
         }
         ipsecs = {
           VISION-OCI-AWS-IPSEC-VPN-KEY = {
@@ -393,6 +394,26 @@ network_configuration = {
                 ike_version   = "V1"
               }
             }
+          }
+        }
+
+        fast_connect_virtual_circuits = {
+          FC-FRA-MEGAPORT-VC1-1-KEY = {
+            type = "PRIVATE",
+            #Optional
+            bandwidth_shape_name = "1 Gbps",
+
+            cross_connect_mappings = {
+              MAPPING-1-KEY = {
+                #Optional
+                customer_bgp_peering_ip = "10.254.254.1/30"
+                oracle_bgp_peering_ip   = "10.254.254.2/30"
+                vlan = "200"
+              }
+            }
+            customer_asn = "133937"
+            display_name = "fc_fra_megaport_vc1_1"
+            gateway_key  = "DRG-VISION-KEY"
           }
         }
       }

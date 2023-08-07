@@ -32,6 +32,10 @@ output "provisioned_networking_resources" {
     customer_premises_equipments                   = local.provisioned_customer_premises_equipments
     ip_sec_vpns                                    = local.provisioned_ipsecs
     ipsec_tunnels_management                       = local.provisioned_ipsec_connection_tunnels_management
+    fast_connect_virtual_circuits = {
+      fast_connect_virtual_circuits            = oci_core_virtual_circuit.these,
+      available_fast_connect_provider_services = local.one_dimmension_fast_connect_provider_services
+    }
   }
 }
 
