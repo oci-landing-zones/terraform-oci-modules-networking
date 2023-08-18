@@ -397,25 +397,68 @@ network_configuration = {
           }
         }
 
+        /*cross_connect_groups = {
+          CROSS-CONNECT-GROUP-01-KEY = {
+            customer_reference_name = "Vision"
+            display_name            = "cc-group-01"
+            cross_connects = {
+              CC-GR01-01-KEY = {
+                location_name           = "FRA"
+                port_speed_shape_name   = "1 Gbps"
+                customer_reference_name = "Vision CC GR 01 - 01"
+                display_name            = "cc-group-01-01"
+              },
+              CC-GR01-02-KEY = {
+                location_name           = "FRA"
+                port_speed_shape_name   = "1 Gbps"
+                customer_reference_name = "Vision CC GR 01 - 02"
+                display_name            = "cc-group-01-02"
+              }
+            }
+          },
+          CROSS-CONNECT-GROUP-02-KEY = {
+            customer_reference_name = "Vision"
+            display_name            = "cc-group-02"
+            cross_connects = {
+              CC-GR02-01-KEY = {
+                location_name           = "FRA"
+                port_speed_shape_name   = "1 Gbps"
+                customer_reference_name = "Vision CC GR 02 - 01"
+                display_name            = "cc-group-02-01"
+              },
+              CC-GR02-02-KEY = {
+                location_name           = "FRA"
+                port_speed_shape_name   = "1 Gbps"
+                customer_reference_name = "Vision CC GR 02 - 02"
+                display_name            = "cc-group-02-02"
+              }
+            }
+          },
+
+        }*/
+
         fast_connect_virtual_circuits = {
           FC-FRA-MEGAPORT-VC1-1-KEY = {
-            type = "PRIVATE",
+            type                                        = "PRIVATE",
+            provision_fc_virtual_circuit                = true
+            show_available_fc_virtual_circuit_providers = false
             #Optional
             bandwidth_shape_name = "1 Gbps",
-
-            cross_connect_mappings = {
+            #provider_service_id  = "ocid1.providerservice.oc1.eu-frankfurt-1.aaaaaaaaqitgqsyd6uisxrgvjvp6mb4rghi6tm5qnvpahync6yqipb3qbgvq",
+            provider_service_key = "FC-FRA-MEGAPORT-VC1-1-AT&T-NETBOND-KEY"
+            /*cross_connect_mappings = {
               MAPPING-1-KEY = {
                 #Optional
                 customer_bgp_peering_ip = "10.254.254.1/30"
                 oracle_bgp_peering_ip   = "10.254.254.2/30"
-                vlan = "200"
+                vlan                    = "200"
               }
-            }
-            customer_asn = "133937"
+            } */
             display_name = "fc_fra_megaport_vc1_1"
             gateway_key  = "DRG-VISION-KEY"
           }
         }
+
       }
     }
   }

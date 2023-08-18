@@ -33,9 +33,14 @@ output "provisioned_networking_resources" {
     ip_sec_vpns                                    = local.provisioned_ipsecs
     ipsec_tunnels_management                       = local.provisioned_ipsec_connection_tunnels_management
     fast_connect_virtual_circuits = {
-      fast_connect_virtual_circuits            = oci_core_virtual_circuit.these,
-      available_fast_connect_provider_services = local.one_dimmension_fast_connect_provider_services
+      fast_connect_virtual_circuits = local.provisioned_fast_connect_virtual_circuits
+      available_fast_connect_provider_services = {
+        for k, v in local.one_dimmension_fast_connect_provider_services :
+        k => v if local.one_dimension_fast_connect_virtual_circuits[v.fcvc_key].show_available_fc_virtual_circuit_providers == true
+      }
     }
+    cross_connect_groups = oci_core_cross_connect_group.these,
+    cross_connects       = oci_core_cross_connect.these
   }
 }
 

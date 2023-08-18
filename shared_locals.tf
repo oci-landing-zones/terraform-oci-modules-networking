@@ -60,6 +60,7 @@ locals {
         dynamic_routing_gateways        = network_configuration_category_value.non_vcn_specific_gateways.dynamic_routing_gateways
         customer_premises_equipments    = network_configuration_category_value.non_vcn_specific_gateways.customer_premises_equipments
         ipsecs                          = network_configuration_category_value.non_vcn_specific_gateways.ipsecs
+        cross_connect_groups            = network_configuration_category_value.non_vcn_specific_gateways.cross_connect_groups
         fast_connect_virtual_circuits   = network_configuration_category_value.non_vcn_specific_gateways.fast_connect_virtual_circuits
         inject_into_existing_drgs       = network_configuration_category_value.non_vcn_specific_gateways.inject_into_existing_drgs
         network_configuration_category  = network_configuration_category_key
