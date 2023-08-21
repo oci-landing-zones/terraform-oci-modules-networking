@@ -160,10 +160,10 @@ locals {
 
 
 resource "oci_core_virtual_circuit" "these" {
-  for_each = {
+  for_each = local.one_dimension_fast_connect_virtual_circuits != null ? length(local.one_dimension_fast_connect_virtual_circuits) >0 ? {
     for k, v in local.one_dimension_fast_connect_virtual_circuits :
     k => v if v.provision_fc_virtual_circuit == true
-  }
+  } : {} : {}
   #Required
   compartment_id = each.value.compartment_id
   type           = each.value.type

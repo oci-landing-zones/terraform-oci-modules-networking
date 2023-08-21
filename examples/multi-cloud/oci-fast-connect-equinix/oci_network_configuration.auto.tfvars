@@ -8,12 +8,12 @@ network_configuration = {
   network_configuration_categories = {
     demo = {
       category_freeform_tags = {
-        "vision-oci-aws-ipsec" = "demo"
+        "vision-oci-equinix-ipsec" = "demo"
       }
 
       vcns = {
-        VISION-VCN-KEY = {
-          display_name                     = "vision-vcn"
+        VISION-EQUINIX-VCN-KEY = {
+          display_name                     = "vision-equinix-vcn"
           is_ipv6enabled                   = false
           is_oracle_gua_allocation_enabled = false
           cidr_blocks                      = ["10.0.0.0/18"],
@@ -324,78 +324,82 @@ network_configuration = {
 
       non_vcn_specific_gateways = {
         dynamic_routing_gateways = {
-          DRG-VISION-KEY = {
-            display_name = "drg-vision"
+          DRG-VISION-EQUINIX-KEY = {
+            display_name = "drg-equinix-vision"
             drg_attachments = {
               DRG-VCN-ATTACH-VISION-KEY = {
-                display_name = "drg-vcn-attach-vision"
+                display_name = "drg-vcn-attach-vision-equinix"
                 network_details = {
-                  attached_resource_key = "VISION-VCN-KEY"
+                  attached_resource_key = "VISION-EQUINIX-VCN-KEY"
                   type                  = "VCN"
                 }
               }
             }
           }
         }
-        customer_premises_equipments = {
-          VISION-CPE-KEY = {
-            ip_address                   = "203.0.113.2",
-            display_name                 = "vision-cpe",
-            cpe_device_shape_vendor_name = "Fortinet"
-          },
-          VISION-CPE-2-KEY = {
-            ip_address   = "203.0.114.2",
-            display_name = "vision-cpe-2"
-          }
-        }
-        ipsecs = {
-          VISION-OCI-AWS-IPSEC-VPN-KEY = {
-            cpe_key       = "VISION-CPE-KEY"
-            drg_key       = "DRG-VISION-KEY",
-            static_routes = ["0.0.0.0/0"]
-            display_name  = "vision-oci-aws-ipsec-vpn"
-            tunnels_management = {
-              tunnel_1 = {
-                routing = "BGP",
-                bgp_session_info = {
-                  customer_bgp_asn      = "64512",
-                  customer_interface_ip = "169.254.150.225/30",
-                  oracle_interface_ip   = "169.254.150.226/30"
-                }
-                shared_secret = "test1",
-                ike_version   = "V1"
+
+        /*cross_connect_groups = {
+          CROSS-CONNECT-GROUP-01-KEY = {
+            customer_reference_name = "Vision"
+            display_name            = "cc-group-01"
+            cross_connects = {
+              CC-GR01-01-KEY = {
+                location_name           = "FRA"
+                port_speed_shape_name   = "1 Gbps"
+                customer_reference_name = "Vision CC GR 01 - 01"
+                display_name            = "cc-group-01-01"
               },
-              tunnel_2 = {
-                routing = "BGP",
-                bgp_session_info = {
-                  customer_bgp_asn      = "64512",
-                  customer_interface_ip = "169.254.150.230/30",
-                  oracle_interface_ip   = "169.254.150.229/30"
-                }
-                shared_secret = "test2",
-                ike_version   = "V2"
+              CC-GR01-02-KEY = {
+                location_name           = "FRA"
+                port_speed_shape_name   = "1 Gbps"
+                customer_reference_name = "Vision CC GR 01 - 02"
+                display_name            = "cc-group-01-02"
               }
             }
           },
-          VISION-OCI-AWS-IPSEC-VPN-2-KEY = {
-            cpe_key       = "VISION-CPE-2-KEY"
-            drg_key       = "DRG-VISION-KEY",
-            static_routes = ["0.0.0.0/0"]
-            display_name  = "vision-oci-aws-ipsec-2-vpn"
-            tunnels_management = {
-              tunnel_1 = {
-                routing = "BGP",
-                bgp_session_info = {
-                  customer_bgp_asn      = "64512",
-                  customer_interface_ip = "169.254.150.217/30",
-                  oracle_interface_ip   = "169.254.150.218/30"
-                }
-                shared_secret = "test1",
-                ike_version   = "V1"
+          CROSS-CONNECT-GROUP-02-KEY = {
+            customer_reference_name = "Vision"
+            display_name            = "cc-group-02"
+            cross_connects = {
+              CC-GR02-01-KEY = {
+                location_name           = "FRA"
+                port_speed_shape_name   = "1 Gbps"
+                customer_reference_name = "Vision CC GR 02 - 01"
+                display_name            = "cc-group-02-01"
+              },
+              CC-GR02-02-KEY = {
+                location_name           = "FRA"
+                port_speed_shape_name   = "1 Gbps"
+                customer_reference_name = "Vision CC GR 02 - 02"
+                display_name            = "cc-group-02-02"
               }
             }
+          },
+
+        }*/
+
+        fast_connect_virtual_circuits = {
+          FC-FRA-VC1-1-KEY = {
+            type                                        = "PRIVATE",
+            provision_fc_virtual_circuit                = true
+            show_available_fc_virtual_circuit_providers = false
+            #Optional
+            bandwidth_shape_name = "1 Gbps",
+            #provider_service_id  = "ocid1.providerservice.oc1.eu-frankfurt-1.aaaaaaaaqitgqsyd6uisxrgvjvp6mb4rghi6tm5qnvpahync6yqipb3qbgvq",
+            provider_service_key = "FC-FRA-VC1-1-BT-CLOUD-CONNECT-KEY"
+            /*cross_connect_mappings = {
+              MAPPING-1-KEY = {
+                #Optional
+                customer_bgp_peering_ip = "10.254.254.1/30"
+                oracle_bgp_peering_ip   = "10.254.254.2/30"
+                vlan                    = "200"
+              }
+            } */
+            display_name = "fc_fra_vc1_1"
+            gateway_key  = "DRG-VISION-EQUINIX-KEY"
           }
         }
+
       }
     }
   }
