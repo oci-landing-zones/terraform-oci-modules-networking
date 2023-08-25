@@ -1,5 +1,5 @@
 <!-- BEGIN_TF_DOCS -->
-# Multicloud connectivity - FastConnect
+# Multicloud connectivity - FastConnect Partner
 
 ## Description
 
