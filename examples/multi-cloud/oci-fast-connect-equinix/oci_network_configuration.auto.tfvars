@@ -1,5 +1,5 @@
 network_configuration = {
-  default_compartment_id = "ocid1.compartment.oc1..aaaaaaaawwhpzd5kxd7dcd56kiuuxeaa46icb44cnu7osq3mbclo2pnv3dpq"
+  default_compartment_id = "ocid1.compartment.oc1........"
   default_freeform_tags = {
     "vision-environment" = "vision"
   }
@@ -8,12 +8,12 @@ network_configuration = {
   network_configuration_categories = {
     demo = {
       category_freeform_tags = {
-        "vision-oci-equinix-ipsec" = "demo"
+        "vision-oci-fastconnect" = "demo"
       }
 
       vcns = {
-        VISION-EQUINIX-VCN-KEY = {
-          display_name                     = "vision-equinix-vcn"
+        VISION-VCN-KEY = {
+          display_name                     = "vision-vcn"
           is_ipv6enabled                   = false
           is_oracle_gua_allocation_enabled = false
           cidr_blocks                      = ["10.0.0.0/18"],
@@ -74,20 +74,29 @@ network_configuration = {
 
               ingress_rules = [
                 {
-                  description = "ingress from 10.0.3.0/24 over TCP22"
-                  stateless   = false
-                  protocol    = "TCP"
-                  src         = "10.0.3.0/24"
-                  src_type    = "CIDR_BLOCK"
-                },
-                {
-                  description  = "ingress from 10.0.3.0/24 over HTTP80"
+                  description  = "ingress from 172.16.0.0/16 over TCP22"
                   stateless    = false
                   protocol     = "TCP"
-                  src          = "10.0.3.0/24"
+                  src          = "172.16.0.0/16"
+                  src_type     = "CIDR_BLOCK"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                },
+                {
+                  description  = "ingress from 172.16.0.0/16 over HTTP80"
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "172.16.0.0/16"
                   src_type     = "CIDR_BLOCK"
                   dst_port_min = 80
                   dst_port_max = 80
+                },
+                {
+                  description = "ingress from 172.16.0.0/16 over ICMP"
+                  stateless   = false
+                  protocol    = "ICMP"
+                  src         = "172.16.0.0/16"
+                  src_type    = "CIDR_BLOCK"
                 }
               ]
             }
@@ -138,7 +147,7 @@ network_configuration = {
               }
             }
             RT-02-KEY = {
-              display_name = "rt-02-prod-vcn-01"
+              display_name = "rt-02"
               route_rules = {
                 sgw-route = {
                   network_entity_key = "SGW-KEY"
@@ -150,6 +159,18 @@ network_configuration = {
                   network_entity_key = "NATGW-KEY"
                   description        = "Route for internet access via NAT GW"
                   destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
+                drg-route-mc = {
+                  network_entity_key = "DRG-VISION-KEY"
+                  description        = "Route for Secondary Cloud via DRG"
+                  destination        = "172.16.0.0/16"
+                  destination_type   = "CIDR_BLOCK"
+                },
+                drg-route-partner = {
+                  network_entity_key = "DRG-VISION-KEY"
+                  description        = "Route to Connetcivity Partner via DRG"
+                  destination        = "192.168.0.0/16"
                   destination_type   = "CIDR_BLOCK"
                 }
               }
@@ -194,7 +215,6 @@ network_configuration = {
           }
 
           network_security_groups = {
-
             NSG-LB-KEY = {
               display_name = "nsg-lb"
               egress_rules = {
@@ -258,8 +278,8 @@ network_configuration = {
                   protocol     = "TCP"
                   src          = "NSG-LB-KEY"
                   src_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 80
-                  dst_port_max = 80
+                  dst_port_min = 8080
+                  dst_port_max = 8080
                 }
               }
             }
@@ -324,60 +344,19 @@ network_configuration = {
 
       non_vcn_specific_gateways = {
         dynamic_routing_gateways = {
-          DRG-VISION-EQUINIX-KEY = {
-            display_name = "drg-equinix-vision"
+          DRG-VISION-KEY = {
+            display_name = "drg-vision"
             drg_attachments = {
               DRG-VCN-ATTACH-VISION-KEY = {
-                display_name = "drg-vcn-attach-vision-equinix"
+                display_name = "drg-vcn-attach-vision"
                 network_details = {
-                  attached_resource_key = "VISION-EQUINIX-VCN-KEY"
+                  attached_resource_key = "VISION-VCN-KEY"
                   type                  = "VCN"
                 }
               }
             }
           }
         }
-
-        /*cross_connect_groups = {
-          CROSS-CONNECT-GROUP-01-KEY = {
-            customer_reference_name = "Vision"
-            display_name            = "cc-group-01"
-            cross_connects = {
-              CC-GR01-01-KEY = {
-                location_name           = "FRA"
-                port_speed_shape_name   = "1 Gbps"
-                customer_reference_name = "Vision CC GR 01 - 01"
-                display_name            = "cc-group-01-01"
-              },
-              CC-GR01-02-KEY = {
-                location_name           = "FRA"
-                port_speed_shape_name   = "1 Gbps"
-                customer_reference_name = "Vision CC GR 01 - 02"
-                display_name            = "cc-group-01-02"
-              }
-            }
-          },
-          CROSS-CONNECT-GROUP-02-KEY = {
-            customer_reference_name = "Vision"
-            display_name            = "cc-group-02"
-            cross_connects = {
-              CC-GR02-01-KEY = {
-                location_name           = "FRA"
-                port_speed_shape_name   = "1 Gbps"
-                customer_reference_name = "Vision CC GR 02 - 01"
-                display_name            = "cc-group-02-01"
-              },
-              CC-GR02-02-KEY = {
-                location_name           = "FRA"
-                port_speed_shape_name   = "1 Gbps"
-                customer_reference_name = "Vision CC GR 02 - 02"
-                display_name            = "cc-group-02-02"
-              }
-            }
-          },
-
-        }*/
-
         fast_connect_virtual_circuits = {
           FC-FRA-VC1-1-KEY = {
             type                                        = "PRIVATE",
@@ -385,21 +364,19 @@ network_configuration = {
             show_available_fc_virtual_circuit_providers = false
             #Optional
             bandwidth_shape_name = "1 Gbps",
-            #provider_service_id  = "ocid1.providerservice.oc1.eu-frankfurt-1.aaaaaaaaqitgqsyd6uisxrgvjvp6mb4rghi6tm5qnvpahync6yqipb3qbgvq",
-            provider_service_key = "FC-FRA-VC1-1-BT-CLOUD-CONNECT-KEY"
-            /*cross_connect_mappings = {
+            provider_service_id  = "ocid1.providerservice.oc1.eu-frankfurt-1..........", # Foollow this procedure for getting the ocid https://docs.oracle.com/en-us/iaas/tools/oci-cli/3.31.1/oci_cli_docs/cmdref/network/fast-connect-provider-service/list.html
+            customer_asn         = "65000"
+            cross_connect_mappings = {
               MAPPING-1-KEY = {
                 #Optional
-                customer_bgp_peering_ip = "10.254.254.1/30"
-                oracle_bgp_peering_ip   = "10.254.254.2/30"
-                vlan                    = "200"
+                customer_bgp_peering_ip = "192.168.3.1/30"
+                oracle_bgp_peering_ip   = "192.168.3.2/30"
               }
-            } */
-            display_name = "fc_fra_vc1_1"
-            gateway_key  = "DRG-VISION-EQUINIX-KEY"
+            }
+            display_name = "VISION_VC_1"
+            gateway_key  = "DRG-VISION-KEY"
           }
         }
-
       }
     }
   }
