@@ -364,7 +364,7 @@ network_configuration = {
             show_available_fc_virtual_circuit_providers = false
             #Optional
             bandwidth_shape_name = "1 Gbps",
-            provider_service_id  = "ocid1.providerservice.oc1.eu-frankfurt-1..........", # Foollow this procedure for getting the ocid https://docs.oracle.com/en-us/iaas/tools/oci-cli/3.31.1/oci_cli_docs/cmdref/network/fast-connect-provider-service/list.html
+            provider_service_id  = "ocid1.providerservice.oc1.eu-frankfurt-1..........", # Follow this procedure for getting the ocid https://docs.oracle.com/en-us/iaas/tools/oci-cli/3.31.1/oci_cli_docs/cmdref/network/fast-connect-provider-service/list.html
             customer_asn         = "65000"
             cross_connect_mappings = {
               MAPPING-1-KEY = {
