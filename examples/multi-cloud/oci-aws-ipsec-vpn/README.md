@@ -1,5 +1,5 @@
 <!-- BEGIN_TF_DOCS -->
-# Multicloud connectivity with FastConnect
+# Multi-cloud connectivity example - (OCI - AWS) IpSec VPN
 
 ## Description
 
