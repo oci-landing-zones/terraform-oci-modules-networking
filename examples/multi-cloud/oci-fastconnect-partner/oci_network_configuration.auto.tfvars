@@ -1,5 +1,5 @@
 network_configuration = {
-  default_compartment_id = "ocid1.compartment.oc1..aaaaaaaawwhpzd5kxd7dcd56kiuuxeaa46icb44cnu7osq3mbclo2pnv3dpq"
+  default_compartment_id = "ocid1.compartment.oc1........"  # To be provided
   default_freeform_tags = {
     "vision-environment" = "vision"
   }
@@ -8,7 +8,7 @@ network_configuration = {
   network_configuration_categories = {
     demo = {
       category_freeform_tags = {
-        "vision-oci-aws-ipsec" = "demo"
+        "vision-oci-fastconnect" = "demo"
       }
 
       vcns = {
@@ -74,20 +74,29 @@ network_configuration = {
 
               ingress_rules = [
                 {
-                  description = "ingress from 10.0.3.0/24 over TCP22"
-                  stateless   = false
-                  protocol    = "TCP"
-                  src         = "10.0.3.0/24"
-                  src_type    = "CIDR_BLOCK"
-                },
-                {
-                  description  = "ingress from 10.0.3.0/24 over HTTP80"
+                  description  = "ingress from 172.16.0.0/16 over TCP22"
                   stateless    = false
                   protocol     = "TCP"
-                  src          = "10.0.3.0/24"
+                  src          = "172.16.0.0/16"
+                  src_type     = "CIDR_BLOCK"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                },
+                {
+                  description  = "ingress from 172.16.0.0/16 over HTTP80"
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "172.16.0.0/16"
                   src_type     = "CIDR_BLOCK"
                   dst_port_min = 80
                   dst_port_max = 80
+                },
+                {
+                  description = "ingress from 172.16.0.0/16 over ICMP"
+                  stateless   = false
+                  protocol    = "ICMP"
+                  src         = "172.16.0.0/16"
+                  src_type    = "CIDR_BLOCK"
                 }
               ]
             }
@@ -138,7 +147,7 @@ network_configuration = {
               }
             }
             RT-02-KEY = {
-              display_name = "rt-02-prod-vcn-01"
+              display_name = "rt-02"
               route_rules = {
                 sgw-route = {
                   network_entity_key = "SGW-KEY"
@@ -150,6 +159,18 @@ network_configuration = {
                   network_entity_key = "NATGW-KEY"
                   description        = "Route for internet access via NAT GW"
                   destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
+                drg-route-mc = {
+                  network_entity_key = "DRG-VISION-KEY"
+                  description        = "Route for Secondary Cloud via DRG"
+                  destination        = "172.16.0.0/16"
+                  destination_type   = "CIDR_BLOCK"
+                },
+                drg-route-partner = {
+                  network_entity_key = "DRG-VISION-KEY"
+                  description        = "Route to Connetcivity Partner via DRG"
+                  destination        = "192.168.0.0/16"
                   destination_type   = "CIDR_BLOCK"
                 }
               }
@@ -194,7 +215,6 @@ network_configuration = {
           }
 
           network_security_groups = {
-
             NSG-LB-KEY = {
               display_name = "nsg-lb"
               egress_rules = {
@@ -258,8 +278,8 @@ network_configuration = {
                   protocol     = "TCP"
                   src          = "NSG-LB-KEY"
                   src_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 80
-                  dst_port_max = 80
+                  dst_port_min = 8080
+                  dst_port_max = 8080
                 }
               }
             }
@@ -337,63 +357,24 @@ network_configuration = {
             }
           }
         }
-        customer_premises_equipments = {
-          VISION-CPE-KEY = {
-            ip_address                   = "203.0.113.2",
-            display_name                 = "vision-cpe",
-            cpe_device_shape_vendor_name = "Fortinet"
-          },
-          VISION-CPE-2-KEY = {
-            ip_address   = "203.0.114.2",
-            display_name = "vision-cpe-2"
-          }
-        }
-        ipsecs = {
-          VISION-OCI-AWS-IPSEC-VPN-KEY = {
-            cpe_key       = "VISION-CPE-KEY"
-            drg_key       = "DRG-VISION-KEY",
-            static_routes = ["0.0.0.0/0"]
-            display_name  = "vision-oci-aws-ipsec-vpn"
-            tunnels_management = {
-              tunnel_1 = {
-                routing = "BGP",
-                bgp_session_info = {
-                  customer_bgp_asn      = "64512",
-                  customer_interface_ip = "169.254.150.225/30",
-                  oracle_interface_ip   = "169.254.150.226/30"
-                }
-                shared_secret = "test1",
-                ike_version   = "V1"
-              },
-              tunnel_2 = {
-                routing = "BGP",
-                bgp_session_info = {
-                  customer_bgp_asn      = "64512",
-                  customer_interface_ip = "169.254.150.230/30",
-                  oracle_interface_ip   = "169.254.150.229/30"
-                }
-                shared_secret = "test2",
-                ike_version   = "V2"
+        fast_connect_virtual_circuits = {
+          FC-FRA-VC1-1-KEY = {
+            type                                        = "PRIVATE",
+            provision_fc_virtual_circuit                = true
+            show_available_fc_virtual_circuit_providers = false
+            #Optional
+            bandwidth_shape_name = "1 Gbps",
+            provider_service_id  = "ocid1.providerservice.oc1.eu-frankfurt-1..........", # Follow this procedure for getting the ocid https://docs.oracle.com/en-us/iaas/tools/oci-cli/3.31.1/oci_cli_docs/cmdref/network/fast-connect-provider-service/list.html
+            customer_asn         = "65000"
+            cross_connect_mappings = {
+              MAPPING-1-KEY = {
+                #Optional
+                customer_bgp_peering_ip = "192.168.3.1/30"
+                oracle_bgp_peering_ip   = "192.168.3.2/30"
               }
             }
-          },
-          VISION-OCI-AWS-IPSEC-VPN-2-KEY = {
-            cpe_key       = "VISION-CPE-2-KEY"
-            drg_key       = "DRG-VISION-KEY",
-            static_routes = ["0.0.0.0/0"]
-            display_name  = "vision-oci-aws-ipsec-2-vpn"
-            tunnels_management = {
-              tunnel_1 = {
-                routing = "BGP",
-                bgp_session_info = {
-                  customer_bgp_asn      = "64512",
-                  customer_interface_ip = "169.254.150.217/30",
-                  oracle_interface_ip   = "169.254.150.218/30"
-                }
-                shared_secret = "test1",
-                ike_version   = "V1"
-              }
-            }
+            display_name = "VISION_VC_1"
+            gateway_key  = "DRG-VISION-KEY"
           }
         }
       }
