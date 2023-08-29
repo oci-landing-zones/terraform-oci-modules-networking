@@ -1,5 +1,5 @@
 <!-- BEGIN_TF_DOCS -->
-# Multi-cloud connectivity example - (OCI - Equinix) Fast Connect
+# Multi-cloud connectivity example - (OCI - AWS) IpSec VPN
 
 ## Description
 
