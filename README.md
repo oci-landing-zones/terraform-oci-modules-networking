@@ -192,6 +192,23 @@ The ```network_configuration``` is a multidimensional complex object:
         - ```drg_attachments```,
         - ```drg_route_tables```
         - ```drg_route_distributions```.
+        - ```ipsecs``` attribute can define any number(0, 1 or multiple) of ipsec connections, and inside the ipsec connection definition, the corresponding ```ipsec_tunnel_management``` can be defined. Both ```ipsec``` and ```ipsec_tunnels_management``` are exposing all the attributes of their corresponding OCI REST API objects through the OCI Terraform provider resources. For reference, the following documentation can be used:
+          - OCI IPSEC:
+            - [REST API](https://docs.oracle.com/en-us/iaas/api/#/en/iaas/20160918/IPSecConnection/CreateIPSecConnection)
+            - [Terraform Resources](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_ipsec)
+          - OCI IPSEC Tunnel Management:
+            - [REST API](https://docs.oracle.com/en-us/iaas/api/#/en/iaas/20160918/datatypes/UpdateIPSecConnectionTunnelDetails)
+            - [Terraform Resources](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_ipsec_connection_tunnel_management)
+        - ```fast_connect_virtual_circuits``` attribute can define any number(0, 1 or multiple) of OCI fast connect virtual circuits. This attribute exposes all the attributes of the corresponding OCI REST API object through the OCI Terraform provider resource. For reference, the following documentation can be used:
+            - [REST API](https://docs.oracle.com/en-us/iaas/api/#/en/iaas/20160918/datatypes/CreateVirtualCircuitDetails)
+            - [Terraform Resources](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_virtual_circuit)
+        - ```cross_connect_groups``` attribute can define any number(0, 1 or multiple) of cross connect groups, and inside a cross connect group definition, any number(0, 1 or multiple) of ```cross_connects``` can be defined. Both ```cross_connect_groups``` and ```cross_connects``` expose all the attributes of their corresponding OCI REST API objects through the OCI Terraform provider resources. For reference, the following documentation can be used:
+          - OCI Cross Connect Group:
+            - [REST API](https://docs.oracle.com/en-us/iaas/api/#/en/iaas/20160918/CrossConnectGroup/)
+            - [Terraform Resources](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_cross_connect_group)
+          - OCI Cross Connect:
+            - [REST API](https://docs.oracle.com/en-us/iaas/api/#/en/iaas/20160918/CrossConnect/)
+            - [Terraform Resources](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_cross_connect)
       - The ```network_firewalls_configuration``` attribute can be used to inject any number of ```network_firewalls``` and/or ```network_firewall_policies```. Existing policies or newly created policies can be specified.
       When updating an attached network firewall policy, a copy of the attached policy will be created, updated with the new values. When done the copy will replace the existing policy.
       - ```l7_load_balancers``` is a multidimensional attribute that:
