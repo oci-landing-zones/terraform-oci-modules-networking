@@ -202,6 +202,18 @@ The ```network_configuration``` is a multidimensional complex object:
       - ```fast_connect_virtual_circuits``` attribute can define any number(0, 1 or multiple) of OCI fast connect virtual circuits. This attribute exposes all the attributes of the corresponding OCI REST API object through the OCI Terraform provider resource. For reference, the following documentation can be used:
             - [REST API](https://docs.oracle.com/en-us/iaas/api/#/en/iaas/20160918/datatypes/CreateVirtualCircuitDetails)
             - [Terraform Resources](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_virtual_circuit)
+
+        Please note the following 2 bool attributes of a fast connect virtual circuit: ```provision_fc_virtual_circuit``` and       ```show_available_fc_virtual_circuit_providers```:
+        - ```provision_fc_virtual_circuit```:
+            - set it to ```false``` when you want just to define a draft fast connect configuration without applying and provisione it.
+            - set it to ```true``` when you want to apply and provision the defined fast connect configuration.
+        - ```show_available_fc_virtual_circuit_providers```:
+            - set it to ```true``` when you want to see the available fast connect providers for the current configuration;
+            - set it to ```true``` when you do not want to see the available fast connect providers for the current configuration;
+
+        The recommendation will be to use the above 2 attributes, in conjunction, in the following 2 use cases:
+          1. When you do not know the available fast connect partners for a certain draft configuration, define the configuration, set the ```provision_fc_virtual_circuit = false``` and ```show_available_fc_virtual_circuit_providers = true``` and run ```terraform apply```. This will generate in the terraform ouput, for each and every draft fast connect virtual circuit that you've defined, all the available fast connect providers and their details. Pick the provider of your choice and note down either the provider ocid or the provider key.
+          2. Once you have the provider ocid and/or the provider key update the corresponding fast connect virtual cirtcuit with those and set the ```provision_fc_virtual_circuit = true``` and ```show_available_fc_virtual_circuit_providers = false```. This will provision the configured virtual circuit and will not show anymore all the available providers for that draft fast connect virtual circuit configuration.
       - ```cross_connect_groups``` attribute can define any number(0, 1 or multiple) of cross connect groups, and inside a cross connect group definition, any number(0, 1 or multiple) of ```cross_connects``` can be defined. Both ```cross_connect_groups``` and ```cross_connects``` expose all the attributes of their corresponding OCI REST API objects through the OCI Terraform provider resources. For reference, the following documentation can be used:
           - OCI Cross Connect Group:
             - [REST API](https://docs.oracle.com/en-us/iaas/api/#/en/iaas/20160918/CrossConnectGroup/)
@@ -239,10 +251,15 @@ When using this module in stand-alone mode, but leave some options, customizatio
 - [Simple Example](examples/simple-example/)
 - [Provision a load balancer on top of an existing VCN](examples/simple-no_vcn-oci-native-l7-lbaas-example)
 - [Provision a complete VCN and a load balancer](examples/standard-vcn-oci-native-l7-lbaas-example)
+- [Edge Connectivity](examples/edge-connectivity/)
+   - [Fast Connect Examples](examples/edge-connectivity/fast-connect-examples/)
+      - [Generic OCI Fast Connect Partner](examples/edge-connectivity/fast-connect-examples/generic-oci-fastconnect-partner/)
+   - [IPSec VPN Examples](examples/edge-connectivity/ipsec-examples/)
+      - [Generic OCI IPSec BGP VPN](examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/)
 
 ## Related Documentation
 - [OCI Networking Overview](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/overview.htm)
 
 ## Known Issues
 
-- On some corner case situations a ```cycle-graph``` exception might be raised when using route tables attached to GWs. This issue will be addressed in one of the next releases.
+- On some corner case situations, a ```cycle-graph``` exception might be raised when using route tables attached to GWs. This issue will be addressed in one of the next releases.
