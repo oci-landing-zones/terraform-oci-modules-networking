@@ -42,7 +42,7 @@ For clarity and proper separation and isolation we've separated the input parame
 - [terraform.tfvars](./terraform.tfvars.template)
 
 
-- [network_configuration.auto.tfvars](./network_configuration.auto.tfvars)
+- [oci_network_configuration.auto.tfvars](./oci_network_configuration.auto.tfvars)
 
 
 ## Output Example:
