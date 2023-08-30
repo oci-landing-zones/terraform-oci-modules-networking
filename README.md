@@ -192,7 +192,7 @@ The ```network_configuration``` is a multidimensional complex object:
         - ```drg_attachments```,
         - ```drg_route_tables```
         - ```drg_route_distributions```.
-        - ```ipsecs``` attribute can define any number(0, 1 or multiple) of ipsec connections, and inside the ipsec connection definition, the corresponding ```ipsec_tunnel_management``` can be defined. Both ```ipsec``` and ```ipsec_tunnels_management``` are exposing all the attributes of their corresponding OCI REST API objects through the OCI Terraform provider resources. For reference, the following documentation can be used:
+      - ```ipsecs``` attribute can define any number(0, 1 or multiple) of ipsec connections, and inside the ipsec connection definition, the corresponding ```ipsec_tunnel_management``` can be defined. Both ```ipsec``` and ```ipsec_tunnels_management``` are exposing all the attributes of their corresponding OCI REST API objects through the OCI Terraform provider resources. For reference, the following documentation can be used:
           - OCI IPSEC:
             - [REST API](https://docs.oracle.com/en-us/iaas/api/#/en/iaas/20160918/IPSecConnection/CreateIPSecConnection)
             - [Terraform Resources](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_ipsec)
