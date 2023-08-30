@@ -29,6 +29,18 @@ output "provisioned_networking_resources" {
     l7_load_balancers                              = module.l7_load_balancers.provisioned_l7_load_balancers
     public_ips_pools                               = local.provisioned_oci_core_public_ip_pools
     public_ips                                     = local.provisioned_oci_core_public_ips
+    customer_premises_equipments                   = local.provisioned_customer_premises_equipments
+    ip_sec_vpns                                    = local.provisioned_ipsecs
+    ipsec_tunnels_management                       = local.provisioned_ipsec_connection_tunnels_management
+    fast_connect_virtual_circuits = {
+      fast_connect_virtual_circuits = local.provisioned_fast_connect_virtual_circuits
+      available_fast_connect_provider_services = local.one_dimmension_fast_connect_provider_services != null ? length(local.one_dimmension_fast_connect_provider_services) > 0 ? {
+        for k, v in local.one_dimmension_fast_connect_provider_services :
+        k => v if local.one_dimension_fast_connect_virtual_circuits[v.fcvc_key].show_available_fc_virtual_circuit_providers == true
+      } : {} : {}
+    }
+    cross_connect_groups = oci_core_cross_connect_group.these,
+    cross_connects       = oci_core_cross_connect.these
   }
 }
 
