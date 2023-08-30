@@ -199,10 +199,10 @@ The ```network_configuration``` is a multidimensional complex object:
           - OCI IPSEC Tunnel Management:
             - [REST API](https://docs.oracle.com/en-us/iaas/api/#/en/iaas/20160918/datatypes/UpdateIPSecConnectionTunnelDetails)
             - [Terraform Resources](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_ipsec_connection_tunnel_management)
-        - ```fast_connect_virtual_circuits``` attribute can define any number(0, 1 or multiple) of OCI fast connect virtual circuits. This attribute exposes all the attributes of the corresponding OCI REST API object through the OCI Terraform provider resource. For reference, the following documentation can be used:
+      - ```fast_connect_virtual_circuits``` attribute can define any number(0, 1 or multiple) of OCI fast connect virtual circuits. This attribute exposes all the attributes of the corresponding OCI REST API object through the OCI Terraform provider resource. For reference, the following documentation can be used:
             - [REST API](https://docs.oracle.com/en-us/iaas/api/#/en/iaas/20160918/datatypes/CreateVirtualCircuitDetails)
             - [Terraform Resources](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_virtual_circuit)
-        - ```cross_connect_groups``` attribute can define any number(0, 1 or multiple) of cross connect groups, and inside a cross connect group definition, any number(0, 1 or multiple) of ```cross_connects``` can be defined. Both ```cross_connect_groups``` and ```cross_connects``` expose all the attributes of their corresponding OCI REST API objects through the OCI Terraform provider resources. For reference, the following documentation can be used:
+      - ```cross_connect_groups``` attribute can define any number(0, 1 or multiple) of cross connect groups, and inside a cross connect group definition, any number(0, 1 or multiple) of ```cross_connects``` can be defined. Both ```cross_connect_groups``` and ```cross_connects``` expose all the attributes of their corresponding OCI REST API objects through the OCI Terraform provider resources. For reference, the following documentation can be used:
           - OCI Cross Connect Group:
             - [REST API](https://docs.oracle.com/en-us/iaas/api/#/en/iaas/20160918/CrossConnectGroup/)
             - [Terraform Resources](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_cross_connect_group)
