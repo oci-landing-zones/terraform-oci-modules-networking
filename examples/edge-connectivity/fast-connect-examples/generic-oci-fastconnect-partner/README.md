@@ -36,7 +36,7 @@ __NOTE 3:__ Please note the following 2 bool attributes of a fast connect virtua
    - set it to ```true``` when you want to apply and provision the defined fast connect configuration.
 - ```show_available_fc_virtual_circuit_providers```:
     - set it to ```true``` when you want to see the available fast connect providers for the current configuration;
-   - set it to ```true``` when you do not want to see the available fast connect providers for the current configuration;
+   - set it to ```false``` when you do not want to see the available fast connect providers for the current configuration;
 
 The recommendation will be to use the above 2 attributes, in conjunction, in the following 2 use cases:
 1. When you do not know the available fast connect partners for a certain draft configuration, define the configuration, set the ```provision_fc_virtual_circuit = false``` and ```show_available_fc_virtual_circuit_providers = true``` and run ```terraform apply```. This will generate in the terraform ouput, for each and every draft fast connect virtual circuit that you've defined, all the available fast connect providers and their details. Pick the provider of your choice and note down either the provider ocid or the provider key.
