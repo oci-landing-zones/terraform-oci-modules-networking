@@ -67,6 +67,7 @@ locals {
       defined_tags                     = drga_value.defined_tags
       display_name                     = drga_value.display_name
       drg_id                           = drga_value.drg_id
+      drg_key                          = local.one_dimension_processed_drg_attachments[drga_key].drg_key
       drg_name                         = local.one_dimension_processed_drg_attachments[drga_key].drg_name
       drg_route_table_id               = drga_value.drg_route_table_id
       drg_route_table_key              = local.one_dimension_processed_drg_attachments[drga_key].drg_route_table_key != null ? local.one_dimension_processed_drg_attachments[drga_key].drg_route_table_key : "CANNOT BE DETERMINED - ROUTE TABLE CREATED OUTSIDE THIS AUTOMATION"
