@@ -50,7 +50,7 @@ locals {
           )
           drg_attachment_name = coalesce(
             length([
-              for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : v1.drg_attachment_key if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null)
+              for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : v1.drg_attachment_key if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null && v1.drg_attachment_key != null)
               ]) > 0 ? [
               for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : local.provisioned_drg_attachments[v1.drg_attachment_key].display_name if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null && v1.drg_attachment_key != null)
             ][0] : null,
@@ -58,7 +58,7 @@ locals {
           )
           drg_attachment_vcn_key = coalesce(
             length([
-              for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : v1.drg_attachment_key if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null)
+              for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : v1.drg_attachment_key if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null && v1.drg_attachment_key != null)
               ]) > 0 ? [
               for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : local.provisioned_drg_attachments[v1.drg_attachment_key].vcn_key if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null && v1.drg_attachment_key != null)
             ][0] : null,
@@ -66,7 +66,7 @@ locals {
           )
           drg_attachment_vcn_id = coalesce(
             length([
-              for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : v1.drg_attachment_key if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null)
+              for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : v1.drg_attachment_key if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null && v1.drg_attachment_key != null)
               ]) > 0 ? [
               for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : local.provisioned_drg_attachments[v1.drg_attachment_key].vcn_id if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null && v1.drg_attachment_key != null)
             ][0] : null,
@@ -74,7 +74,7 @@ locals {
           )
           drg_attachment_vcn_name = coalesce(
             length([
-              for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : v1.drg_attachment_key if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null)
+              for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : v1.drg_attachment_key if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null && v1.drg_attachment_key != null)
               ]) > 0 ? [
               for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : local.provisioned_drg_attachments[v1.drg_attachment_key].vcn_name if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null && v1.drg_attachment_key != null)
             ][0] : null,
@@ -82,7 +82,7 @@ locals {
           )
           drg_attachment_drg_key = coalesce(
             length([
-              for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : v1.drg_attachment_key if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null)
+              for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : v1.drg_attachment_key if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null && v1.drg_attachment_key != null)
               ]) > 0 ? [
               for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : local.provisioned_drg_attachments[v1.drg_attachment_key].drg_key if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null && v1.drg_attachment_key != null)
             ][0] : null,
@@ -90,7 +90,7 @@ locals {
           )
           drg_attachment_drg_id = coalesce(
             length([
-              for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : v1.drg_attachment_key if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null)
+              for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : v1.drg_attachment_key if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null && v1.drg_attachment_key != null)
               ]) > 0 ? [
               for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : local.provisioned_drg_attachments[v1.drg_attachment_key].drg_id if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null && v1.drg_attachment_key != null)
             ][0] : null,
@@ -98,7 +98,7 @@ locals {
           )
           drg_attachment_drg_name = coalesce(
             length([
-              for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : v1.drg_attachment_key if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null)
+              for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : v1.drg_attachment_key if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null && v1.drg_attachment_key != null)
               ]) > 0 ? [
               for k1, v1 in local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria : local.provisioned_drg_attachments[v1.drg_attachment_key].drg_name if (v1.drg_attachment_id == v.drg_attachment_id && v1.drg_attachment_id != null && v1.drg_attachment_key != null)
             ][0] : null,
