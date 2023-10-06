@@ -72,7 +72,6 @@ network_configuration:
                 name: lb2-lsnr1-80
                 port: '80'
                 protocol: HTTP
-              LB2-LSNR-2-443:
                 connection_configuration:
                   idle_timeout_in_seconds: 1200
                 default_backend_set_key: EXAMPLE-02-LB-BCK-END-SET-01

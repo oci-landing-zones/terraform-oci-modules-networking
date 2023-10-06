@@ -91,34 +91,6 @@
                   "name": "lb2-lsnr1-80",
                   "port": "80",
                   "protocol": "HTTP"
-                },
-                "LB2-LSNR-2-443": {
-                  "connection_configuration": {
-                    "idle_timeout_in_seconds": 1200
-                  },
-                  "default_backend_set_key": "EXAMPLE-02-LB-BCK-END-SET-01",
-                  "hostname_keys": [
-                    "LB2-HOSTNAME-1-KEY",
-                    "LB2-HOSTNAME-2-KEY"
-                  ],
-                  "name": "lb2-lsnr2-443",
-                  "path_route_set_key": "EXMPL_02_PATH_ROUTE_SET_01_KEY",
-                  "port": "443",
-                  "protocol": "HTTP",
-                  "routing_policy_key": "LB2-ROUTE-POLICY-1-KEY",
-                  "rule_set_keys": [
-                    "LB2-RULE-SET-1-KEY"
-                  ],
-                  "ssl_configuration": {
-                    "certificate_key": "LB-2-CERT-1-KEY",
-                    "cipher_suite_key": "EXAMPLE-02-LB-CIPHER-SUITE-01-KEY",
-                    "protocols": [
-                      "TLSv1.2"
-                    ],
-                    "server_order_preference": "ENABLED",
-                    "verify_depth": 3,
-                    "verify_peer_certificate": true
-                  }
                 }
               },
               "network_security_group_ids": null,
