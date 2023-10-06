@@ -101,6 +101,17 @@ For referring to a specific module version, append *ref=\<version\>* to the *sou
   source = "git@github.com:oracle-quickstart/terraform-oci-cis-landing-zone-networking.git?ref=v0.1.0"
 ```
 
+### Using the Module with ORM**
+
+For an ad-hoc use where you can select your resources, follow these guidelines:
+1. [![Deploy_To_OCI](../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking/archive/refs/heads/main.zip)
+2. Accept terms,  wait for the configuration to load. 
+3. Set the working directory to “orm-facade”. 
+4. Set the stack name you prefer.
+5. Set the terraform version to 1.2.x. Click Next. 
+6. Add your json/yaml configuration files. Click Next.
+8. Un-check run apply. Click Create.
+
 ## How to use the module
 
 The input parameters for the module can be divided into two categories, for which we recomend to create two different ```*.tfvars.*``` files:
