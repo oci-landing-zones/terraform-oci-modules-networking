@@ -56,14 +56,6 @@
                   }
                 }
               },
-              "certificates": {
-                "LB-2-CERT-1-KEY": {
-                  "ca_certificate": "~/certs/ca.crt",
-                  "certificate_name": "lb2-cert1",
-                  "private_key": "~/certs/my_cert.key",
-                  "public_certificate": "~/certs/my_cert.crt"
-                }
-              },
               "cipher_suites": {
                 "EXAMPLE-02-LB-CIPHER-SUITE-01-KEY": {
                   "ciphers": [

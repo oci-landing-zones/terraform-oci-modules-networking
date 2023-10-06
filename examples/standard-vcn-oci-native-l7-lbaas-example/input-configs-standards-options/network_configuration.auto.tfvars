@@ -725,16 +725,6 @@ network_configuration = {
                 }
               }
             }
-            certificates = {
-              LB-2-CERT-1-KEY = {
-                #Required
-                certificate_name = "lb2-cert1",
-                #Optional
-                ca_certificate     = "~/certs/ca.crt"
-                private_key        = "~/certs/my_cert.key"
-                public_certificate = "~/certs/my_cert.crt"
-              }
-            }
             listeners = {
               LB2-LSNR-1-80 = {
                 default_backend_set_key = "EXAMPLE-02-LB-BCK-END-SET-01",
