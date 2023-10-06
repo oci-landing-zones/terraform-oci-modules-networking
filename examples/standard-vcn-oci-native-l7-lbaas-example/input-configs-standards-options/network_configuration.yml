@@ -85,7 +85,6 @@ network_configuration:
                 routing_policy_key: LB2-ROUTE-POLICY-1-KEY
                 rule_set_keys:
                 - LB2-RULE-SET-1-KEY
-                ssl_configuration:
                   certificate_key: LB-2-CERT-1-KEY
                   cipher_suite_key: EXAMPLE-02-LB-CIPHER-SUITE-01-KEY
                   protocols:
