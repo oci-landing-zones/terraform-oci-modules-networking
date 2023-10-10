@@ -434,16 +434,131 @@ variable "network_configuration" {
             freeform_tags     = optional(map(string))
             statements = optional(map(object({
               action = string,
-              match_criteria = optional(map(object({
-                match_type        = string,
-                attachment_type   = optional(string),
-                drg_attachment_id = optional(string),
-              })))
+              match_criteria = optional(object({
+                match_type         = string,
+                attachment_type    = optional(string),
+                drg_attachment_id  = optional(string),
+                drg_attachment_key = optional(string)
+              }))
               priority = optional(number)
             })))
           })))
         })))
 
+        customer_premises_equipments = optional(map(object({
+          compartment_id               = optional(string),
+          ip_address                   = string,
+          defined_tags                 = optional(map(string)),
+          display_name                 = optional(string),
+          freeform_tags                = optional(map(string)),
+          cpe_device_shape_id          = optional(string),
+          cpe_device_shape_vendor_name = optional(string)
+        })))
+
+        ipsecs = optional(map(object({
+          compartment_id            = optional(string),
+          cpe_id                    = optional(string),
+          cpe_key                   = optional(string),
+          drg_id                    = optional(string),
+          drg_key                   = optional(string),
+          static_routes             = list(string),
+          cpe_local_identifier      = optional(string),
+          cpe_local_identifier_type = optional(string),
+          defined_tags              = optional(map(string)),
+          display_name              = optional(string),
+          freeform_tags             = optional(map(string)),
+          tunnels_management = optional(object({
+            tunnel_1 = optional(object({
+              routing = string,
+              bgp_session_info = optional(object({
+                customer_bgp_asn      = optional(string),
+                customer_interface_ip = optional(string),
+                oracle_interface_ip   = optional(string)
+              }))
+              encryption_domain_config = optional(object({
+                cpe_traffic_selector    = optional(string),
+                oracle_traffic_selector = optional(string)
+              }))
+              shared_secret = optional(string),
+              ike_version   = optional(string)
+            })),
+            tunnel_2 = optional(object({
+              routing = string,
+              bgp_session_info = optional(object({
+                customer_bgp_asn      = optional(string),
+                customer_interface_ip = optional(string),
+                oracle_interface_ip   = optional(string)
+              }))
+              encryption_domain_config = optional(object({
+                cpe_traffic_selector    = optional(string),
+                oracle_traffic_selector = optional(string)
+              }))
+              shared_secret = optional(string),
+              ike_version   = optional(string)
+            }))
+          }))
+        })))
+
+        fast_connect_virtual_circuits = optional(map(object({
+          #Required
+          compartment_id                              = optional(string),
+          provision_fc_virtual_circuit                = bool,
+          show_available_fc_virtual_circuit_providers = bool,
+          type                                        = string,
+          #Optional
+          bandwidth_shape_name = optional(string),
+          bgp_admin_state      = optional(string),
+          cross_connect_mappings = optional(map(object({
+            #Optional
+            bgp_md5auth_key                          = optional(string)
+            cross_connect_or_cross_connect_group_id  = optional(string)
+            cross_connect_or_cross_connect_group_key = optional(string)
+            customer_bgp_peering_ip                  = optional(string)
+            customer_bgp_peering_ipv6                = optional(string)
+            oracle_bgp_peering_ip                    = optional(string)
+            oracle_bgp_peering_ipv6                  = optional(string)
+            vlan                                     = optional(string)
+          })))
+          customer_asn              = optional(string)
+          customer_bgp_asn          = optional(string)
+          defined_tags              = optional(map(string))
+          display_name              = optional(string)
+          freeform_tags             = optional(map(string))
+          ip_mtu                    = optional(number)
+          is_bfd_enabled            = optional(bool)
+          gateway_id                = optional(string)
+          gateway_key               = optional(string)
+          provider_service_id       = optional(string)
+          provider_service_key      = optional(string)
+          provider_service_key_name = optional(string)
+          public_prefixes = optional(map(object({
+            #Required
+            cidr_block = string,
+          })))
+          region         = optional(string)
+          routing_policy = optional(list(string))
+        })))
+
+        cross_connect_groups = optional(map(object({
+          compartment_id          = optional(string),
+          customer_reference_name = optional(string),
+          defined_tags            = optional(map(string)),
+          display_name            = optional(string),
+          freeform_tags           = optional(map(string)),
+          cross_connects = optional(map(object({
+            compartment_id                                = optional(string),
+            location_name                                 = string,
+            port_speed_shape_name                         = string,
+            customer_reference_name                       = optional(string),
+            defined_tags                                  = optional(map(string))
+            display_name                                  = optional(string),
+            far_cross_connect_or_cross_connect_group_id   = optional(string),
+            far_cross_connect_or_cross_connect_group_key  = optional(string),
+            freeform_tags                                 = optional(map(string))
+            near_cross_connect_or_cross_connect_group_id  = optional(string),
+            near_cross_connect_or_cross_connect_group_key = optional(string),
+          })))
+        })))
         inject_into_existing_drgs = optional(map(object({
           drg_id = string,
 
@@ -495,16 +610,16 @@ variable "network_configuration" {
             freeform_tags     = optional(map(string))
             statements = optional(map(object({
               action = string,
-              match_criteria = optional(map(object({
-                match_type        = string,
-                attachment_type   = optional(string),
-                drg_attachment_id = optional(string),
-              })))
+              match_criteria = optional(object({
+                match_type         = string,
+                attachment_type    = optional(string),
+                drg_attachment_id  = optional(string),
+                drg_attachment_key = optional(string)
+              }))
               priority = number
             })))
           })))
         })))
-
         network_firewalls_configuration = optional(object({
           network_firewalls = optional(map(object({
             availability_domain         = optional(number),

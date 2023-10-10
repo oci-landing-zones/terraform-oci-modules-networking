@@ -434,16 +434,131 @@ variable "network_configuration" {
             freeform_tags     = optional(map(string))
             statements = optional(map(object({
               action = string,
-              match_criteria = optional(map(object({
-                match_type        = string,
-                attachment_type   = optional(string),
-                drg_attachment_id = optional(string),
-              })))
+              match_criteria = optional(object({
+                match_type         = string,
+                attachment_type    = optional(string),
+                drg_attachment_id  = optional(string),
+                drg_attachment_key = optional(string)
+              }))
               priority = optional(number)
             })))
           })))
         })))
 
+        customer_premises_equipments = optional(map(object({
+          compartment_id               = optional(string),
+          ip_address                   = string,
+          defined_tags                 = optional(map(string)),
+          display_name                 = optional(string),
+          freeform_tags                = optional(map(string)),
+          cpe_device_shape_id          = optional(string),
+          cpe_device_shape_vendor_name = optional(string)
+        })))
+
+        ipsecs = optional(map(object({
+          compartment_id            = optional(string),
+          cpe_id                    = optional(string),
+          cpe_key                   = optional(string),
+          drg_id                    = optional(string),
+          drg_key                   = optional(string),
+          static_routes             = list(string),
+          cpe_local_identifier      = optional(string),
+          cpe_local_identifier_type = optional(string),
+          defined_tags              = optional(map(string)),
+          display_name              = optional(string),
+          freeform_tags             = optional(map(string)),
+          tunnels_management = optional(object({
+            tunnel_1 = optional(object({
+              routing = string,
+              bgp_session_info = optional(object({
+                customer_bgp_asn      = optional(string),
+                customer_interface_ip = optional(string),
+                oracle_interface_ip   = optional(string)
+              }))
+              encryption_domain_config = optional(object({
+                cpe_traffic_selector    = optional(string),
+                oracle_traffic_selector = optional(string)
+              }))
+              shared_secret = optional(string),
+              ike_version   = optional(string)
+            })),
+            tunnel_2 = optional(object({
+              routing = string,
+              bgp_session_info = optional(object({
+                customer_bgp_asn      = optional(string),
+                customer_interface_ip = optional(string),
+                oracle_interface_ip   = optional(string)
+              }))
+              encryption_domain_config = optional(object({
+                cpe_traffic_selector    = optional(string),
+                oracle_traffic_selector = optional(string)
+              }))
+              shared_secret = optional(string),
+              ike_version   = optional(string)
+            }))
+          }))
+        })))
+
+        fast_connect_virtual_circuits = optional(map(object({
+          #Required
+          compartment_id                              = optional(string),
+          provision_fc_virtual_circuit                = bool,
+          show_available_fc_virtual_circuit_providers = bool,
+          type                                        = string,
+          #Optional
+          bandwidth_shape_name = optional(string),
+          bgp_admin_state      = optional(string),
+          cross_connect_mappings = optional(map(object({
+            #Optional
+            bgp_md5auth_key                          = optional(string)
+            cross_connect_or_cross_connect_group_id  = optional(string)
+            cross_connect_or_cross_connect_group_key = optional(string)
+            customer_bgp_peering_ip                  = optional(string)
+            customer_bgp_peering_ipv6                = optional(string)
+            oracle_bgp_peering_ip                    = optional(string)
+            oracle_bgp_peering_ipv6                  = optional(string)
+            vlan                                     = optional(string)
+          })))
+          customer_asn              = optional(string)
+          customer_bgp_asn          = optional(string)
+          defined_tags              = optional(map(string))
+          display_name              = optional(string)
+          freeform_tags             = optional(map(string))
+          ip_mtu                    = optional(number)
+          is_bfd_enabled            = optional(bool)
+          gateway_id                = optional(string)
+          gateway_key               = optional(string)
+          provider_service_id       = optional(string)
+          provider_service_key      = optional(string)
+          provider_service_key_name = optional(string)
+          public_prefixes = optional(map(object({
+            #Required
+            cidr_block = string,
+          })))
+          region         = optional(string)
+          routing_policy = optional(list(string))
+        })))
+
+        cross_connect_groups = optional(map(object({
+          compartment_id          = optional(string),
+          customer_reference_name = optional(string),
+          defined_tags            = optional(map(string)),
+          display_name            = optional(string),
+          freeform_tags           = optional(map(string)),
+          cross_connects = optional(map(object({
+            compartment_id                                = optional(string),
+            location_name                                 = string,
+            port_speed_shape_name                         = string,
+            customer_reference_name                       = optional(string),
+            defined_tags                                  = optional(map(string))
+            display_name                                  = optional(string),
+            far_cross_connect_or_cross_connect_group_id   = optional(string),
+            far_cross_connect_or_cross_connect_group_key  = optional(string),
+            freeform_tags                                 = optional(map(string))
+            near_cross_connect_or_cross_connect_group_id  = optional(string),
+            near_cross_connect_or_cross_connect_group_key = optional(string),
+          })))
+        })))
         inject_into_existing_drgs = optional(map(object({
           drg_id = string,
 
@@ -495,16 +610,16 @@ variable "network_configuration" {
             freeform_tags     = optional(map(string))
             statements = optional(map(object({
               action = string,
-              match_criteria = optional(map(object({
-                match_type        = string,
-                attachment_type   = optional(string),
-                drg_attachment_id = optional(string),
-              })))
+              match_criteria = optional(object({
+                match_type         = string,
+                attachment_type    = optional(string),
+                drg_attachment_id  = optional(string),
+                drg_attachment_key = optional(string)
+              }))
               priority = number
             })))
           })))
         })))
-
         network_firewalls_configuration = optional(object({
           network_firewalls = optional(map(object({
             availability_domain         = optional(number),
@@ -608,6 +723,145 @@ variable "network_configuration" {
             maximum_bandwidth_in_mbps = number,
             minimum_bandwidth_in_mbps = number
           }))
+          backend_sets = optional(map(object({
+            health_checker = object({
+              protocol            = string,
+              interval_ms         = number,
+              is_force_plain_text = bool,
+              port                = number,
+              response_body_regex = optional(string),
+              retries             = number,
+              return_code         = number,
+              timeout_in_millis   = number,
+              url_path            = optional(string)
+            })
+            name   = string,
+            policy = string,
+            lb_cookie_session_persistence_configuration = optional(object({
+              cookie_name        = optional(string),
+              disable_fallback   = optional(bool),
+              domain             = optional(string),
+              is_http_only       = optional(bool),
+              is_secure          = optional(bool),
+              max_age_in_seconds = optional(number),
+              path               = optional(string),
+            }))
+            session_persistence_configuration = optional(object({
+              cookie_name      = string,
+              disable_fallback = optional(bool)
+            }))
+            ssl_configuration = optional(object({
+              certificate_ids                    = optional(list(string)),
+              certificate_keys                   = optional(list(string)),
+              certificate_name                   = optional(string),
+              cipher_suite_name                  = optional(string),
+              protocols                          = optional(list(string)),
+              server_order_preference            = optional(string),
+              trusted_certificate_authority_ids  = optional(list(string)),
+              trusted_certificate_authority_keys = optional(list(string)),
+              verify_depth                       = optional(number),
+              verify_peer_certificate            = optional(bool),
+            }))
+            backends = optional(map(object({
+              ip_address = string,
+              port       = number,
+              backup     = optional(bool),
+              drain      = optional(bool),
+              offline    = optional(bool),
+              weight     = optional(number)
+            })))
+          })))
+          cipher_suites = optional(map(object({
+            ciphers = list(string),
+            name    = string
+          })))
+          path_route_sets = optional(map(object({
+            name = string,
+            path_routes = map(object({
+              backend_set_key = string,
+              path            = string,
+              path_match_type = object({
+                match_type = string
+              })
+            }))
+          })))
+          host_names = optional(map(object({
+            hostname = string,
+            name     = string
+          })))
+          routing_policies = optional(map(object({
+            condition_language_version = string,
+            name                       = string,
+            rules = map(object({
+              actions = map(object({
+                backend_set_key = string,
+                name            = string,
+              }))
+              condition = string,
+              name      = string
+            }))
+          })))
+          rule_sets = optional(map(object({
+            name = string,
+            items = map(object({
+              action                         = string,
+              allowed_methods                = optional(list(string)),
+              are_invalid_characters_allowed = optional(bool),
+              conditions = optional(map(object({
+                attribute_name  = string,
+                attribute_value = string,
+                operator        = optional(string)
+              })))
+              description                  = optional(string),
+              header                       = optional(string),
+              http_large_header_size_in_kb = optional(number),
+              prefix                       = optional(string),
+              redirect_uri = optional(object({
+                host     = optional(string, )
+                path     = optional(string),
+                port     = optional(number),
+                protocol = optional(string),
+                query    = optional(string)
+              }))
+              response_code = optional(number)
+              status_code   = optional(number),
+              suffix        = optional(string),
+              value         = optional(string)
+            }))
+          })))
+          certificates = optional(map(object({
+            #Required
+            certificate_name = string,
+            #Optional
+            ca_certificate     = optional(string),
+            passphrase         = optional(string),
+            private_key        = optional(string),
+            public_certificate = optional(string)
+          })))
+          listeners = optional(map(object({
+            default_backend_set_key = string,
+            name                    = string,
+            port                    = string,
+            protocol                = string,
+            connection_configuration = optional(object({
+              idle_timeout_in_seconds            = number,
+              backend_tcp_proxy_protocol_version = optional(string)
+            }))
+            hostname_keys      = optional(list(string)),
+            path_route_set_key = optional(string),
+            routing_policy_key = optional(string),
+            rule_set_keys      = optional(list(string)),
+            ssl_configuration = optional(object({
+              certificate_key                   = optional(string),
+              certificate_ids                   = optional(list(string)),
+              cipher_suite_key                  = optional(string),
+              protocols                         = optional(list(string)),
+              server_order_preference           = optional(string),
+              trusted_certificate_authority_ids = optional(list(string)),
+              verify_depth                      = optional(number),
+              verify_peer_certificate           = optional(bool)
+            }))
+          })))
         })))
       }))
       }

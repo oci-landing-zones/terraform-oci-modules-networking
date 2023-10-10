@@ -434,11 +434,12 @@ variable "network_configuration" {
             freeform_tags     = optional(map(string))
             statements = optional(map(object({
               action = string,
-              match_criteria = optional(map(object({
-                match_type        = string,
-                attachment_type   = optional(string),
-                drg_attachment_id = optional(string),
-              })))
+              match_criteria = optional(object({
+                match_type         = string,
+                attachment_type    = optional(string),
+                drg_attachment_id  = optional(string),
+                drg_attachment_key = optional(string)
+              }))
               priority = optional(number)
             })))
           })))
@@ -609,11 +610,12 @@ variable "network_configuration" {
             freeform_tags     = optional(map(string))
             statements = optional(map(object({
               action = string,
-              match_criteria = optional(map(object({
-                match_type        = string,
-                attachment_type   = optional(string),
-                drg_attachment_id = optional(string),
-              })))
+              match_criteria = optional(object({
+                match_type         = string,
+                attachment_type    = optional(string),
+                drg_attachment_id  = optional(string),
+                drg_attachment_key = optional(string)
+              }))
               priority = number
             })))
           })))
