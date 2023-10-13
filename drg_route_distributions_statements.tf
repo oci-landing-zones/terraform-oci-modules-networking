@@ -67,21 +67,14 @@ resource "oci_core_drg_route_distribution_statement" "these" {
   priority = each.value.priority
   #Optional
   dynamic "match_criteria" {
-    iterator = criteria
-    for_each = each.value.match_criteria != null ? length(each.value.match_criteria) > 0 ? [
-      for v, x in each.value.match_criteria : {
-        match_type = x.match_type
-        #Optional
-        attachment_type   = x.attachment_type
-        drg_attachment_id = x.drg_attachment_id
-    }] : [] : []
+    for_each = each.value.match_criteria != null ? [1] : []
 
     content {
       #Required
-      match_type = criteria.value.match_type
+      match_type = each.value.match_criteria.match_type
       #Optional
-      attachment_type   = criteria.value.attachment_type
-      drg_attachment_id = criteria.value.drg_attachment_id
+      attachment_type   = each.value.match_criteria.match_type.attachment_type
+      drg_attachment_id = each.value.match_criteria.match_type.value.drg_attachment_id
     }
   }
 }
