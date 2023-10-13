@@ -73,8 +73,8 @@ resource "oci_core_drg_route_distribution_statement" "these" {
       #Required
       match_type = each.value.match_criteria.match_type
       #Optional
-      attachment_type   = each.value.match_criteria.match_type.attachment_type
-      drg_attachment_id = each.value.match_criteria.match_type.value.drg_attachment_id
+      attachment_type   = each.value.match_criteria.attachment_type
+      drg_attachment_id = each.value.match_criteria.value.drg_attachment_id
     }
   }
 }
