@@ -415,8 +415,8 @@ variable "network_configuration" {
             route_rules = optional(map(object({
               destination                 = string,
               destination_type            = string,
-              next_hop_drg_attachment_id  = string,
-              next_hop_drg_attachment_key = string,
+              next_hop_drg_attachment_id  = optional(string),
+              next_hop_drg_attachment_key = optional(string),
             })))
           })))
 
@@ -591,8 +591,8 @@ variable "network_configuration" {
             route_rules = optional(map(object({
               destination                 = string,
               destination_type            = string,
-              next_hop_drg_attachment_id  = string,
-              next_hop_drg_attachment_key = string,
+              next_hop_drg_attachment_id  = optional(string),
+              next_hop_drg_attachment_key = optional(string),
             })))
           })))
 

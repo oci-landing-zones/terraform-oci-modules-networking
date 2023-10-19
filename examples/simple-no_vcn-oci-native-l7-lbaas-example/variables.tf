@@ -1,14 +1,3 @@
-# Copyright (c) 2022, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
-
-
-# tenancy details
-variable "tenancy_ocid" {}
-variable "user_ocid" {}
-variable "fingerprint" {}
-variable "private_key_path" {}
-variable "region" {}
-
 variable "network_configuration" {
   type = object({
     default_compartment_id     = optional(string),
@@ -422,8 +411,8 @@ variable "network_configuration" {
             route_rules = optional(map(object({
               destination                 = string,
               destination_type            = string,
-              next_hop_drg_attachment_id  = string,
-              next_hop_drg_attachment_key = string,
+              next_hop_drg_attachment_id  = optional(string),
+              next_hop_drg_attachment_key = optional(string),
             })))
           })))
 
@@ -598,8 +587,8 @@ variable "network_configuration" {
             route_rules = optional(map(object({
               destination                 = string,
               destination_type            = string,
-              next_hop_drg_attachment_id  = string,
-              next_hop_drg_attachment_key = string,
+              next_hop_drg_attachment_id  = optional(string),
+              next_hop_drg_attachment_key = optional(string),
             })))
           })))
 
@@ -868,4 +857,3 @@ variable "network_configuration" {
     )))
   })
 }
-
