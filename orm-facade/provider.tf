@@ -34,7 +34,7 @@ terraform {
       version               = ">= 5.16.0"
       configuration_aliases = [oci]
     }
-
-    experiments = [module_variable_optional_attrs]
   }
+
+  experiments = [module_variable_optional_attrs]
 } 
