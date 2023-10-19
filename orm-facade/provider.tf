@@ -26,7 +26,7 @@ terraform {
   required_providers {
     oci-home = {
       source                = "oracle/oci"
-      version               = "<= 5.16.0"
+      version               = ">= 4.109.0"
       configuration_aliases = [oci-home.home]
     }
     oci = {
