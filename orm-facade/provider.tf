@@ -10,7 +10,7 @@ provider "oci" {
   private_key_password = var.private_key_password
 }
 
-provider "oci" {
+provider "oci-home" {
   alias                = "home"
   region               = local.regions_map[local.home_region_key]
   tenancy_ocid         = var.tenancy_ocid
@@ -26,12 +26,12 @@ terraform {
   required_providers {
     oci-home = {
       source                = "oracle/oci"
-      version               = ">= 5.16.0"
-      configuration_aliases = [oci.home]
+      version               = "<= 5.16.0"
+      configuration_aliases = [oci-home.home]
     }
     oci = {
       source                = "oracle/oci"
-      version               = ">= 5.16.0"
+      version               = "<= 5.16.0"
       configuration_aliases = [oci]
     }
   }
