@@ -10,6 +10,6 @@ locals {
 }
 
 module "terraform-oci-cis-landing-zone-networking" {
-  source = "../"
+  source                = "../"
   network_configuration = local.network_configuration
 }
