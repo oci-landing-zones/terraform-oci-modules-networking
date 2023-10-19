@@ -39,7 +39,7 @@ locals {
       vcn_name                       = local.provisioned_vcns != null ? length(local.provisioned_vcns) > 0 ? [for vcn_key, vcn_value in local.provisioned_vcns : vcn_value.display_name if vcn_value.id == default_rt_value.route_tables[0].vcn_id][0] : null : null
       network_configuration_category = local.provisioned_vcns != null ? length(local.provisioned_vcns) > 0 ? [for vcn_key, vcn_value in local.provisioned_vcns : vcn_value.network_configuration_category if vcn_value.id == default_rt_value.route_tables[0].vcn_id][0] : null : null
       route_table_key                = replace(upper("${default_rt_value.route_tables[0].display_name}-KEY"), " ", "_")
-    } if default_rt_value.route_tables != null
+    } if default_rt_value.route_tables != null && length(default_rt_value.route_tables) > 0
   }
   one_dimension_processed_route_tables = local.one_dimension_processed_vcns != null ? {
     for flat_route_table in flatten([
