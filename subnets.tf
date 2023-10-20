@@ -41,8 +41,23 @@ locals {
           #route_table_id             = subnet_value.route_table_key != null ? merge(oci_core_route_table.these_gw_attached, oci_core_route_table.these_no_gw_attached, local.default_route_tables)[subnet_value.route_table_key].id : null
           security_list_keys = subnet_value.security_list_keys
           security_list_ids = subnet_value.security_list_keys != null ? length(subnet_value.security_list_keys) > 0 ? [
-            for seclistname in subnet_value.security_list_keys : oci_core_security_list.these[seclistname].id
-          ] : [] : []
+            for seclistname in subnet_value.security_list_keys : merge(
+              {
+                for sec_list_key, sec_list_value in oci_core_security_list.these : sec_list_key => {
+                  sec_list_key = sec_list_key,
+                  display_name = sec_list_value.display_name,
+                  id           = sec_list_value.id
+                }
+              },
+              {
+                "default_security_list" = {
+                  sec_list_key = "default_security_list",
+                  display_name = "default_security_list",
+                  id           = oci_core_vcn.these[vcn_key].default_security_list_id
+                }
+
+            })[seclistname].id
+          ] : [oci_core_vcn.these[vcn_key].default_security_list_id] : [oci_core_vcn.these[vcn_key].default_security_list_id]
           network_configuration_category = vcn_value.network_configuration_category
           vcn_key                        = vcn_key
           vcn_name                       = vcn_value.display_name
@@ -97,18 +112,77 @@ locals {
           security_list_keys = subnet_value.security_list_keys
           security_list_ids = concat(
             subnet_value.security_list_keys != null ? [
-              for seclistname in subnet_value.security_list_keys : oci_core_security_list.these[seclistname].id
+              for seclistname in subnet_value.security_list_keys : merge(
+                {
+                  for sec_list_key, sec_list_value in oci_core_security_list.these : sec_list_key => {
+                    sec_list_key = sec_list_key,
+                    display_name = sec_list_value.display_name,
+                    id           = sec_list_value.id
+                  }
+                },
+                {
+                  "default_security_list" = {
+                    sec_list_key = "default_security_list",
+                    display_name = "default_security_list",
+                    id           = oci_core_vcn.these[vcn_key].default_security_list_id
+                  }
+
+              })[seclistname].id
             ] : [],
 
             subnet_value.security_list_ids != null ? subnet_value.security_list_ids : []
-          )
+            ) != null ? length(
+            concat(
+              subnet_value.security_list_keys != null ? [
+                for seclistname in subnet_value.security_list_keys : merge(
+                  {
+                    for sec_list_key, sec_list_value in oci_core_security_list.these : sec_list_key => {
+                      sec_list_key = sec_list_key,
+                      display_name = sec_list_value.display_name,
+                      id           = sec_list_value.id
+                    }
+                  },
+                  {
+                    "default_security_list" = {
+                      sec_list_key = "default_security_list",
+                      display_name = "default_security_list",
+                      id           = oci_core_vcn.these[vcn_key].default_security_list_id
+                    }
+
+                })[seclistname].id
+              ] : [],
+
+              subnet_value.security_list_ids != null ? subnet_value.security_list_ids : []
+            )
+            ) > 0 ? concat(
+            subnet_value.security_list_keys != null ? [
+              for seclistname in subnet_value.security_list_keys : merge(
+                {
+                  for sec_list_key, sec_list_value in oci_core_security_list.these : sec_list_key => {
+                    sec_list_key = sec_list_key,
+                    display_name = sec_list_value.display_name,
+                    id           = sec_list_value.id
+                  }
+                },
+                {
+                  "default_security_list" = {
+                    sec_list_key = "default_security_list",
+                    display_name = "default_security_list",
+                    id           = oci_core_vcn.these[vcn_key].default_security_list_id
+                  }
+
+              })[seclistname].id
+            ] : [],
+
+            subnet_value.security_list_ids != null ? subnet_value.security_list_ids : []
+          ) : [] : []
           network_configuration_category = vcn_value.network_configuration_category
           vcn_key                        = vcn_key
           vcn_name                       = vcn_value.vcn_name
           subnet_key                     = subnet_key
           vcn_id                         = vcn_value.vcn_id
         }
-      ] : [] : []
+      ] : [oci_core_vcn.these[vcn_key].default_security_list_id] : [oci_core_vcn.these[vcn_key].default_security_list_id]
     ]) : flat_subnet.subnet_key => flat_subnet
   } : null
 
@@ -134,11 +208,41 @@ locals {
 
       security_lists = flatten(subnet_value.security_list_ids != null ? [
         for sec_list_id in subnet_value.security_list_ids : contains([
-          for sec_list_key, sec_list_value in oci_core_security_list.these : sec_list_value.id
+          for sec_list_key, sec_list_value in merge(
+            {
+              for sec_list_key, sec_list_value in oci_core_security_list.these : sec_list_key => {
+                sec_list_key = sec_list_key,
+                display_name = sec_list_value.display_name,
+                id           = sec_list_value.id
+              }
+            },
+            {
+              "default_security_list" = {
+                sec_list_key = "default_security_list",
+                display_name = "default_security_list",
+                id           = oci_core_vcn.these[merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].vcn_key].default_security_list_id
+              }
+
+          }) : sec_list_value.id
           ],
 
           sec_list_id) ? [
-          for sec_list_key, sec_list_value in oci_core_security_list.these : {
+          for sec_list_key, sec_list_value in merge(
+            {
+              for sec_list_key, sec_list_value in oci_core_security_list.these : sec_list_key => {
+                sec_list_key = sec_list_key,
+                display_name = sec_list_value.display_name,
+                id           = sec_list_value.id
+              }
+            },
+            {
+              "default_security_list" = {
+                sec_list_key = "default_security_list",
+                display_name = "default_security_list",
+                id           = oci_core_vcn.these[merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].vcn_key].default_security_list_id
+              }
+
+            }) : {
             display_name = sec_list_value.display_name
             sec_list_key = sec_list_key
             sec_list_id  = sec_list_id

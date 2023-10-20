@@ -136,6 +136,9 @@ locals {
           category_ssh_ports_to_check    = network_configuration_category_value.category_ssh_ports_to_check
           default_enable_cis_checks      = var.network_configuration.default_enable_cis_checks
           default_ssh_ports_to_check     = var.network_configuration.default_ssh_ports_to_check
+          default_dhcp_options_id        = data.oci_core_vcn.existing_vcns[vcn_key].default_dhcp_options_id
+          default_route_table_id         = data.oci_core_vcn.existing_vcns[vcn_key].default_route_table_id
+          default_security_list_id       = data.oci_core_vcn.existing_vcns[vcn_key].default_security_list_id
         }
       ] : [] : []
     ]) : flat_vcn.vcn_key => flat_vcn
