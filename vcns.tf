@@ -28,6 +28,7 @@ locals {
           is_oracle_gua_allocation_enabled = vcn_value.is_oracle_gua_allocation_enabled
           vcn_key                          = vcn_key
           network_configuration_category   = network_configuration_category_key
+          default_security_list            = vcn_value.default_security_list
           security_lists                   = vcn_value.security_lists
           subnets                          = vcn_value.subnets
           vcn_specific_gateways            = vcn_value.vcn_specific_gateways

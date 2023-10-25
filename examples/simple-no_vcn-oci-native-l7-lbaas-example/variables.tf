@@ -37,6 +37,38 @@ variable "network_configuration" {
         defined_tags                     = optional(map(string)),
         freeform_tags                    = optional(map(string)),
 
+        default_security_list = optional(object({
+          compartment_id = optional(string),
+          defined_tags   = optional(map(string)),
+          freeform_tags  = optional(map(string)),
+          ingress_rules = optional(list(object({
+            stateless    = optional(bool),
+            protocol     = string,
+            description  = optional(string),
+            src          = string,
+            src_type     = string,
+            src_port_min = optional(number),
+            src_port_max = optional(number),
+            dst_port_min = optional(number),
+            dst_port_max = optional(number),
+            icmp_type    = optional(number),
+            icmp_code    = optional(number)
+          }))),
+          egress_rules = optional(list(object({
+            stateless    = optional(bool),
+            protocol     = string,
+            description  = optional(string),
+            dst          = string,
+            dst_type     = string,
+            src_port_min = optional(number),
+            src_port_max = optional(number),
+            dst_port_min = optional(number),
+            dst_port_max = optional(number),
+            icmp_type    = optional(number),
+            icmp_code    = optional(number)
+          })))
+        }))
+
         security_lists = optional(map(object({
           compartment_id = optional(string),
           defined_tags   = optional(map(string)),
@@ -556,6 +588,7 @@ variable "network_configuration" {
             near_cross_connect_or_cross_connect_group_key = optional(string),
           })))
         })))
+
         inject_into_existing_drgs = optional(map(object({
           drg_id = string,
 
@@ -617,6 +650,7 @@ variable "network_configuration" {
             })))
           })))
         })))
+
         network_firewalls_configuration = optional(object({
           network_firewalls = optional(map(object({
             availability_domain         = optional(number),
@@ -702,6 +736,7 @@ variable "network_configuration" {
             })))
           })))
         }))
+
         l7_load_balancers = optional(map(object({
           compartment_id              = optional(string),
           display_name                = string,

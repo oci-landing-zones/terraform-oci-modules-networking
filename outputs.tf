@@ -7,6 +7,7 @@ output "provisioned_networking_resources" {
     vcns                                           = local.provisioned_vcns,
     subnets                                        = local.provisioned_subnets,
     service_gateways                               = local.provisioned_service_gateways,
+    default_security_lists                         = local.provisioned_default_security_lists
     security_lists                                 = local.provisioned_security_lists
     route_tables                                   = local.provisioned_route_tables
     route_tables_attachments                       = local.provisioned_route_tables_attachments

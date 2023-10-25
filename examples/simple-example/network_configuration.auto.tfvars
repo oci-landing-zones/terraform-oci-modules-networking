@@ -21,10 +21,7 @@ network_configuration = {
           is_create_igw                    = false
           is_attach_drg                    = false
           block_nat_traffic                = false
-
-          security_lists = {
-
-            SECLIST-LB-KEY = {
+                      default-security-list = {
               display_name = "sl-lb"
 
               egress_rules = [
@@ -57,8 +54,9 @@ network_configuration = {
                   dst_port_max = 443
                 }
               ]
-            },
+            }
 
+          security_lists = {
             SECLIST-APP-KEY = {
               display_name = "sl-app"
 
