@@ -1,22 +1,23 @@
 locals {
+
   one_dimension_processed_default_security_lists = local.one_dimension_processed_vcns != null ? {
     for flat_default_security_list in flatten([
       for vcn_key, vcn_value in local.one_dimension_processed_vcns : [
         {
           manage_default_resource_id = local.provisioned_vcns[vcn_key].id
-          compartment_id             = vcn_value.default_security_list.compartment_id != null ? vcn_value.default_security_list.compartment_id : vcn_value.category_compartment_id != null ? vcn_value.category_compartment_id : vcn_value.default_compartment_id != null ? vcn_value.default_compartment_id : null
+          compartment_id             = vcn_value.default_security_list != null ? vcn_value.default_security_list.compartment_id != null ? vcn_value.default_security_list.compartment_id : vcn_value.category_compartment_id != null ? vcn_value.category_compartment_id : vcn_value.default_compartment_id != null ? vcn_value.default_compartment_id : null : vcn_value.compartment_id
           default_compartment_id     = vcn_value.default_compartment_id
           category_compartment_id    = vcn_value.category_compartment_id
-          defined_tags               = merge(vcn_value.default_security_list.defined_tags, vcn_value.category_defined_tags, vcn_value.default_defined_tags)
+          defined_tags               = vcn_value.default_security_list != null ? merge(vcn_value.default_security_list.defined_tags, vcn_value.category_defined_tags, vcn_value.default_defined_tags) : merge(vcn_value.defined_tags, vcn_value.category_defined_tags, vcn_value.default_defined_tags)
           default_defined_tags       = vcn_value.default_defined_tags
           category_defined_tags      = vcn_value.category_defined_tags
-          freeform_tags              = merge(vcn_value.default_security_list.freeform_tags, vcn_value.category_freeform_tags, vcn_value.default_freeform_tags)
+          freeform_tags              = vcn_value.default_security_list != null ? merge(vcn_value.default_security_list.freeform_tags, vcn_value.category_freeform_tags, vcn_value.default_freeform_tags) : merge(vcn_value.freeform_tags, vcn_value.category_freeform_tags, vcn_value.default_freeform_tags)
           default_freeform_tags      = vcn_value.default_freeform_tags
           category_freeform_tags     = vcn_value.category_freeform_tags
           enable_cis_checks          = vcn_value.category_enable_cis_checks != null ? vcn_value.category_enable_cis_checks : vcn_value.default_enable_cis_checks != null ? vcn_value.default_enable_cis_checks : true
           ssh_ports_to_check         = vcn_value.category_ssh_ports_to_check != null ? vcn_value.category_ssh_ports_to_check : vcn_value.default_ssh_ports_to_check != null ? vcn_value.default_ssh_ports_to_check : local.DEFAULT_SSH_PORTS_TO_CHECK
 
-          egress_rules = [
+          egress_rules = vcn_value.default_security_list != null ? vcn_value.default_security_list.egress_rules != null ? [
             for e_rule in vcn_value.default_security_list.egress_rules : {
               stateless    = e_rule.stateless
               protocol     = local.network_terminology["${e_rule.protocol}"]
@@ -29,9 +30,9 @@ locals {
               dst_port_max = e_rule.dst_port_max
               icmp_type    = e_rule.icmp_type
               icmp_code    = e_rule.icmp_code
-          }]
+          }] : [] : []
 
-          ingress_rules = [
+          ingress_rules = vcn_value.default_security_list != null ? vcn_value.default_security_list.ingress_rules != null ? [
             for i_rule in vcn_value.default_security_list.ingress_rules : {
               stateless    = i_rule.stateless
               protocol     = local.network_terminology["${i_rule.protocol}"]
@@ -44,14 +45,27 @@ locals {
               dst_port_max = i_rule.dst_port_max
               icmp_type    = i_rule.icmp_type
               icmp_code    = i_rule.icmp_code
+            }] : [] : [
+            for i_cidr in concat(vcn_value.cidr_blocks, ["0.0.0.0/0"]) : {
+              stateless    = false
+              protocol     = local.network_terminology["ICMP"]
+              description  = i_cidr == "0.0.0.0/0" ? "ICMP type 3 code 4" : "ICMP type 3"
+              src          = i_cidr
+              src_type     = "CIDR_BLOCK"
+              src_port_min = null
+              src_port_max = null
+              dst_port_min = null
+              dst_port_max = null
+              icmp_type    = 3
+              icmp_code    = i_cidr == "0.0.0.0/0" ? 4 : null
           }]
           network_configuration_category = vcn_value.network_configuration_category
           vcn_key                        = vcn_key
           vcn_name                       = vcn_value.display_name
           vcn_id                         = oci_core_vcn.these[vcn_key].id
-          security_list_key              = "DEFAULT-SEC-LIST-${vcn_key}"
+          security_list_key              = vcn_value.default_security_list != null ? "DEFAULT-SEC-LIST-${vcn_key}" : "CIS-DEFAULT-SEC-LIST-${vcn_key}"
         }
-      ] if vcn_value.default_security_list != null
+      ]
     ]) : flat_default_security_list.security_list_key => flat_default_security_list
   } : null
 
@@ -59,20 +73,20 @@ locals {
     for flat_default_security_list in flatten([
       for vcn_key, vcn_value in local.one_dimension_processed_existing_vcns : [
         {
-          compartment_id          = vcn_value.default_security_list.compartment_id != null ? vcn_value.default_security_list.compartment_id : vcn_value.category_compartment_id != null ? vcn_value.category_compartment_id : vcn_value.default_compartment_id != null ? vcn_value.default_compartment_id : null
+          compartment_id          = vcn_value.default_security_list != null ? vcn_value.default_security_list.compartment_id != null ? vcn_value.default_security_list.compartment_id : vcn_value.category_compartment_id != null ? vcn_value.category_compartment_id : vcn_value.default_compartment_id != null ? vcn_value.default_compartment_id : null : vcn_value.compartment_id
           default_compartment_id  = vcn_value.default_compartment_id
           category_compartment_id = vcn_value.category_compartment_id
-          defined_tags            = merge(vcn_value.default_security_list.defined_tags, vcn_value.category_defined_tags, vcn_value.default_defined_tags)
+          defined_tags            = vcn_value.default_security_list != null ? merge(vcn_value.default_security_list.defined_tags, vcn_value.category_defined_tags, vcn_value.default_defined_tags) : merge(vcn_value.defined_tags, vcn_value.category_defined_tags, vcn_value.default_defined_tags)
           default_defined_tags    = vcn_value.default_defined_tags
           category_defined_tags   = vcn_value.category_defined_tags
-          freeform_tags           = merge(vcn_value.default_security_list.freeform_tags, vcn_value.category_freeform_tags, vcn_value.default_freeform_tags)
+          freeform_tags           = vcn_value.default_security_list != null ? merge(vcn_value.default_security_list.freeform_tags, vcn_value.category_freeform_tags, vcn_value.default_freeform_tags) : merge(vcn_value.freeform_tags, vcn_value.category_freeform_tags, vcn_value.default_freeform_tags)
           default_freeform_tags   = vcn_value.default_freeform_tags
           category_freeform_tags  = vcn_value.category_freeform_tags
-          display_name            = vcn_value.default_security_list.display_name
           enable_cis_checks       = vcn_value.category_enable_cis_checks != null ? vcn_value.category_enable_cis_checks : vcn_value.default_enable_cis_checks != null ? vcn_value.default_enable_cis_checks : true
           ssh_ports_to_check      = vcn_value.category_ssh_ports_to_check != null ? vcn_value.category_ssh_ports_to_check : vcn_value.default_ssh_ports_to_check != null ? vcn_value.default_ssh_ports_to_check : local.DEFAULT_SSH_PORTS_TO_CHECK
 
-          egress_rules = [
+
+          egress_rules = vcn_value.default_security_list != null ? vcn_value.default_security_list.egress_rules != null ? [
             for e_rule in vcn_value.default_security_list.egress_rules : {
               stateless    = e_rule.stateless
               protocol     = local.network_terminology["${e_rule.protocol}"]
@@ -85,9 +99,9 @@ locals {
               dst_port_max = e_rule.dst_port_max
               icmp_type    = e_rule.icmp_type
               icmp_code    = e_rule.icmp_code
-          }]
+          }] : [] : []
 
-          ingress_rules = [
+          ingress_rules = vcn_value.default_security_list != null ? vcn_value.default_security_list.ingress_rules != null ? [
             for i_rule in vcn_value.default_security_list.ingress_rules : {
               stateless    = i_rule.stateless
               protocol     = local.network_terminology["${i_rule.protocol}"]
@@ -100,14 +114,28 @@ locals {
               dst_port_max = i_rule.dst_port_max
               icmp_type    = i_rule.icmp_type
               icmp_code    = i_rule.icmp_code
+            }] : [] : [
+            for i_cidr in concat(vcn_value.cidr_blocks, ["0.0.0.0/0"]) : {
+              stateless    = false
+              protocol     = local.network_terminology["ICMP"]
+              description  = i_cidr == "0.0.0.0/0" ? "ICMP type 3 code 4" : "ICMP type 3"
+              src          = i_cidr
+              src_type     = "CIDR_BLOCK"
+              src_port_min = null
+              src_port_max = null
+              dst_port_min = null
+              dst_port_max = null
+              icmp_type    = 3
+              icmp_code    = i_cidr == "0.0.0.0/0" ? 4 : null
           }]
+
           network_configuration_category = vcn_value.network_configuration_category
           vcn_key                        = vcn_key
           vcn_name                       = vcn_value.vcn_name
           vcn_id                         = vcn_value.vcn_id
-          security_list_key              = "DEFAULT-SEC-LIST-${vcn_key}"
+          security_list_key              = vcn_value.default_security_list != null ? "DEFAULT-SEC-LIST-${vcn_key}" : "CIS-DEFAULT-SEC-LIST-${vcn_key}"
         }
-      ] if vcn_value.default_security_list != null
+      ]
     ]) : flat_default_security_list.security_list_key => flat_default_security_list
   } : null
 
