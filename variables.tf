@@ -112,6 +112,20 @@ variable "network_configuration" {
           })))
         })))
 
+        default_dhcp_options = optional(object({
+          compartment_id   = optional(string),
+          display_name     = optional(string),
+          defined_tags     = optional(map(string)),
+          freeform_tags    = optional(map(string)),
+          domain_name_type = optional(string),
+          options = map(object({
+            type                = string,
+            server_type         = optional(string),
+            custom_dns_servers  = optional(list(string))
+            search_domain_names = optional(list(string))
+          }))
+        }))
+
         dhcp_options = optional(map(object({
           compartment_id   = optional(string),
           display_name     = optional(string),

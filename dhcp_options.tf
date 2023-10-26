@@ -103,11 +103,13 @@ resource "oci_core_dhcp_options" "these" {
       for option_key, option_value in each.value.options : {
         type                = option_value.type
         search_domain_names = option_value.search_domain_names
+        server_type         = option_value.server_type
     } if option_value.type == "DomainNameServer" && option_value.server_type == "VcnLocalPlusInternet"]
 
     content {
-      type        = opt.value.type
-      server_type = opt.value.server_type
+      type                = opt.value.type
+      server_type         = opt.value.server_type
+      search_domain_names = opt.value.search_domain_names
     }
   }
 

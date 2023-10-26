@@ -26,7 +26,7 @@ locals {
                 id = oci_core_vcn.these[vcn_key].default_dhcp_options_id
               }
             }
-          )[subnet_value.dhcp_options_key].id : null
+          )[subnet_value.dhcp_options_key].id : oci_core_vcn.these[vcn_key].default_dhcp_options_id
           display_name               = subnet_value.display_name
           dns_label                  = subnet_value.dns_label
           freeform_tags              = merge(subnet_value.freeform_tags, vcn_value.category_freeform_tags, vcn_value.default_freeform_tags)
@@ -89,14 +89,10 @@ locals {
             },
             {
               "default_dhcp_options" = {
-                id = [
-                  for inject_vcn_key, inject_vcn_value in data.oci_core_vcn.existing_vcns : {
-                    id = inject_vcn_value.default_dhcp_options_id
-                  } if inject_vcn_value.id == vcn_value.vcn_id
-                ][0].id
+                id = vcn_value.default_dhcp_options_id
               }
             }
-          )[subnet_value.dhcp_options_key].id : null
+          )[subnet_value.dhcp_options_key].id : vcn_value.default_dhcp_options_id
           display_name               = subnet_value.display_name
           dns_label                  = subnet_value.dns_label
           freeform_tags              = merge(subnet_value.freeform_tags, vcn_value.category_freeform_tags, vcn_value.default_freeform_tags)
@@ -124,7 +120,7 @@ locals {
                   "default_security_list" = {
                     sec_list_key = "default_security_list",
                     display_name = "default_security_list",
-                    id           = oci_core_vcn.these[vcn_key].default_security_list_id
+                    id           = vcn_value.default_security_list_id
                   }
 
               })[seclistname].id
@@ -146,7 +142,7 @@ locals {
                     "default_security_list" = {
                       sec_list_key = "default_security_list",
                       display_name = "default_security_list",
-                      id           = oci_core_vcn.these[vcn_key].default_security_list_id
+                      id           = vcn_value.default_security_list_id
                     }
 
                 })[seclistname].id
@@ -168,7 +164,7 @@ locals {
                   "default_security_list" = {
                     sec_list_key = "default_security_list",
                     display_name = "default_security_list",
-                    id           = oci_core_vcn.these[vcn_key].default_security_list_id
+                    id           = vcn_value.default_security_list_id
                   }
 
               })[seclistname].id
@@ -182,7 +178,7 @@ locals {
           subnet_key                     = subnet_key
           vcn_id                         = vcn_value.vcn_id
         }
-      ] : [oci_core_vcn.these[vcn_key].default_security_list_id] : [oci_core_vcn.these[vcn_key].default_security_list_id]
+      ] : [vcn_value.default_security_list_id] : [vcn_value.default_security_list_id]
     ]) : flat_subnet.subnet_key => flat_subnet
   } : null
 
@@ -193,7 +189,7 @@ locals {
       compartment_id             = subnet_value.compartment_id
       defined_tags               = subnet_value.defined_tags
       dhcp_options_id            = subnet_value.dhcp_options_id
-      dhcp_options_key           = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+      dhcp_options_key           = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_id != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION" : "default_dhcp_options"
       display_name               = subnet_value.display_name
       dns_label                  = subnet_value.dns_label
       freeform_tags              = subnet_value.freeform_tags
@@ -276,8 +272,8 @@ locals {
       compartment_id             = subnet_value.compartment_id
       defined_tags               = subnet_value.defined_tags
       dhcp_options_id            = subnet_value.dhcp_options_id
-      dhcp_options_key           = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key
-      dhcp_options_name          = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key == "default_dhcp_options" ? "default_dhcp_options" : can(oci_core_dhcp_options.these[merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key].display_name) ? oci_core_dhcp_options.these[merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key].display_name : "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+      dhcp_options_key           = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_id != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key : "default_dhcp_options" : "default_dhcp_options"
+      dhcp_options_name          = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_id != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key == "default_dhcp_options" ? "default_dhcp_options" : can(oci_core_dhcp_options.these[merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key].display_name) ? oci_core_dhcp_options.these[merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key].display_name : "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : "default_dhcp_options" : "default_dhcp_options"
       display_name               = subnet_value.display_name
       dns_label                  = subnet_value.dns_label
       freeform_tags              = subnet_value.freeform_tags

@@ -34,6 +34,7 @@ locals {
           vcn_specific_gateways            = vcn_value.vcn_specific_gateways
           network_security_groups          = vcn_value.network_security_groups
           route_tables                     = vcn_value.route_tables
+          default_dhcp_options             = vcn_value.default_dhcp_options
           dhcp_options                     = vcn_value.dhcp_options
           category_enable_cis_checks       = network_configuration_category_value.category_enable_cis_checks
           category_ssh_ports_to_check      = network_configuration_category_value.category_ssh_ports_to_check

@@ -26,6 +26,7 @@ output "provisioned_networking_resources" {
     drg_route_distributions                        = local.provisioned_drg_route_distributions
     drg_route_distributions_statements             = local.provisioned_drg_route_distributions_statements
     drg_attachments                                = local.provisioned_drg_attachments
+    default_dhcp_options                           = local.provisioned_default_dhcp_options
     dhcp_options                                   = local.provisioned_dhcp_options
     l7_load_balancers                              = module.l7_load_balancers.provisioned_l7_load_balancers
     public_ips_pools                               = local.provisioned_oci_core_public_ip_pools
