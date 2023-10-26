@@ -39,7 +39,6 @@ locals {
             }
           } : null : null
           customer_asn              = fcvc_value.customer_asn
-          customer_bgp_asn          = fcvc_value.customer_bgp_asn
           ip_mtu                    = fcvc_value.ip_mtu
           is_bfd_enabled            = fcvc_value.is_bfd_enabled
           gateway_id                = fcvc_value.gateway_id != null ? fcvc_value.gateway_id : fcvc_value.gateway_key != null ? local.provisioned_dynamic_gateways[fcvc_value.gateway_key].id : null
@@ -76,7 +75,6 @@ locals {
       bgp_admin_state                             = fcvc_value.bgp_admin_state
       cross_connect_mappings                      = fcvc_value.cross_connect_mappings
       customer_asn                                = fcvc_value.customer_asn
-      customer_bgp_asn                            = fcvc_value.customer_bgp_asn
       ip_mtu                                      = fcvc_value.ip_mtu
       is_bfd_enabled                              = fcvc_value.is_bfd_enabled
       gateway_id                                  = fcvc_value.gateway_id
@@ -126,7 +124,6 @@ locals {
       compartment_id         = fcvc_value.compartment_id
       cross_connect_mappings = fcvc_value.cross_connect_mappings
       customer_asn           = fcvc_value.customer_asn
-      customer_bgp_asn       = fcvc_value.customer_bgp_asn
       defined_tags           = fcvc_value.defined_tags
       display_name           = fcvc_value.display_name
       freeform_tags          = fcvc_value.freeform_tags
@@ -186,7 +183,6 @@ resource "oci_core_virtual_circuit" "these" {
     }
   }
   customer_asn              = each.value.customer_asn
-  customer_bgp_asn          = each.value.customer_bgp_asn
   defined_tags              = each.value.defined_tags
   display_name              = each.value.display_name
   freeform_tags             = each.value.freeform_tags

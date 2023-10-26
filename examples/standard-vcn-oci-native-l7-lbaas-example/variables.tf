@@ -552,7 +552,6 @@ variable "network_configuration" {
             vlan                                     = optional(string)
           })))
           customer_asn              = optional(string)
-          customer_bgp_asn          = optional(string)
           defined_tags              = optional(map(string))
           display_name              = optional(string)
           freeform_tags             = optional(map(string))
