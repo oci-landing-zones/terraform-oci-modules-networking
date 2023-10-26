@@ -22,7 +22,7 @@ locals {
           enable_cis_checks       = vcn_value.category_enable_cis_checks != null ? vcn_value.category_enable_cis_checks : vcn_value.default_enable_cis_checks != null ? vcn_value.default_enable_cis_checks : true
           ssh_ports_to_check      = vcn_value.category_ssh_ports_to_check != null ? vcn_value.category_ssh_ports_to_check : vcn_value.default_ssh_ports_to_check != null ? vcn_value.default_ssh_ports_to_check : local.DEFAULT_SSH_PORTS_TO_CHECK
 
-          egress_rules = [
+          egress_rules = sec_list_value.egress_rules != null ? [
             for e_rule in sec_list_value.egress_rules : {
               stateless    = e_rule.stateless
               protocol     = local.network_terminology["${e_rule.protocol}"]
@@ -35,9 +35,9 @@ locals {
               dst_port_max = e_rule.dst_port_max
               icmp_type    = e_rule.icmp_type
               icmp_code    = e_rule.icmp_code
-          }]
+          }] : []
 
-          ingress_rules = [
+          ingress_rules = sec_list_value.ingress_rules != null ? [
             for i_rule in sec_list_value.ingress_rules : {
               stateless    = i_rule.stateless
               protocol     = local.network_terminology["${i_rule.protocol}"]
@@ -50,7 +50,7 @@ locals {
               dst_port_max = i_rule.dst_port_max
               icmp_type    = i_rule.icmp_type
               icmp_code    = i_rule.icmp_code
-          }]
+          }] : []
           network_configuration_category = vcn_value.network_configuration_category
           vcn_key                        = vcn_key
           vcn_name                       = vcn_value.display_name
@@ -80,7 +80,7 @@ locals {
           enable_cis_checks       = vcn_value.category_enable_cis_checks != null ? vcn_value.category_enable_cis_checks : vcn_value.default_enable_cis_checks != null ? vcn_value.default_enable_cis_checks : true
           ssh_ports_to_check      = vcn_value.category_ssh_ports_to_check != null ? vcn_value.category_ssh_ports_to_check : vcn_value.default_ssh_ports_to_check != null ? vcn_value.default_ssh_ports_to_check : local.DEFAULT_SSH_PORTS_TO_CHECK
 
-          egress_rules = [
+          egress_rules = sec_list_value.egress_rules != null ? [
             for e_rule in sec_list_value.egress_rules : {
               stateless    = e_rule.stateless
               protocol     = local.network_terminology["${e_rule.protocol}"]
@@ -93,9 +93,9 @@ locals {
               dst_port_max = e_rule.dst_port_max
               icmp_type    = e_rule.icmp_type
               icmp_code    = e_rule.icmp_code
-          }]
+          }] : []
 
-          ingress_rules = [
+          ingress_rules = sec_list_value.ingress_rules != null ? [
             for i_rule in sec_list_value.ingress_rules : {
               stateless    = i_rule.stateless
               protocol     = local.network_terminology["${i_rule.protocol}"]
@@ -108,7 +108,7 @@ locals {
               dst_port_max = i_rule.dst_port_max
               icmp_type    = i_rule.icmp_type
               icmp_code    = i_rule.icmp_code
-          }]
+          }] : []
           network_configuration_category = vcn_value.network_configuration_category
           vcn_key                        = vcn_key
           vcn_name                       = vcn_value.vcn_name
