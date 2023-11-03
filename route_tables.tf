@@ -199,7 +199,7 @@ resource "oci_core_route_table" "these_no_gw_attached" {
 
   display_name   = each.value.display_name
   vcn_id         = each.value.vcn_id != null ? each.value.vcn_id : oci_core_vcn.these[each.value.vcn_key].id
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   defined_tags   = each.value.defined_tags
   freeform_tags  = each.value.freeform_tags
   dynamic "route_rules" {
@@ -226,7 +226,7 @@ resource "oci_core_route_table" "these_gw_attached" {
 
   display_name   = each.value.display_name
   vcn_id         = each.value.vcn_id != null ? each.value.vcn_id : oci_core_vcn.these[each.value.vcn_key].id
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   defined_tags   = each.value.defined_tags
   freeform_tags  = each.value.freeform_tags
   dynamic "route_rules" {
@@ -254,7 +254,7 @@ resource "oci_core_route_table" "these_drg_attached" {
 
   display_name   = each.value.display_name
   vcn_id         = each.value.vcn_id != null ? each.value.vcn_id : oci_core_vcn.these[each.value.vcn_key].id
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   defined_tags   = each.value.defined_tags
   freeform_tags  = each.value.freeform_tags
   dynamic "route_rules" {

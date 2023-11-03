@@ -81,7 +81,7 @@ resource "oci_core_service_gateway" "these" {
 
   for_each = merge(local.one_dimension_processed_service_gateways, local.one_dimension_processed_injected_service_gateways)
   #Required
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   services {
     service_id = local.oci_services_details["objectstorage"].id
   }

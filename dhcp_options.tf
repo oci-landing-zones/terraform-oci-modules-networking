@@ -79,7 +79,7 @@ locals {
 resource "oci_core_dhcp_options" "these" {
   for_each = merge(local.one_dimension_processed_dhcp_options, local.one_dimension_processed_injected_dhcp_options)
 
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   vcn_id         = each.value.vcn_id
   display_name   = each.value.display_name
 

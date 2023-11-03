@@ -52,7 +52,7 @@ locals {
 resource "oci_core_cpe" "these" {
   for_each = local.one_dimension_customer_premises_equipments
   #Required
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   ip_address     = each.value.ip_address
 
   #Optional

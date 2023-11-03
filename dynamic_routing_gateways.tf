@@ -49,7 +49,7 @@ locals {
 resource "oci_core_drg" "these" {
   for_each = local.one_dimension_dynamic_routing_gateways
   #Required
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
 
   #Optional
   defined_tags  = each.value.defined_tags

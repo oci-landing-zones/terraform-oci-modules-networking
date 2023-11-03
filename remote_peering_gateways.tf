@@ -92,7 +92,7 @@ locals {
 resource "oci_core_remote_peering_connection" "oci_acceptor_remote_peering_connections" {
   for_each = local.one_dimension_processed_acceptor_remote_peering_connections
   #Required
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   #drg_id         = each.value.drg_id != null ? each.value.drg_id : each.value.drg_name != null ? oci_core_drg.these[each.value.drg_name].id : null
   drg_id = each.value.drg_id
   #Optional
@@ -109,7 +109,7 @@ resource "oci_core_remote_peering_connection" "oci_acceptor_remote_peering_conne
 resource "oci_core_remote_peering_connection" "oci_requestor_remote_peering_connections" {
   for_each = local.one_dimension_processed_requestor_remote_peering_connections
   #Required
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   #drg_id         = each.value.drg_id != null ? each.value.drg_id : each.value.drg_key != null ? oci_core_drg.these[each.value.drg_key].id : null
   drg_id = each.value.drg_id
   #Optional

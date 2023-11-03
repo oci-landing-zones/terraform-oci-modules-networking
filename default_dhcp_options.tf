@@ -83,7 +83,7 @@ resource "oci_core_default_dhcp_options" "these" {
 
   manage_default_resource_id = merge(local.provisioned_vcns, local.one_dimension_processed_existing_vcns)[each.value.vcn_key].default_dhcp_options_id
 
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   display_name   = each.value.display_name
   defined_tags   = each.value.defined_tags
   freeform_tags  = each.value.freeform_tags

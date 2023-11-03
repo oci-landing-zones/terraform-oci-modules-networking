@@ -191,7 +191,7 @@ locals {
 
 resource "oci_core_network_security_group" "these" {
   for_each       = local.merged_one_dimension_processed_nsgs != null ? local.merged_one_dimension_processed_nsgs : {}
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   vcn_id         = each.value.vcn_id
   display_name   = each.value.nsg_name
   defined_tags   = each.value.defined_tags

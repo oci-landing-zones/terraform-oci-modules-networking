@@ -312,7 +312,7 @@ resource "oci_core_subnet" "these" {
   for_each = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)
   #Required
   cidr_block     = each.value.cidr_block
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   vcn_id         = each.value.vcn_id
 
   #Optional

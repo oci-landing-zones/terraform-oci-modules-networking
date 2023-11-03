@@ -78,7 +78,7 @@ locals {
 resource "oci_core_vcn" "these" {
   for_each = local.one_dimension_processed_vcns
 
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
 
   #Optional
   dynamic "byoipv6cidr_details" {

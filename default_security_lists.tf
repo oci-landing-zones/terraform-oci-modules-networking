@@ -201,7 +201,7 @@ resource "oci_core_default_security_list" "these" {
   }
 
   #Required
-  compartment_id             = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   manage_default_resource_id = merge(local.provisioned_vcns, local.one_dimension_processed_existing_vcns)[each.value.vcn_key].default_security_list_id
 
   #Optional
