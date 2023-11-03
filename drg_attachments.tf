@@ -38,7 +38,8 @@ locals {
         for drga_key, drga_value in drg_value.drg_attachments : {
           defined_tags        = drga_value.defined_tags
           freeform_tags       = drga_value.freeform_tags
-          drg_id              = drg_value.drg_id
+          #drg_id              = drg_value.drg_id
+          drg_id              = length(regexall("^ocid1.*$", drg_value.drg_id)) > 0 ? drg_value.drg_id : var.network_dependency["dynamic_routing_gateways"][drg_value.drg_id].id
           drg_name            = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
           drg_key             = drg_key
           display_name        = drga_value.display_name
