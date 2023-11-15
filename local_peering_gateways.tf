@@ -1,5 +1,11 @@
-# Copyright (c) 2022, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+# ####################################################################################################### #
+# Copyright (c) 2023 Oracle and/or its affiliates,  All rights reserved.                                  #
+# Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
+# Author: Cosmin Tudor                                                                                    #
+# Author email: cosmin.tudor@oracle.com                                                                   #
+# Last Modified: Wed Nov 15 2023                                                                          #
+# Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
+# ####################################################################################################### #
 
 locals {
   one_dimension_processed_local_peering_gateways = local.one_dimension_processed_vcn_specific_gateways != null ? {
@@ -62,23 +68,36 @@ locals {
 
   provisioned_local_peering_gateways = {
     for lpg_key, lpg_value in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : lpg_key => {
-      compartment_id                 = lpg_value.compartment_id
-      defined_tags                   = lpg_value.defined_tags
-      display_name                   = lpg_value.display_name
-      freeform_tags                  = lpg_value.freeform_tags
-      id                             = lpg_value.id
-      role                           = contains(keys(local.one_dimension_processed_requestor_local_peering_gateways), lpg_key) ? "REQUESTOR" : contains(keys(local.one_dimension_processed_acceptor_local_peering_gateways), lpg_key) ? "ACCEPTOR" : null
-      is_cross_tenancy_peering       = lpg_value.is_cross_tenancy_peering
-      peer_advertised_cidr           = lpg_value.peer_advertised_cidr
-      peer_advertised_cidr_details   = lpg_value.peer_advertised_cidr_details
-      peer_id                        = lpg_value.peer_id
-      peer_key                       = can([for lpg_key2, lpg_value2 in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : lpg_key2 if lpg_value2.id == lpg_value.peer_id][0]) ? [for lpg_key2, lpg_value2 in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : lpg_key2 if lpg_value2.id == lpg_value.peer_id][0] : "NOT PEERED OR PARTNER LPG CREATED OUTSIDE THIS AUTOMATION"
-      peer_name                      = can([for lpg_key2, lpg_value2 in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : lpg_value2.display_name if lpg_value2.id == lpg_value.peer_id][0]) ? [for lpg_key2, lpg_value2 in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : lpg_value2.display_name if lpg_value2.id == lpg_value.peer_id][0] : "NOT PEERED OR PARTNER LPG CREATED OUTSIDE THIS AUTOMATION"
-      peering_status                 = lpg_value.peering_status
-      peering_status_details         = lpg_value.peering_status_details
-      route_table_id                 = lpg_value.route_table_id
-      route_table_key                = local.merged_one_dimension_processed_local_peering_gateways[lpg_key].route_table_key
-      route_table_name               = local.merged_one_dimension_processed_local_peering_gateways[lpg_key].route_table_key != null ? merge(oci_core_route_table.these_gw_attached, oci_core_route_table.these_no_gw_attached)[local.merged_one_dimension_processed_local_peering_gateways[lpg_key].route_table_key].display_name : null
+      compartment_id               = lpg_value.compartment_id
+      defined_tags                 = lpg_value.defined_tags
+      display_name                 = lpg_value.display_name
+      freeform_tags                = lpg_value.freeform_tags
+      id                           = lpg_value.id
+      role                         = contains(keys(local.one_dimension_processed_requestor_local_peering_gateways), lpg_key) ? "REQUESTOR" : contains(keys(local.one_dimension_processed_acceptor_local_peering_gateways), lpg_key) ? "ACCEPTOR" : null
+      is_cross_tenancy_peering     = lpg_value.is_cross_tenancy_peering
+      peer_advertised_cidr         = lpg_value.peer_advertised_cidr
+      peer_advertised_cidr_details = lpg_value.peer_advertised_cidr_details
+      peer_id                      = lpg_value.peer_id
+      peer_key                     = can([for lpg_key2, lpg_value2 in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : lpg_key2 if lpg_value2.id == lpg_value.peer_id][0]) ? [for lpg_key2, lpg_value2 in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : lpg_key2 if lpg_value2.id == lpg_value.peer_id][0] : "NOT PEERED OR PARTNER LPG CREATED OUTSIDE THIS AUTOMATION"
+      peer_name                    = can([for lpg_key2, lpg_value2 in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : lpg_value2.display_name if lpg_value2.id == lpg_value.peer_id][0]) ? [for lpg_key2, lpg_value2 in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : lpg_value2.display_name if lpg_value2.id == lpg_value.peer_id][0] : "NOT PEERED OR PARTNER LPG CREATED OUTSIDE THIS AUTOMATION"
+      peering_status               = lpg_value.peering_status
+      peering_status_details       = lpg_value.peering_status_details
+      route_table_id               = lpg_value.route_table_id
+      route_table_key = lpg_value.route_table_id == merge(
+        local.provisioned_vcns,
+        local.one_dimension_processed_existing_vcns
+      )[local.merged_one_dimension_processed_local_peering_gateways[lpg_key].vcn_key].default_route_table_id ? "default_route_table" : local.merged_one_dimension_processed_local_peering_gateways[lpg_key].route_table_key == null ? local.merged_one_dimension_processed_local_peering_gateways[lpg_key].route_table_id != null ? "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null : local.merged_one_dimension_processed_local_peering_gateways[lpg_key].route_table_key
+      route_table_name = lpg_value.route_table_id == merge(
+        local.provisioned_vcns,
+        local.one_dimension_processed_existing_vcns
+        )[local.merged_one_dimension_processed_local_peering_gateways[lpg_key].vcn_key].default_route_table_id ? "default_route_table" : local.merged_one_dimension_processed_local_peering_gateways[lpg_key].route_table_key == null ? local.merged_one_dimension_processed_local_peering_gateways[lpg_key].route_table_id != null ? "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null : can(
+        merge(
+          local.provisioned_igw_natgw_specific_route_tables,
+          local.provisioned_lpg_specific_route_tables
+        )[local.merged_one_dimension_processed_local_peering_gateways[lpg_key].route_table_key].display_name) ? merge(
+        local.provisioned_igw_natgw_specific_route_tables,
+        local.provisioned_lpg_specific_route_tables
+      )[local.merged_one_dimension_processed_local_peering_gateways[lpg_key].route_table_key].display_name : "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION"
       state                          = lpg_value.state
       time_created                   = lpg_value.time_created
       timeouts                       = lpg_value.timeouts
@@ -98,11 +117,25 @@ resource "oci_core_local_peering_gateway" "oci_acceptor_local_peering_gateways" 
   vcn_id         = each.value.vcn_id != null ? each.value.vcn_id : oci_core_vcn.these[each.value.vcn_key].id
 
   #Optional
-  defined_tags   = each.value.defined_tags
-  display_name   = each.value.display_name
-  freeform_tags  = each.value.freeform_tags
-  peer_id        = null
-  route_table_id = each.value.route_table_id != null ? each.value.route_table_id : each.value.route_table_key != null ? oci_core_route_table.these_gw_attached[each.value.route_table_key].id : null
+  defined_tags  = each.value.defined_tags
+  display_name  = each.value.display_name
+  freeform_tags = each.value.freeform_tags
+  peer_id       = null
+  route_table_id = each.value.route_table_id != null ? each.value.route_table_id : each.value.route_table_key != null ? merge(
+    {
+      for rt_key, rt_value in merge(
+        local.provisioned_igw_natgw_specific_route_tables,
+        local.provisioned_lpg_specific_route_tables
+        ) : rt_key => {
+        id = rt_value.id
+      }
+    },
+    {
+      "default_route_table" = {
+        id = oci_core_vcn.these[each.value.vcn_key].default_route_table_id
+      }
+    }
+  )[each.value.route_table_key].id : null
 }
 
 resource "oci_core_local_peering_gateway" "oci_requestor_local_peering_gateways" {
@@ -112,10 +145,23 @@ resource "oci_core_local_peering_gateway" "oci_requestor_local_peering_gateways"
   vcn_id         = each.value.vcn_id != null ? each.value.vcn_id : oci_core_vcn.these[each.value.vcn_key].id
 
   #Optional
-  defined_tags   = each.value.defined_tags
-  display_name   = each.value.display_name
-  freeform_tags  = each.value.freeform_tags
-  peer_id        = each.value.peer_id != null ? each.value.peer_id : each.value.peer_key != null ? oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways[each.value.peer_key].id : null
-  route_table_id = each.value.route_table_id != null ? each.value.route_table_id : each.value.route_table_key != null ? oci_core_route_table.these_gw_attached[each.value.route_table_key].id : null
+  defined_tags  = each.value.defined_tags
+  display_name  = each.value.display_name
+  freeform_tags = each.value.freeform_tags
+  route_table_id = each.value.route_table_id != null ? each.value.route_table_id : each.value.route_table_key != null ? merge(
+    {
+      for rt_key, rt_value in merge(
+        local.provisioned_igw_natgw_specific_route_tables,
+        local.provisioned_lpg_specific_route_tables
+        ) : rt_key => {
+        id = rt_value.id
+      }
+    },
+    {
+      "default_route_table" = {
+        id = oci_core_vcn.these[each.value.vcn_key].default_route_table_id
+      }
+    }
+  )[each.value.route_table_key].id : null
 
 }

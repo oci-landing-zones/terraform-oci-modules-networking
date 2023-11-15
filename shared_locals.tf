@@ -1,3 +1,12 @@
+# ####################################################################################################### #
+# Copyright (c) 2023 Oracle and/or its affiliates,  All rights reserved.                                  #
+# Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
+# Author: Cosmin Tudor                                                                                    #
+# Author email: cosmin.tudor@oracle.com                                                                   #
+# Last Modified: Wed Nov 15 2023                                                                          #
+# Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
+# ####################################################################################################### #
+
 locals {
   network_terminology = {
     TCP      = "6"
@@ -127,12 +136,13 @@ locals {
           default_freeform_tags          = var.network_configuration.default_freeform_tags
           category_freeform_tags         = network_configuration_category_value.category_freeform_tags
           vcn_specific_gateways          = vcn_value.vcn_specific_gateways
-          default_security_lists         = vcn_value.default_security_lists
+          default_security_list          = vcn_value.default_security_list
           security_lists                 = vcn_value.security_lists
           subnets                        = vcn_value.subnets
           network_security_groups        = vcn_value.network_security_groups
           route_tables                   = vcn_value.route_tables
           default_dhcp_options           = vcn_value.default_dhcp_options
+          default_route_table            = vcn_value.default_route_table
           dhcp_options                   = vcn_value.dhcp_options
           category_enable_cis_checks     = network_configuration_category_value.category_enable_cis_checks
           category_ssh_ports_to_check    = network_configuration_category_value.category_ssh_ports_to_check

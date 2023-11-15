@@ -567,7 +567,7 @@
                   },
                   "sgw-route": {
                     "description": "Route for sgw",
-                    "destination": "oci-fra-objectstorage",
+                    "destination": "objectstorage",
                     "destination_type": "SERVICE_CIDR_BLOCK",
                     "network_entity_key": "SGW-KEY"
                   }
@@ -745,7 +745,8 @@
               },
               "service_gateways": {
                 "SGW-KEY": {
-                  "display_name": "sgw-prod-vcn"
+                  "display_name": "sgw-prod-vcn",
+                  "services": "objectstorage"
                 }
               }
             }

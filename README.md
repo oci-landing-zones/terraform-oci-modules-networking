@@ -142,13 +142,23 @@ The ```network_configuration``` is a multidimensional complex object:
     - ```vcns``` defines any number of VCNs to be created for this category.will enable one to specify any number of vcns he wants to create under one category. Each ```vcn``` can have any number of:
       - ```security_lists```,
       - ```route_tables```, 
+        - For route rules we support the following:
+          - ```destination``` supported values: 
+              - ```a cidr block```
+              - ```objectstorage``` or ```all-services``` - only for ```SERVICE_CIDR_BLOCK```
+          - ```destination_type``` supported values:
+              - ```CIDR_BLOCK```
+              - ```SERVICE_CIDR_BLOCK``` - only for SGW
       - ```dhcp_options```, 
       - ```subnets```, 
       - ```network_security_groups``` and
       - ```vcn_specific_gateways``` like: 
         - ```internet_gateways```,
         - ```nat_gateways```,
-        - ```service_gateways``` and 
+        - ```service_gateways``` 
+          - SGW services value:
+            - ```objectstorage``` - for object storage access
+            - ```all-services``` - for all OCI internal network services access
         - ```local_peering_gateways```. 
       - All the resources of a ```vcn``` (including the VCN) are created from scratch. To refer to a resource a key is used to refer to the related resource. Here is an example for specifying a security list, attached to a subnet:
   
@@ -179,13 +189,23 @@ The ```network_configuration``` is a multidimensional complex object:
           - Any number these attributes can be specified:
             - ```security_lists```, 
             - ```route_tables```, 
+              - For route rules we support the following:
+                - ```destination``` supported values: 
+                    - ```a cidr block```
+                    - ```objectstorage``` or ```all-services``` - only for ```SERVICE_CIDR_BLOCK```
+                - ```destination_type``` supported values:
+                    - ```CIDR_BLOCK```
+                    - ```SERVICE_CIDR_BLOCK``` - only for SGW
             - ```dhcp_options```, 
             - ```subnets```, 
             - ```network_security_groups``` and
             - ```vcn_specific_gateways``` like:
               - ```internet_gateways```, 
               - ```nat_gateways```, 
-              - ```service_gateways``` or
+              - ```service_gateways```
+                - SGW services value:
+                  - ```objectstorage``` - for object storage access
+                  - ```all-services``` - for all OCI internal network services access
               - ```local_peering_gateways```. 
         - To refer a resource within a resource, the following options are available:
             1. To use the referend object key when the refered object was created as part of the same automation.
