@@ -1,5 +1,11 @@
-# Copyright (c) 2022, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+# ####################################################################################################### #
+# Copyright (c) 2023 Oracle and/or its affiliates,  All rights reserved.                                  #
+# Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
+# Author: Cosmin Tudor                                                                                    #
+# Author email: cosmin.tudor@oracle.com                                                                   #
+# Last Modified: Wed Nov 15 2023                                                                          #
+# Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
+# ####################################################################################################### #
 
 locals {
 
@@ -35,6 +41,7 @@ locals {
           network_security_groups          = vcn_value.network_security_groups
           route_tables                     = vcn_value.route_tables
           default_dhcp_options             = vcn_value.default_dhcp_options
+          default_route_table              = vcn_value.default_route_table
           dhcp_options                     = vcn_value.dhcp_options
           category_enable_cis_checks       = network_configuration_category_value.category_enable_cis_checks
           category_ssh_ports_to_check      = network_configuration_category_value.category_ssh_ports_to_check
@@ -44,6 +51,7 @@ locals {
       ] : [] : []
     ]) : flat_vcn.vcn_key => flat_vcn
   } : {} : {} : {}
+
 
   provisioned_vcns = {
     for vcn_key, vcn_value in oci_core_vcn.these : vcn_key => {

@@ -1,5 +1,11 @@
-# Copyright (c) 2022, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+# ####################################################################################################### #
+# Copyright (c) 2023 Oracle and/or its affiliates,  All rights reserved.                                  #
+# Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
+# Author: Cosmin Tudor                                                                                    #
+# Author email: cosmin.tudor@oracle.com                                                                   #
+# Last Modified: Wed Nov 15 2023                                                                          #
+# Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
+# ####################################################################################################### #
 
 
 variable "network_configuration" {
@@ -98,6 +104,26 @@ variable "network_configuration" {
           })))
         })))
 
+        default_route_table = optional(object({
+          compartment_id = optional(string),
+          defined_tags   = optional(map(string)),
+          freeform_tags  = optional(map(string)),
+          display_name   = optional(string),
+          route_rules = optional(map(object({
+            network_entity_id  = optional(string),
+            network_entity_key = optional(string),
+            description        = optional(string),
+            // Supported values:
+            //    - "a cidr block"
+            //    - "objectstorage" or "all-services" - only for "SERVICE_CIDR_BLOCK"
+            destination = optional(string),
+            // Supported values:
+            //    - "CIDR_BLOCK"
+            //    - "SERVICE_CIDR_BLOCK" - only for SGW
+            destination_type = optional(string),
+          })))
+        }))
+
         route_tables = optional(map(object({
           compartment_id = optional(string),
           defined_tags   = optional(map(string)),
@@ -107,8 +133,14 @@ variable "network_configuration" {
             network_entity_id  = optional(string),
             network_entity_key = optional(string),
             description        = optional(string),
-            destination        = optional(string),
-            destination_type   = optional(string)
+            // Supported values:
+            //    - "a cidr block"
+            //    - "objectstorage" or "all-services" - only for "SERVICE_CIDR_BLOCK"
+            destination = optional(string),
+            // Supported values:
+            //    - "CIDR_BLOCK"
+            //    - "SERVICE_CIDR_BLOCK" - only for SGW
+            destination_type = optional(string),
           })))
         })))
 
@@ -212,7 +244,11 @@ variable "network_configuration" {
           })))
 
           service_gateways = optional(map(object({
-            compartment_id  = optional(string),
+            compartment_id = optional(string),
+            // SGW services value:
+            //       - objectstorage - for object storage access
+            //       - all-services - for all OCI internal network services access
+            services        = string,
             defined_tags    = optional(map(string)),
             display_name    = optional(string),
             freeform_tags   = optional(map(string)),
@@ -234,6 +270,38 @@ variable "network_configuration" {
       inject_into_existing_vcns = optional(map(object({
 
         vcn_id = string,
+
+        default_security_list = optional(object({
+          compartment_id = optional(string),
+          defined_tags   = optional(map(string)),
+          freeform_tags  = optional(map(string)),
+          ingress_rules = optional(list(object({
+            stateless    = optional(bool),
+            protocol     = string,
+            description  = optional(string),
+            src          = string,
+            src_type     = string,
+            src_port_min = optional(number),
+            src_port_max = optional(number),
+            dst_port_min = optional(number),
+            dst_port_max = optional(number),
+            icmp_type    = optional(number),
+            icmp_code    = optional(number)
+          }))),
+          egress_rules = optional(list(object({
+            stateless    = optional(bool),
+            protocol     = string,
+            description  = optional(string),
+            dst          = string,
+            dst_type     = string,
+            src_port_min = optional(number),
+            src_port_max = optional(number),
+            dst_port_min = optional(number),
+            dst_port_max = optional(number),
+            icmp_type    = optional(number),
+            icmp_code    = optional(number)
+          })))
+        }))
 
         security_lists = optional(map(object({
           compartment_id = optional(string),
@@ -268,6 +336,26 @@ variable "network_configuration" {
           })))
         })))
 
+        default_route_table = optional(object({
+          compartment_id = optional(string),
+          defined_tags   = optional(map(string)),
+          freeform_tags  = optional(map(string)),
+          display_name   = optional(string),
+          route_rules = optional(map(object({
+            network_entity_id  = optional(string),
+            network_entity_key = optional(string),
+            description        = optional(string),
+            // Supported values:
+            //    - "a cidr block"
+            //    - "objectstorage" or "all-services" - only for "SERVICE_CIDR_BLOCK"
+            destination = optional(string),
+            // Supported values:
+            //    - "CIDR_BLOCK"
+            //    - "SERVICE_CIDR_BLOCK" - only for SGW
+            destination_type = optional(string),
+          })))
+        }))
+
         route_tables = optional(map(object({
           compartment_id = optional(string),
           defined_tags   = optional(map(string)),
@@ -277,10 +365,31 @@ variable "network_configuration" {
             network_entity_id  = optional(string),
             network_entity_key = optional(string),
             description        = optional(string),
-            destination        = optional(string),
-            destination_type   = optional(string)
+            description        = optional(string),
+            // Supported values:
+            //    - "a cidr block"
+            //    - "objectstorage" or "all-services" - only for "SERVICE_CIDR_BLOCK"
+            destination = optional(string),
+            // Supported values:
+            //    - "CIDR_BLOCK"
+            //    - "SERVICE_CIDR_BLOCK" - only for SGW
+            destination_type = optional(string)
           })))
         })))
+
+        default_dhcp_options = optional(object({
+          compartment_id   = optional(string),
+          display_name     = optional(string),
+          defined_tags     = optional(map(string)),
+          freeform_tags    = optional(map(string)),
+          domain_name_type = optional(string),
+          options = map(object({
+            type                = string,
+            server_type         = optional(string),
+            custom_dns_servers  = optional(list(string))
+            search_domain_names = optional(list(string))
+          }))
+        }))
 
         dhcp_options = optional(map(object({
           compartment_id   = optional(string),
@@ -373,7 +482,11 @@ variable "network_configuration" {
           })))
 
           service_gateways = optional(map(object({
-            compartment_id  = optional(string),
+            compartment_id = optional(string),
+            // SGW services value:
+            //       - objectstorage - for object storage access
+            //       - all-services - for all OCI internal network services access
+            services        = string,
             defined_tags    = optional(map(string)),
             display_name    = optional(string),
             freeform_tags   = optional(map(string)),

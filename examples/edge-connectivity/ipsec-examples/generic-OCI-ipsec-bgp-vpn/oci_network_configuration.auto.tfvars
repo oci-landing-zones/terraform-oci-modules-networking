@@ -39,11 +39,11 @@ network_configuration = {
 
               ingress_rules = [
                 {
-                  description = "ingress from 10.0.0.0/16 over TCP:22"
-                  stateless   = false
-                  protocol    = "TCP"
-                  src         = "10.0.0.0/16"
-                  src_type    = "CIDR_BLOCK"
+                  description  = "ingress from 10.0.0.0/16 over TCP:22"
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "10.0.0.0/16"
+                  src_type     = "CIDR_BLOCK"
                   dst_port_min = 22
                   dst_port_max = 22
                 },
