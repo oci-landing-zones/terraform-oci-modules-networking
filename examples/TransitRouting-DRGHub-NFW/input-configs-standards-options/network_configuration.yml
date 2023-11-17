@@ -1,0 +1,244 @@
+# ####################################################################################################### #
+# Copyright (c) 2023 Oracle and/or its affiliates,  All rights reserved.                                  #
+# Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
+# Author: Cosmin Tudor                                                                                    #
+# Author email: cosmin.tudor@oracle.com                                                                   #
+# Last Modified: Wed Nov 15 2023                                                                          #
+# Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
+# ####################################################################################################### #
+
+---
+network_configuration:
+  default_compartment_id: null
+  default_enable_cis_checks: false
+  default_freeform_tags:
+    vision-environment: vision
+  network_configuration_categories:
+    production:
+      category_freeform_tags:
+        vision-sub-environment: prod
+      vcns:
+        SIMPLE-VCN-KEY:
+          block_nat_traffic: false
+          cidr_blocks:
+          - 10.0.0.0/18
+          display_name: vcn-simple
+          dns_label: vcnsimple
+          is_attach_drg: false
+          is_create_igw: false
+          is_ipv6enabled: false
+          is_oracle_gua_allocation_enabled: false
+          network_security_groups:
+            NSG-APP-KEY:
+              display_name: nsg-app
+              egress_rules:
+                anywhere:
+                  description: egress to 0.0.0.0/0 over TCP
+                  dst: 0.0.0.0/0
+                  dst_type: CIDR_BLOCK
+                  protocol: TCP
+                  stateless: false
+              ingress_rules:
+                http_8080:
+                  description: ingress from 0.0.0.0/0 over HTTP8080
+                  dst_port_max: 80
+                  dst_port_min: 80
+                  protocol: TCP
+                  src: NSG-LB-KEY
+                  src_type: NETWORK_SECURITY_GROUP
+                  stateless: false
+                ssh_22:
+                  description: ingress from 0.0.0.0/0 over TCP22
+                  dst_port_max: 22
+                  dst_port_min: 22
+                  protocol: TCP
+                  src: NSG-LB-KEY
+                  src_type: NETWORK_SECURITY_GROUP
+                  stateless: false
+            NSG-DB-KEY:
+              display_name: nsg-db
+              egress_rules:
+                anywhere:
+                  description: egress to 0.0.0.0/0 over TCP
+                  dst: 0.0.0.0/0
+                  dst_type: CIDR_BLOCK
+                  protocol: TCP
+                  stateless: false
+              ingress_rules:
+                http_8080:
+                  description: ingress from 0.0.0.0/0 over TCP:1521
+                  dst_port_max: 1521
+                  dst_port_min: 1521
+                  protocol: TCP
+                  src: NSG-APP-KEY
+                  src_type: NETWORK_SECURITY_GROUP
+                  stateless: false
+                ssh_22:
+                  description: ingress from 0.0.0.0/0 over TCP22
+                  dst_port_max: 22
+                  dst_port_min: 22
+                  protocol: TCP
+                  src: NSG-APP-KEY
+                  src_type: NETWORK_SECURITY_GROUP
+                  stateless: false
+            NSG-LB-KEY:
+              display_name: nsg-lb
+              egress_rules:
+                anywhere:
+                  description: egress to 0.0.0.0/0 over TCP
+                  dst: 0.0.0.0/0
+                  dst_type: CIDR_BLOCK
+                  protocol: TCP
+                  stateless: false
+              ingress_rules:
+                http_443:
+                  description: ingress from 0.0.0.0/0 over https:443
+                  dst_port_max: 443
+                  dst_port_min: 443
+                  protocol: TCP
+                  src: 0.0.0.0/0
+                  src_type: CIDR_BLOCK
+                  stateless: false
+                ssh_22:
+                  description: ingress from 0.0.0.0/0 over TCP22
+                  dst_port_max: 22
+                  dst_port_min: 22
+                  protocol: TCP
+                  src: 0.0.0.0/0
+                  src_type: CIDR_BLOCK
+                  stateless: false
+          route_tables:
+            RT-01-KEY:
+              display_name: rt-01
+              route_rules:
+                internet_route:
+                  description: Route for internet access
+                  destination: 0.0.0.0/0
+                  destination_type: CIDR_BLOCK
+                  network_entity_key: IGW-KEY
+            RT-02-KEY:
+              display_name: rt-02-prod-vcn-01
+              route_rules:
+                natgw-route:
+                  description: Route for internet access via NAT GW
+                  destination: 0.0.0.0/0
+                  destination_type: CIDR_BLOCK
+                  network_entity_key: NATGW-KEY
+                sgw-route:
+                  description: Route for sgw
+                  destination: objectstorage
+                  destination_type: SERVICE_CIDR_BLOCK
+                  network_entity_key: SGW-KEY
+          security_lists:
+            SECLIST-APP-KEY:
+              display_name: sl-app
+              egress_rules:
+              - description: egress to 0.0.0.0/0 over TCP
+                dst: 0.0.0.0/0
+                dst_type: CIDR_BLOCK
+                protocol: TCP
+                stateless: false
+              ingress_rules:
+              - description: ingress from 10.0.3.0/24 over TCP22
+                protocol: TCP
+                src: 10.0.3.0/24
+                src_type: CIDR_BLOCK
+                stateless: false
+              - description: ingress from 10.0.3.0/24 over HTTP80
+                dst_port_max: 80
+                dst_port_min: 80
+                protocol: TCP
+                src: 10.0.3.0/24
+                src_type: CIDR_BLOCK
+                stateless: false
+            SECLIST-DB-KEY:
+              display_name: sl-db
+              egress_rules:
+              - description: egress to 0.0.0.0/0 over TCP
+                dst: 0.0.0.0/0
+                dst_type: CIDR_BLOCK
+                protocol: TCP
+                stateless: false
+              ingress_rules:
+              - description: ingress from 10.0.2.0/24 over TCP22
+                protocol: TCP
+                src: 10.0.2.0/24
+                src_type: CIDR_BLOCK
+                stateless: false
+              - description: ingress from 10.0.2.0/24 over TCP:1521
+                dst_port_max: 1521
+                dst_port_min: 1521
+                protocol: TCP
+                src: 10.0.2.0/24
+                src_type: CIDR_BLOCK
+                stateless: false
+            SECLIST-LB-KEY:
+              display_name: sl-lb
+              egress_rules:
+              - description: egress to 0.0.0.0/0 over ALL protocols
+                dst: 0.0.0.0/0
+                dst_type: CIDR_BLOCK
+                protocol: ALL
+                stateless: false
+              ingress_rules:
+              - description: ingress from 0.0.0.0/0 over TCP22
+                dst_port_max: 22
+                dst_port_min: 22
+                protocol: TCP
+                src: 0.0.0.0/0
+                src_type: CIDR_BLOCK
+                stateless: false
+              - description: ingress from 0.0.0.0/0 over TCP443
+                dst_port_max: 443
+                dst_port_min: 443
+                protocol: TCP
+                src: 0.0.0.0/0
+                src_type: CIDR_BLOCK
+                stateless: false
+          subnets:
+            PRIVATE-APP-SUBNET-KEY:
+              cidr_block: 10.0.2.0/24
+              dhcp_options_key: default_dhcp_options
+              display_name: sub-private-app
+              dns_label: privateapp
+              ipv6cidr_blocks: []
+              prohibit_internet_ingress: true
+              prohibit_public_ip_on_vnic: true
+              route_table_key: RT-02-KEY
+              security_list_keys:
+              - SECLIST-APP-KEY
+            PRIVATE-DB-SUBNET-KEY:
+              cidr_block: 10.0.1.0/24
+              dhcp_options_key: default_dhcp_options
+              display_name: sub-private-db
+              dns_label: privatedb
+              ipv6cidr_blocks: []
+              prohibit_internet_ingress: true
+              prohibit_public_ip_on_vnic: true
+              route_table_key: RT-02-KEY
+              security_list_keys:
+              - SECLIST-DB-KEY
+            PUBLIC-LB-SUBNET-KEY:
+              cidr_block: 10.0.3.0/24
+              dhcp_options_key: default_dhcp_options
+              display_name: sub-public-lb
+              dns_label: publiclb
+              ipv6cidr_blocks: []
+              prohibit_internet_ingress: false
+              prohibit_public_ip_on_vnic: false
+              route_table_key: RT-01-KEY
+              security_list_keys:
+              - SECLIST-LB-KEY
+          vcn_specific_gateways:
+            internet_gateways:
+              IGW-KEY:
+                display_name: igw-prod-vcn
+                enabled: true
+            nat_gateways:
+              NATGW-KEY:
+                block_traffic: false
+                display_name: natgw-prod-vcn
+            service_gateways:
+              SGW-KEY:
+                display_name: sgw-prod-vcn
+                services: objectstorage
