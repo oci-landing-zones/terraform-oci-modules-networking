@@ -3,7 +3,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
 # Author: Cosmin Tudor                                                                                    #
 # Author email: cosmin.tudor@oracle.com                                                                   #
-# Last Modified: Wed Nov 15 2023                                                                          #
+# Last Modified: Fri Nov 17 2023                                                                          #
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
@@ -17,7 +17,7 @@ locals {
           drg_route_table_id             = local.provisioned_drg_route_tables[drgrt_key].id
           destination                    = drgrtrr_value.destination
           destination_type               = drgrtrr_value.destination_type
-          next_hop_drg_attachment_id     = drgrtrr_value.next_hop_drg_attachment_id != null ? drgrtrr_value.next_hop_drg_attachment_id : drgrtrr_value.next_hop_drg_attachment_key != null ? local.provisioned_drg_attachments[drgrtrr_value.next_hop_drg_attachment_key].id : null
+          next_hop_drg_attachment_id     = drgrtrr_value.next_hop_drg_attachment_id != null ? drgrtrr_value.next_hop_drg_attachment_id : drgrtrr_value.next_hop_drg_attachment_key != null ? merge(local.provisioned_drg_attachments, local.provisioned_fast_connect_virtual_circuits)[drgrtrr_value.next_hop_drg_attachment_key].id : null
           next_hop_drg_attachment_key    = drgrtrr_value.next_hop_drg_attachment_key
           drg_id                         = drgrt_value.drg_id
           drg_name                       = drgrt_value.drg_name

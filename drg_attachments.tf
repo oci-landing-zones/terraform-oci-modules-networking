@@ -3,7 +3,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
 # Author: Cosmin Tudor                                                                                    #
 # Author email: cosmin.tudor@oracle.com                                                                   #
-# Last Modified: Wed Nov 15 2023                                                                          #
+# Last Modified: Fri Nov 17 2023                                                                          #
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
@@ -102,12 +102,12 @@ locals {
           route_table_key = contains(
             keys(local.all_known_vcn_default_route_tables),
             drga_value.network_details[0].route_table_id
-          ) ? local.all_known_vcn_default_route_tables[drga_value.network_details[0].route_table_id].key : local.one_dimension_processed_drg_attachments[drga_key].route_table_key == null ? local.one_dimension_processed_drg_attachments[drga_key].route_table_id != null ? "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null : local.one_dimension_processed_drg_attachments[drga_key].route_table_key
+          ) ? local.all_known_vcn_default_route_tables[drga_value.network_details[0].route_table_id].key : can(local.one_dimension_processed_drg_attachments[drga_key].route_table_key) ? local.one_dimension_processed_drg_attachments[drga_key].route_table_key == null ? local.one_dimension_processed_drg_attachments[drga_key].route_table_id != null ? "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null : local.one_dimension_processed_drg_attachments[drga_key].route_table_key : null
 
           route_table_name = contains(
             keys(local.all_known_vcn_default_route_tables),
             drga_value.network_details[0].route_table_id
-            ) ? local.all_known_vcn_default_route_tables[drga_value.network_details[0].route_table_id].key : local.one_dimension_processed_drg_attachments[drga_key].route_table_key == null ? local.one_dimension_processed_drg_attachments[drga_key].route_table_id != null ? "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null : can(
+            ) ? local.all_known_vcn_default_route_tables[drga_value.network_details[0].route_table_id].key : can(local.one_dimension_processed_drg_attachments[drga_key].route_table_key) ? local.one_dimension_processed_drg_attachments[drga_key].route_table_key == null ? local.one_dimension_processed_drg_attachments[drga_key].route_table_id != null ? "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null : can(
             merge(
               local.provisioned_igw_natgw_specific_route_tables,
               local.provisioned_drga_specific_route_tables,
@@ -116,7 +116,7 @@ locals {
             local.provisioned_igw_natgw_specific_route_tables,
             local.provisioned_drga_specific_route_tables,
             local.provisioned_lpg_specific_route_tables
-          )[local.one_dimension_processed_drg_attachments[drga_key].route_table_key].display_name : "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+          )[local.one_dimension_processed_drg_attachments[drga_key].route_table_key].display_name : "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null
           type           = drga_value.network_details[0].type
           vcn_route_type = drga_value.network_details[0].vcn_route_type
         }
