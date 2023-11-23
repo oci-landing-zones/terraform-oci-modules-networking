@@ -3,11 +3,63 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
 # Author: Cosmin Tudor                                                                                    #
 # Author email: cosmin.tudor@oracle.com                                                                   #
-# Last Modified: Wed Nov 15 2023                                                                          #
+# Last Modified: Thu Nov 23 2023                                                                          #
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
+data "oci_core_drg_attachments" "fc_vc_drg_attachments" {
+  for_each = local.provisioned_fast_connect_virtual_circuits
+  #Required
+  compartment_id  = each.value.compartment_id
+  attachment_type = "ALL"
+
+  #Optional
+  network_id = each.value.id
+  drg_id     = each.value.gateway_id
+}
+
+data "oci_core_drg_attachments" "rpc_drg_attachments" {
+  for_each = local.provisioned_remote_peering_connections
+  #Required
+  compartment_id  = each.value.compartment_id
+  attachment_type = "ALL"
+
+  #Optional
+  network_id = each.value.id
+  drg_id     = each.value.drg_id
+}
+
+data "oci_core_drg_attachments" "ipsec_drg_attachments" {
+  for_each = local.provisioned_ipsec_connection_tunnels_management
+  #Required
+  compartment_id  = each.value.compartment_id
+  attachment_type = "ALL"
+
+  #Optional
+  network_id = each.value.id
+  drg_id     = each.value.drg_id
+}
+
 locals {
+  fc_vc_drg_attachments = data.oci_core_drg_attachments.fc_vc_drg_attachments != null ? length(data.oci_core_drg_attachments.fc_vc_drg_attachments) > 0 ? {
+    for fcvcdrga_key, fcvcdrga_value in data.oci_core_drg_attachments.fc_vc_drg_attachments : fcvcdrga_key => fcvcdrga_value.drg_attachments[0] if length(fcvcdrga_value.drg_attachments) > 0
+  } : null : null
+
+  rpc_drg_attachments = data.oci_core_drg_attachments.rpc_drg_attachments != null ? length(data.oci_core_drg_attachments.rpc_drg_attachments) > 0 ? {
+    for rpcdrga_key, rpcdrga_value in data.oci_core_drg_attachments.rpc_drg_attachments : rpcdrga_key => rpcdrga_value.drg_attachments[0] if length(rpcdrga_value.drg_attachments) > 0
+  } : null : null
+
+  ipsec_drg_attachments = data.oci_core_drg_attachments.ipsec_drg_attachments != null ? length(data.oci_core_drg_attachments.ipsec_drg_attachments) > 0 ? {
+    for ipsecdrga_key, ipsecdrga_value in data.oci_core_drg_attachments.ipsec_drg_attachments : ipsecdrga_key => ipsecdrga_value.drg_attachments[0] if length(ipsecdrga_value.drg_attachments) > 0
+  } : null : null
+
+  drtd_attachments = merge(
+    local.provisioned_drg_attachments,
+    local.fc_vc_drg_attachments,
+    local.rpc_drg_attachments,
+    local.ipsec_drg_attachments
+  )
+
   one_dimension_processed_drg_route_distributions_statements = local.one_dimension_processed_drg_route_distributions != null ? length(local.one_dimension_processed_drg_route_distributions) > 0 ? {
     for flat_drgrdssts in flatten([
       for drgrd_key, drgrd_value in local.one_dimension_processed_drg_route_distributions :
@@ -28,7 +80,7 @@ locals {
             #Optional
             attachment_type    = drgrdsts_value.match_criteria.attachment_type
             drg_attachment_key = drgrdsts_value.match_criteria.drg_attachment_key
-            drg_attachment_id  = drgrdsts_value.match_criteria.drg_attachment_id != null ? drgrdsts_value.match_criteria.drg_attachment_id : drgrdsts_value.match_criteria.drg_attachment_key != null ? local.provisioned_drg_attachments[drgrdsts_value.match_criteria.drg_attachment_key].id : null
+            drg_attachment_id  = drgrdsts_value.match_criteria.drg_attachment_id != null ? drgrdsts_value.match_criteria.drg_attachment_id : drgrdsts_value.match_criteria.drg_attachment_key != null ? local.drtd_attachments[drgrdsts_value.match_criteria.drg_attachment_key].id : null
 
           } : null
           drgrdsts_key = drgrdsts_key
@@ -45,18 +97,11 @@ locals {
       drg_route_distribution_key  = local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].drg_route_distribution_key
       drg_route_distribution_name = local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].drg_route_distribution_name
       action                      = drgrdsts_value.action
-
       match_criteria = {
-        attachment_type         = drgrdsts_value.match_criteria[0].attachment_type
-        drg_attachment_id       = drgrdsts_value.match_criteria[0].drg_attachment_id
-        drg_attachment_key      = contains(keys(local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria), "drg_attachment_key") ? local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION"
-        drg_attachment_name     = contains(keys(local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria), "drg_attachment_key") ? local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key != null ? local.provisioned_drg_attachments[local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key].display_name : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION" : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION"
-        drg_attachment_vcn_key  = contains(keys(local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria), "drg_attachment_key") ? local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key != null ? local.provisioned_drg_attachments[local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key].vcn_key : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION" : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION"
-        drg_attachment_vcn_id   = contains(keys(local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria), "drg_attachment_key") ? local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key != null ? local.provisioned_drg_attachments[local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key].vcn_id : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION" : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION"
-        drg_attachment_vcn_name = contains(keys(local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria), "drg_attachment_key") ? local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key != null ? local.provisioned_drg_attachments[local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key].vcn_name : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION" : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION"
-        drg_attachment_drg_key  = contains(keys(local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria), "drg_attachment_key") ? local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key != null ? local.provisioned_drg_attachments[local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key].drg_key : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION" : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION"
-        drg_attachment_drg_id   = contains(keys(local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria), "drg_attachment_key") ? local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key != null ? local.provisioned_drg_attachments[local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key].drg_id : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION" : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION"
-        drg_attachment_drg_name = contains(keys(local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria), "drg_attachment_key") ? local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key != null ? local.provisioned_drg_attachments[local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key].drg_name : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION" : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION"
+        attachment_type     = drgrdsts_value.match_criteria[0].attachment_type
+        drg_attachment_id   = drgrdsts_value.match_criteria[0].drg_attachment_id
+        drg_attachment_key  = contains(keys(local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria), "drg_attachment_key") ? local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION"
+        drg_attachment_name = contains(keys(local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria), "drg_attachment_key") ? local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key != null ? local.drtd_attachments[local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key].display_name : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION" : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION"
       }
       priority                       = drgrdsts_value.priority
       drg_id                         = local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].drg_id
@@ -87,3 +132,5 @@ resource "oci_core_drg_route_distribution_statement" "these" {
     }
   }
 }
+
+
