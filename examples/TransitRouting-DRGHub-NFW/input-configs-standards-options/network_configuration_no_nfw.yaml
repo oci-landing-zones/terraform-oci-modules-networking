@@ -3,7 +3,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
 # Author: Cosmin Tudor                                                                                    #
 # Author email: cosmin.tudor@oracle.com                                                                   #
-# Last Modified: Tue Nov 21 2023                                                                          #
+# Last Modified: Thu Nov 23 2023                                                                          #
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
@@ -52,6 +52,39 @@ network_configuration:
                   # Route traffic than enters HUB VCN to the NFW
                   route_table_key: VCN-H-INGRESS-RT-KEY
                   type: VCN
+            drg_route_distributions:
+              IMPORT-HUB-RTD-KEY:
+                display_name: import_hub_rtd
+                distribution_type: IMPORT
+                statements:
+                  ROUTE-TO-ON-PREMISES-FC-KEY:
+                    action: ACCEPT
+                    match_criteria:
+                      attachment_type: VIRTUAL_CIRCUIT
+                      drg_attachment_key: VISON-FC-VC-1-KEY
+                      match_type: DRG_ATTACHMENT_ID
+                    priority: 40
+                  ROUTE-TO-VCN-A-KEY:
+                    action: ACCEPT
+                    match_criteria:
+                      attachment_type: VCN
+                      drg_attachment_key: DRG-HUB-VCN-A-ATTACH-KEY
+                      match_type: DRG_ATTACHMENT_ID
+                    priority: 10
+                  ROUTE-TO-VCN-B-KEY:
+                    action: ACCEPT
+                    match_criteria:
+                      attachment_type: VCN
+                      drg_attachment_key: DRG-HUB-VCN-B-ATTACH-KEY
+                      match_type: DRG_ATTACHMENT_ID
+                    priority: 20
+                  ROUTE-TO-VCN-C-KEY:
+                    action: ACCEPT
+                    match_criteria:
+                      attachment_type: VCN
+                      drg_attachment_key: DRG-HUB-VCN-C-ATTACH-KEY
+                      match_type: DRG_ATTACHMENT_ID
+                    priority: 30
             drg_route_tables:
               # Callout 2
               # Ingress Routes table - entering DRG through DRG-A-VCN-HUB
@@ -60,9 +93,9 @@ network_configuration:
               # On the roadmap there are plans to add support for: DrgRouteDistribution and DrgRouteDistributionStatements
               DRG-RT-HUB-KEY:
                 display_name: drg-rt-hub
+                import_drg_route_distribution_key: "IMPORT-HUB-RTD-KEY"
                 is_ecmp_enabled: false
-                # All the bellow route rules should be dynamic and not static - they should be created as means of BGP discovery and DrgRouteDistribution/DrgRouteDistributionStatements
-                # For now you'll need to manually create the bellow route rules after this configuration is provisioned by terraform.
+                # No static routes are needed in this configuration
                 route_rules: null
               # Callout 1
               # DRG ingress - from DRG-Attachments to DRG
