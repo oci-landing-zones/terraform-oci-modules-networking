@@ -3,12 +3,12 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
 # Author: Cosmin Tudor                                                                                    #
 # Author email: cosmin.tudor@oracle.com                                                                   #
-# Last Modified: Tue Nov 21 2023                                                                          #
+# Last Modified: Thu Nov 23 2023                                                                          #
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
 network_configuration = {
-  default_compartment_id = "ocid1.compartment.oc1..."
+  default_compartment_id = "ocid1.compartment.oc1....."
   default_freeform_tags = {
     "vision-environment" = "vision"
   }
@@ -64,7 +64,7 @@ network_configuration = {
           }
 
           route_tables = {
-            // Callout 5 - Traffic living Subnet H
+            // Callout 5 - Traffic leaving Subnet H
             // Subnet Egress Route Table
             SUBNET-H-RT-KEY = {
               display_name = "subnet-h-rt"
@@ -106,30 +106,32 @@ network_configuration = {
               //    - STEP 2: After STEP 1 run succesfully, copy the private_ip OCID of the NFW from the STEP 1 output, and use that to replace the content 
               //              of network_entity_id for all the 4 route rules bellow.   
               route_rules = {
-                /*ON-PREMISES-TO-NFW-PrivateIP-KEY = {
-                  network_entity_id = "ocid1.privateip.oc1.eu-frankfurt-1.abtheljslfg2wxowcvsuwgu3oktsgokbzfmg5o6bbhpdduu465ups4pameqq"
+                /*
+                ON-PREMISES-TO-NFW-PrivateIP-KEY = {
+                  network_entity_id = "ocid1.privateip.oc1.eu-frankfurt-1.abtheljsvivbkzts7cim5cjttqlw2dv24h6l75naqc7sgp4oegod32odiqwa"
                   description       = "Route for fwd-ing traffic that has as destination the on-premises through the NFW"
                   destination       = "172.16.0.0/16"
                   destination_type  = "CIDR_BLOCK"
                 }
                 VCN-A-TO-NFW-PrivateIP-KEY = {
-                  network_entity_id = "ocid1.privateip.oc1.eu-frankfurt-1.abtheljslfg2wxowcvsuwgu3oktsgokbzfmg5o6bbhpdduu465ups4pameqq"
+                  network_entity_id = "ocid1.privateip.oc1.eu-frankfurt-1.abtheljsvivbkzts7cim5cjttqlw2dv24h6l75naqc7sgp4oegod32odiqwa"
                   description       = "Route for fwd-ing traffic that has as destination the VCN-A through the NFW"
                   destination       = "192.168.10.0/24"
                   destination_type  = "CIDR_BLOCK"
                 }
                 VCN-B-TO-NFW-PrivateIP-KEY = {
-                  network_entity_id = "ocid1.privateip.oc1.eu-frankfurt-1.abtheljslfg2wxowcvsuwgu3oktsgokbzfmg5o6bbhpdduu465ups4pameqq"
+                  network_entity_id = "ocid1.privateip.oc1.eu-frankfurt-1.abtheljsvivbkzts7cim5cjttqlw2dv24h6l75naqc7sgp4oegod32odiqwa"
                   description       = "Route for fwd-ing traffic that has as destination the VCN-B through the NFW"
                   destination       = "192.168.20.0/24"
                   destination_type  = "CIDR_BLOCK"
                 }
                 VCN-C-TO-NFW-PrivateIP-KEY = {
-                  network_entity_id = "ocid1.privateip.oc1.eu-frankfurt-1.abtheljslfg2wxowcvsuwgu3oktsgokbzfmg5o6bbhpdduu465ups4pameqq"
+                  network_entity_id = "ocid1.privateip.oc1.eu-frankfurt-1.abtheljsvivbkzts7cim5cjttqlw2dv24h6l75naqc7sgp4oegod32odiqwa"
                   description       = "Route for fwd-ing traffic that has as destination the VCN-C through the NFW"
                   destination       = "192.168.30.0/24"
                   destination_type  = "CIDR_BLOCK"
-                }*/
+                }
+                */
               }
             }
           }
@@ -143,7 +145,7 @@ network_configuration = {
               ipv6cidr_blocks            = []
               prohibit_internet_ingress  = true
               prohibit_public_ip_on_vnic = true
-              // Callout 5 - Traffic living Subnet H
+              // Callout 5 - Traffic leaving Subnet H
               // Subnet Egress Route Table
               route_table_key    = "SUBNET-H-RT-KEY"
               security_list_keys = ["default_security_list"]
@@ -173,37 +175,58 @@ network_configuration = {
               }
               // Callout 2
               // Ingress Routes table - entering DRG through DRG-A-VCN-HUB
-              // This should be BGP - dynamic routing
-              // The creation of dynamic routing is not supported yet by this automation
-              // On the roadmap there are plans to add support for: DrgRouteDistribution and DrgRouteDistributionStatements
+              // BGP - dynamic routing
               DRG-RT-HUB-KEY = {
                 display_name    = "drg-rt-hub"
                 is_ecmp_enabled = false
-                // All the bellow route rules should be dynamic and not static - they should be created as means of BGP discovery and DrgRouteDistribution/DrgRouteDistributionStatements
-                // For now you'll need to manually create the bellow route rules after this configuration is provisioned by terraform.
+                // Import dynamic routes
+                import_drg_route_distribution_key = "IMPORT-HUB-RTD-KEY",
                 route_rules = {
-                  /*
-                  TO-FC-VC-KEY = {
-                    destination                 = "172.16.0.0/16"
-                    destination_type            = "CIDR_BLOCK"
-                    next_hop_drg_attachment_key = "VISON-FC-VC-1-KEY"
+                  // NO STATIC ROUTES NEEDED
+                }
+              }
+            }
+            drg_route_distributions = {
+              IMPORT-HUB-RTD-KEY = {
+                distribution_type = "IMPORT"
+                display_name      = "import_hub_rtd"
+                statements = {
+                  ROUTE-TO-VCN-A-KEY = {
+                    action = "ACCEPT",
+                    match_criteria = {
+                      match_type         = "DRG_ATTACHMENT_ID",
+                      attachment_type    = "VCN",
+                      drg_attachment_key = "DRG-HUB-VCN-A-ATTACH-KEY"
+                    }
+                    priority = 10
                   }
-                  TO-VCN-A-KEY = {
-                    destination                 = "192.168.10.0/24"
-                    destination_type            = "CIDR_BLOCK"
-                    next_hop_drg_attachment_key = "DRG-HUB-VCN-A-ATTACH-KEY"
+                  ROUTE-TO-VCN-B-KEY = {
+                    action = "ACCEPT",
+                    match_criteria = {
+                      match_type         = "DRG_ATTACHMENT_ID",
+                      attachment_type    = "VCN",
+                      drg_attachment_key = "DRG-HUB-VCN-B-ATTACH-KEY"
+                    }
+                    priority = 20
                   }
-                  TO-VCN-B-KEY = {
-                    destination                 = "192.168.20.0/24"
-                    destination_type            = "CIDR_BLOCK"
-                    next_hop_drg_attachment_key = "DRG-HUB-VCN-B-ATTACH-KEY"
+                  ROUTE-TO-VCN-C-KEY = {
+                    action = "ACCEPT",
+                    match_criteria = {
+                      match_type         = "DRG_ATTACHMENT_ID",
+                      attachment_type    = "VCN",
+                      drg_attachment_key = "DRG-HUB-VCN-C-ATTACH-KEY"
+                    }
+                    priority = 30
                   }
-                  TO-VCN-C-KEY = {
-                    destination                 = "192.168.30.0/24"
-                    destination_type            = "CIDR_BLOCK"
-                    next_hop_drg_attachment_key = "DRG-HUB-VCN-C-ATTACH-KEY"
+                  ROUTE-TO-ON-PREMISES-FC-KEY = {
+                    action = "ACCEPT",
+                    match_criteria = {
+                      match_type         = "DRG_ATTACHMENT_ID",
+                      attachment_type    = "VIRTUAL_CIRCUIT",
+                      drg_attachment_key = "VISON-FC-VC-1-KEY"
+                    }
+                    priority = 40
                   }
-                  */
                 }
               }
             }
@@ -409,7 +432,7 @@ network_configuration = {
           }
 
           route_tables = {
-            // Callout 3 - Traffic living Subnet 1
+            // Callout 3 - Traffic leaving Subnet 1
             SUBNET-1-RT-KEY = {
               display_name = "subnet-1-rt"
               route_rules = {
@@ -444,7 +467,7 @@ network_configuration = {
               ipv6cidr_blocks            = []
               prohibit_internet_ingress  = true
               prohibit_public_ip_on_vnic = true
-              // Callout 3 - Traffic living Subnet 1
+              // Callout 3 - Traffic leaving Subnet 1
               route_table_key    = "SUBNET-1-RT-KEY"
               security_list_keys = ["default_security_list"]
             }
@@ -494,7 +517,7 @@ network_configuration = {
           }
 
           route_tables = {
-            // Callout 6 - Traffic living Subnet 2
+            // Callout 6 - Traffic leaving Subnet 2
             SUBNET-2-RT-KEY = {
               display_name = "subnet-2-rt"
               route_rules = {
@@ -529,7 +552,7 @@ network_configuration = {
               ipv6cidr_blocks            = []
               prohibit_internet_ingress  = true
               prohibit_public_ip_on_vnic = true
-              // Callout 6 - Traffic living Subnet 2
+              // Callout 6 - Traffic leaving Subnet 2
               route_table_key    = "SUBNET-2-RT-KEY"
               security_list_keys = ["default_security_list"]
             }
@@ -579,7 +602,7 @@ network_configuration = {
           }
 
           route_tables = {
-            // Callout 7 - Traffic living Subnet 3
+            // Callout 7 - Traffic leaving Subnet 3
             SUBNET-3-RT-KEY = {
               display_name = "subnet-3-rt"
               route_rules = {
@@ -614,7 +637,7 @@ network_configuration = {
               ipv6cidr_blocks            = []
               prohibit_internet_ingress  = true
               prohibit_public_ip_on_vnic = true
-              // Callout 7 - Traffic living Subnet 3
+              // Callout 7 - Traffic leaving Subnet 3
               route_table_key    = "SUBNET-3-RT-KEY"
               security_list_keys = ["default_security_list"]
             }
