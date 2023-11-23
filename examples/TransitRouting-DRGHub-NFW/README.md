@@ -37,19 +37,6 @@ For an ad-hoc use where you can select your resources, follow these guidelines:
 
 ## Know Issues
 
-### Gaps
-
-#### No coverage for DRG Route Table dynamic(BGP) route rules
-
-Currently, the ```terraform-oci-cis-landing-zone-networking``` terraform OCI networking module does not cover ```DrgRouteDistribution``` and ```DrgRouteDistributionStatements``` and, consequently, the creation of dynamic route rules inside the DRG Route Tables is not supported yet. 
-
-The above gap it is on the roadmap and it will be covered.
-
-Until it gets covered the only workaround available is to provision this configuration in 2 steps:
-
-- STEP 1: Run this automation with the ```DRG-RT-HUB-KEY``` DRG Route Table containing no route rules.
-- STEP 2: After STEP 1 is performed succesfully, go to the OCI Console and populate the ```DRG-RT-HUB-KEY``` with the corresponding BGP discovered dynamic route rules.
-
 ### Limitations
 
 #### Provisioning of the Private IP Route Rules in 2 steps
