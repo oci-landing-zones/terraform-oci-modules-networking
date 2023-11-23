@@ -8,7 +8,7 @@
 # ####################################################################################################### #
 
 network_configuration = {
-  default_compartment_id = "ocid1.compartment.oc1..aaaaaaaaqgesrpmt675pazv7mjz7sscaruh4z5yoww7jupwbeizsqm4yl7ea"
+  default_compartment_id = "ocid1.compartment.oc1....."
   default_freeform_tags = {
     "vision-environment" = "vision"
   }
