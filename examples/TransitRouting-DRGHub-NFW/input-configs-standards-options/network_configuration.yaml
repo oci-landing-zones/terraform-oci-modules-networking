@@ -45,7 +45,7 @@ network_configuration:
               DRG-HUB-VCN-H-ATTACH-KEY:
                 display_name: drg-hub-vcn-h-attach
                 # Ingress Routes table - entering DRG through DRG-A-VCN-HUB
-                # drg_route_table_key: DRG-RT-HUB-KEY
+                drg_route_table_key: DRG-RT-HUB-KEY
                 network_details:
                   attached_resource_key: VCN-HUB-KEY
                   # Egress Routes table - from DRGA-VCN-HUB to HUB-VCN
@@ -89,8 +89,6 @@ network_configuration:
               # Callout 2
               # Ingress Routes table - entering DRG through DRG-A-VCN-HUB
               # This should be BGP - dynamic routing
-              # The creation of dynamic routing is not supported yet by this automation
-              # On the roadmap there are plans to add support for: DrgRouteDistribution and DrgRouteDistributionStatements
               DRG-RT-HUB-KEY:
                 display_name: drg-rt-hub
                 import_drg_route_distribution_key: "IMPORT-HUB-RTD-KEY"
@@ -183,7 +181,6 @@ network_configuration:
                       type: SIMPLE
           network_firewalls:
             HUB-NFW-KEY:
-              availability_domain: 2
               display_name: hub_nfw
               ipv4address: 10.0.0.10
               network_firewall_policy_key: HUB-NFW-POLICY-KEY

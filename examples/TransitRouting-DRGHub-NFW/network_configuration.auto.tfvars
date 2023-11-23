@@ -234,7 +234,7 @@ network_configuration = {
               DRG-HUB-VCN-H-ATTACH-KEY = {
                 display_name = "drg-hub-vcn-h-attach"
                 // Ingress Routes table - entering DRG through DRG-A-VCN-HUB
-                // drg_route_table_key = "DRG-RT-HUB-KEY"
+                drg_route_table_key = "DRG-RT-HUB-KEY"
                 network_details = {
                   attached_resource_key = "VCN-HUB-KEY"
                   type                  = "VCN"
@@ -297,7 +297,6 @@ network_configuration = {
         network_firewalls_configuration = {
           network_firewalls = {
             HUB-NFW-KEY = {
-              availability_domain         = 2
               display_name                = "hub_nfw"
               subnet_key                  = "SUBNET-H-KEY"
               ipv4address                 = "10.0.0.10"
