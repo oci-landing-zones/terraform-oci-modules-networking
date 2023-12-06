@@ -222,8 +222,8 @@ resource "oci_core_route_table" "these_no_gw_attached" {
 }
 
 resource "oci_core_route_table" "these_gw_attached" {
-  for_each = local.one_dimension_processed_route_tables_gw_attached
-
+  for_each = merge(local.one_dimension_processed_route_tables_gw_attached,local.one_dimension_processed_route_tables_gw_attached)
+  
   display_name   = each.value.display_name
   vcn_id         = each.value.vcn_id != null ? each.value.vcn_id : oci_core_vcn.these[each.value.vcn_key].id
   compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
