@@ -1,15 +1,34 @@
-# Copyright (c) 2022, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+# ####################################################################################################### #
+# Copyright (c) 2023 Oracle and/or its affiliates,  All rights reserved.                                  #
+# Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
+# Author: Cosmin Tudor                                                                                    #
+# Author email: cosmin.tudor@oracle.com                                                                   #
+# Last Modified: Wed Nov 22 2023                                                                          #
+# Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
+# ####################################################################################################### #
 
 output "provisioned_networking_resources" {
   description = "Provisioned networking resources"
   value = {
-    vcns                                           = local.provisioned_vcns,
-    subnets                                        = local.provisioned_subnets,
-    service_gateways                               = local.provisioned_service_gateways,
-    default_security_lists                         = local.provisioned_default_security_lists
-    security_lists                                 = local.provisioned_security_lists
-    route_tables                                   = local.provisioned_route_tables
+    vcns                   = local.provisioned_vcns,
+    subnets                = local.provisioned_subnets,
+    service_gateways       = local.provisioned_service_gateways,
+    default_security_lists = local.provisioned_default_security_lists
+    security_lists         = local.provisioned_security_lists
+    default_route_tables = {
+      igw_natgw_specific_default_rts_attachable_to_igw_natgw_sgw_lpg_drga_subnet = local.provisioned_igw_natgw_specific_default_route_tables,
+      sgw_specific_default_rts_attachable_to_sgw_subnet                          = local.provisioned_sgw_specific_default_route_tables,
+      lpg_specific_default_rts_attachable_to_lpg_drga_subnet                     = local.provisioned_lpg_specific_default_route_tables,
+      drga_specific_default_rts_attachable_to_drga_subnet                        = local.provisioned_drga_specific_default_route_tables,
+      non_gw_specific_remaining_default_rts_attachable_to_drga_subnet            = local.provisioned_non_gw_specific_remaining_default_route_tables
+    }
+    route_tables = {
+      igw_natgw_specific_rts_attachable_to_igw_natgw_sgw_lpg_drga_subnet = local.provisioned_igw_natgw_specific_route_tables,
+      sgw_specific_rts_attachable_to_sgw_subnet                          = local.provisioned_sgw_specific_route_tables,
+      lpg_specific_rts_attachable_to_lpg_drga_subnet                     = local.provisioned_lpg_specific_route_tables,
+      drga_specific_rts_attachable_to_drga_subnet                        = local.provisioned_drga_specific_route_tables,
+      non_gw_specific_remaining_rts_attachable_to_drga_subnet            = local.provisioned_non_gw_specific_remaining_route_tables
+    }
     route_tables_attachments                       = local.provisioned_route_tables_attachments
     remote_peering_connections                     = local.provisioned_remote_peering_connections
     network_security_groups                        = local.provisioned_network_security_groups
@@ -41,8 +60,9 @@ output "provisioned_networking_resources" {
         k => v if local.one_dimension_fast_connect_virtual_circuits[v.fcvc_key].show_available_fc_virtual_circuit_providers == true
       } : {} : {}
     }
-    cross_connect_groups = oci_core_cross_connect_group.these,
-    cross_connects       = oci_core_cross_connect.these
+    cross_connect_groups  = oci_core_cross_connect_group.these,
+    cross_connects        = oci_core_cross_connect.these
+    fc_vc_drg_attachments = local.fc_vc_drg_attachments
   }
 }
 

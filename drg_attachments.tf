@@ -1,5 +1,11 @@
-# Copyright (c) 2022, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+# ####################################################################################################### #
+# Copyright (c) 2023 Oracle and/or its affiliates,  All rights reserved.                                  #
+# Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
+# Author: Cosmin Tudor                                                                                    #
+# Author email: cosmin.tudor@oracle.com                                                                   #
+# Last Modified: Fri Nov 17 2023                                                                          #
+# Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
+# ####################################################################################################### #
 
 
 locals {
@@ -61,6 +67,16 @@ locals {
 
   one_dimension_processed_drg_attachments = merge(local.one_dimension_processed_drg_attachments_1, local.one_dimension_injected_drg_attachments)
 
+  all_known_vcn_default_route_tables = {
+    for vcn_key, vcn_value in merge(
+      local.provisioned_vcns,
+      local.one_dimension_processed_existing_vcns
+      ) : vcn_value.default_route_table_id => {
+      id  = vcn_value.default_route_table_id
+      key = "${vcn_key}_default_route_table"
+    }
+  }
+
   provisioned_drg_attachments = {
     for drga_key, drga_value in oci_core_drg_attachment.these : drga_key => {
       compartment_id                   = drga_value.compartment_id
@@ -83,71 +99,37 @@ locals {
           attached_resource_key  = can([for vcn_key, vcn_value in oci_core_vcn.these : vcn_key if vcn_value.id == drga_value.network_details[0].id][0]) ? [for vcn_key, vcn_value in oci_core_vcn.these : vcn_key if vcn_value.id == drga_value.network_details[0].id][0] : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
           ipsec_connection_id    = drga_value.network_details[0].ipsec_connection_id
           route_table_id         = drga_value.network_details[0].route_table_id
+          route_table_key = contains(
+            keys(local.all_known_vcn_default_route_tables),
+            drga_value.network_details[0].route_table_id
+          ) ? local.all_known_vcn_default_route_tables[drga_value.network_details[0].route_table_id].key : can(local.one_dimension_processed_drg_attachments[drga_key].route_table_key) ? local.one_dimension_processed_drg_attachments[drga_key].route_table_key == null ? local.one_dimension_processed_drg_attachments[drga_key].route_table_id != null ? "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null : local.one_dimension_processed_drg_attachments[drga_key].route_table_key : null
 
-          route_table_key = drga_value.network_details[0].route_table_id != null && length(drga_value.network_details[0].route_table_id) > 1 ? length([
-            for rt_key, rt_value in merge(
-              oci_core_route_table.these_gw_attached,
-              oci_core_route_table.these_no_gw_attached,
-              oci_core_route_table.these_drg_attached
-            ) : rt_value.display_name if rt_value.id == drga_value.network_details[0].route_table_id]) > 0 ? [
-            for rt_key, rt_value in merge(
-              oci_core_route_table.these_gw_attached,
-              oci_core_route_table.these_no_gw_attached,
-              oci_core_route_table.these_drg_attached
-          ) : rt_value.display_name if rt_value.id == drga_value.network_details[0].route_table_id][0] : "CANNOT BE DETERMINED - ROUTE TABLE CREATED OUTSIDE THIS AUTOMATION" : null
-
-
-          route_table_name = drga_value.network_details[0].route_table_id != null && length(drga_value.network_details[0].route_table_id) > 1 ? length([
-            for rt_key, rt_value in merge(
-              oci_core_route_table.these_gw_attached,
-              oci_core_route_table.these_no_gw_attached,
-              oci_core_route_table.these_drg_attached
-            ) : rt_value.display_name if rt_value.id == drga_value.network_details[0].route_table_id]) > 0 ? [
-            for rt_key, rt_value in merge(
-              oci_core_route_table.these_gw_attached,
-              oci_core_route_table.these_no_gw_attached,
-              oci_core_route_table.these_drg_attached
-          ) : rt_value.display_name if rt_value.id == drga_value.network_details[0].route_table_id][0] : "CANNOT BE DETERMINED - ROUTE TABLE CREATED OUTSIDE THIS AUTOMATION" : null
+          route_table_name = contains(
+            keys(local.all_known_vcn_default_route_tables),
+            drga_value.network_details[0].route_table_id
+            ) ? local.all_known_vcn_default_route_tables[drga_value.network_details[0].route_table_id].key : can(local.one_dimension_processed_drg_attachments[drga_key].route_table_key) ? local.one_dimension_processed_drg_attachments[drga_key].route_table_key == null ? local.one_dimension_processed_drg_attachments[drga_key].route_table_id != null ? "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null : can(
+            merge(
+              local.provisioned_igw_natgw_specific_route_tables,
+              local.provisioned_drga_specific_route_tables,
+              local.provisioned_lpg_specific_route_tables
+            )[local.one_dimension_processed_drg_attachments[drga_key].route_table_key].display_name) ? merge(
+            local.provisioned_igw_natgw_specific_route_tables,
+            local.provisioned_drga_specific_route_tables,
+            local.provisioned_lpg_specific_route_tables
+          )[local.one_dimension_processed_drg_attachments[drga_key].route_table_key].display_name : "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null
           type           = drga_value.network_details[0].type
           vcn_route_type = drga_value.network_details[0].vcn_route_type
         }
       ] : []
-
       remove_export_drg_route_distribution_trigger = drga_value.remove_export_drg_route_distribution_trigger
-      route_table_id                               = drga_value.route_table_id
-
-      route_table_key = drga_value.route_table_id != null ? length([
-        for rt_key, rt_value in merge(
-          oci_core_route_table.these_gw_attached,
-          oci_core_route_table.these_no_gw_attached,
-          oci_core_route_table.these_drg_attached
-        ) : rt_value.display_name if rt_value.id == drga_value.route_table_id]) > 0 ? [
-        for rt_key, rt_value in merge(
-          oci_core_route_table.these_gw_attached,
-          oci_core_route_table.these_no_gw_attached,
-          oci_core_route_table.these_drg_attached
-      ) : rt_value.display_name if rt_value.id == drga_value.route_table_id][0] : "CANNOT BE DETERMINED - ROUTE TABLE CREATED OUTSIDE THIS AUTOMATION" : null
-
-      route_table_name = drga_value.route_table_id != null ? length([
-        for rt_key, rt_value in merge(
-          oci_core_route_table.these_gw_attached,
-          oci_core_route_table.these_no_gw_attached,
-          oci_core_route_table.these_drg_attached
-        ) : rt_value.display_name if rt_value.id == drga_value.route_table_id]) > 0 ? [
-        for rt_key, rt_value in merge(
-          oci_core_route_table.these_gw_attached,
-          oci_core_route_table.these_no_gw_attached,
-          oci_core_route_table.these_drg_attached
-      ) : rt_value.display_name if rt_value.id == drga_value.route_table_id][0] : "CANNOT BE DETERMINED - ROUTE TABLE CREATED OUTSIDE THIS AUTOMATION" : null
-
-      state                          = drga_value.state
-      time_created                   = drga_value.time_created
-      timeouts                       = drga_value.timeouts
-      vcn_id                         = drga_value.vcn_id
-      vcn_name                       = can([for vcn_key, vcn_value in oci_core_vcn.these : vcn_value.display_name if vcn_value.id == drga_value.vcn_id][0]) ? [for vcn_key, vcn_value in oci_core_vcn.these : vcn_value.display_name if vcn_value.id == drga_value.vcn_id][0] : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
-      vcn_key                        = can([for vcn_key, vcn_value in oci_core_vcn.these : vcn_key if vcn_value.id == drga_value.vcn_id][0]) ? [for vcn_key, vcn_value in oci_core_vcn.these : vcn_key if vcn_value.id == drga_value.vcn_id][0] : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
-      drga_key                       = drga_key
-      network_configuration_category = local.one_dimension_processed_drg_attachments[drga_key].network_configuration_category
+      state                                        = drga_value.state
+      time_created                                 = drga_value.time_created
+      timeouts                                     = drga_value.timeouts
+      vcn_id                                       = drga_value.vcn_id
+      vcn_name                                     = can([for vcn_key, vcn_value in oci_core_vcn.these : vcn_value.display_name if vcn_value.id == drga_value.vcn_id][0]) ? [for vcn_key, vcn_value in oci_core_vcn.these : vcn_value.display_name if vcn_value.id == drga_value.vcn_id][0] : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+      vcn_key                                      = can([for vcn_key, vcn_value in oci_core_vcn.these : vcn_key if vcn_value.id == drga_value.vcn_id][0]) ? [for vcn_key, vcn_value in oci_core_vcn.these : vcn_key if vcn_value.id == drga_value.vcn_id][0] : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+      drga_key                                     = drga_key
+      network_configuration_category               = local.one_dimension_processed_drg_attachments[drga_key].network_configuration_category
     }
   }
 }
@@ -166,12 +148,30 @@ resource "oci_core_drg_attachment" "these" {
     iterator = net_det
     for_each = each.value.network_details != null ? [each.value.network_details] : []
     content {
-      id   = net_det.value.attached_resource_id != null ? net_det.value.attached_resource_id : oci_core_vcn.these[net_det.value.attached_resource_key].id
+      id   = net_det.value.attached_resource_id != null ? net_det.value.attached_resource_id : net_det.value.attached_resource_key != null ? local.provisioned_vcns[net_det.value.attached_resource_key].id : null
       type = net_det.value.type
 
       #Optional
-      route_table_id = net_det.value.route_table_id != null ? net_det.value.route_table_id : net_det.value.route_table_key != null ? oci_core_route_table.these_drg_attached[net_det.value.route_table_key].id : null
-      vcn_route_type = net_det.value.vcn_route_type
+
+      route_table_id = net_det.value.route_table_id != null ? net_det.value.route_table_id : net_det.value.route_table_key != null ? merge(
+        {
+          for rt_key, rt_value in merge(
+            local.provisioned_igw_natgw_specific_route_tables,
+            local.provisioned_drga_specific_route_tables,
+            local.provisioned_lpg_specific_route_tables
+            ) : rt_key => {
+            id = rt_value.id
+          }
+        },
+        {
+          for vcn_key, vcn_value in merge(
+            local.provisioned_vcns,
+            local.one_dimension_processed_existing_vcns
+            ) : "${vcn_key}_default_route_table" => {
+            id = vcn_value.default_route_table_id
+          }
+        }
+      )[net_det.value.route_table_key].id : null
     }
   }
 }

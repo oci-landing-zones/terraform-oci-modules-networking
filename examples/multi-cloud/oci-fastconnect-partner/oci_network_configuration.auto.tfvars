@@ -1,5 +1,5 @@
 network_configuration = {
-  default_compartment_id = "ocid1.compartment.oc1........"  # To be provided
+  default_compartment_id = "ocid1.compartment.oc1........" # To be provided
   default_freeform_tags = {
     "vision-environment" = "vision"
   }
@@ -38,36 +38,36 @@ network_configuration = {
 
               ingress_rules = [
                 {
-                  description = "ingress from Secondary Cloud over TCP1521"
-                  stateless   = false
-                  protocol    = "TCP"
-                  src         = "172.16.0.0/16"
-                  src_type    = "CIDR_BLOCK"
+                  description  = "ingress from Secondary Cloud over TCP1521"
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "172.16.0.0/16"
+                  src_type     = "CIDR_BLOCK"
                   dst_port_min = 1521
                   dst_port_max = 1521
                 },
                 {
-                  description = "ingress from Secondary Cloud over TCP22 SSH"
-                  stateless   = false
-                  protocol    = "TCP"
-                  src         = "172.16.0.0/16"
-                  src_type    = "CIDR_BLOCK"
+                  description  = "ingress from Secondary Cloud over TCP22 SSH"
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "172.16.0.0/16"
+                  src_type     = "CIDR_BLOCK"
                   dst_port_min = 22
                   dst_port_max = 22
                 },
                 {
-                  description  = "Ping from Secondary Cloud"
-                  stateless    = false
-                  protocol     = "ICMP"
-                  src          = "172.16.0.0/16"
-                  src_type     = "CIDR_BLOCK"
+                  description = "Ping from Secondary Cloud"
+                  stateless   = false
+                  protocol    = "ICMP"
+                  src         = "172.16.0.0/16"
+                  src_type    = "CIDR_BLOCK"
                 },
                 {
-                  description  = "Ping from Multicloud Router"
-                  stateless    = false
-                  protocol     = "ICMP"
-                  src          = "192.168.3.0/30"
-                  src_type     = "CIDR_BLOCK"
+                  description = "Ping from Multicloud Router"
+                  stateless   = false
+                  protocol    = "ICMP"
+                  src         = "192.168.3.0/30"
+                  src_type    = "CIDR_BLOCK"
                 },
               ]
             }
@@ -94,7 +94,7 @@ network_configuration = {
           }
 
           subnets = {
-                  PRIVATE-DB-SUBNET-KEY = {
+            PRIVATE-DB-SUBNET-KEY = {
               cidr_block                 = "10.0.1.0/24"
               dhcp_options_key           = "default_dhcp_options"
               display_name               = "sub-private-db"
@@ -107,7 +107,7 @@ network_configuration = {
               security_list_keys         = ["SECLIST-DB-KEY"]
             }
           }
-        }  
+        }
       }
 
       non_vcn_specific_gateways = {

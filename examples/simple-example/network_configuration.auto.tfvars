@@ -1,5 +1,14 @@
+# ####################################################################################################### #
+# Copyright (c) 2023 Oracle and/or its affiliates,  All rights reserved.                                  #
+# Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
+# Author: Cosmin Tudor                                                                                    #
+# Author email: cosmin.tudor@oracle.com                                                                   #
+# Last Modified: Wed Nov 15 2023                                                                          #
+# Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
+# ####################################################################################################### #
+
 network_configuration = {
-  default_compartment_id = "ocid1.compartment.oc1...."
+  default_compartment_id = "ocid1.compartment.oc1..aaaaaaaaqgesrpmt675pazv7mjz7sscaruh4z5yoww7jupwbeizsqm4yl7ea"
   default_freeform_tags = {
     "vision-environment" = "vision"
   }
@@ -21,7 +30,43 @@ network_configuration = {
           is_create_igw                    = false
           is_attach_drg                    = false
           block_nat_traffic                = false
-                      default-security-list = {
+          default-security-list = {
+            display_name = "sl-lb"
+
+            egress_rules = [
+              {
+                description = "egress to 0.0.0.0/0 over ALL protocols"
+                stateless   = false
+                protocol    = "ALL"
+                dst         = "0.0.0.0/0"
+                dst_type    = "CIDR_BLOCK"
+              }
+            ]
+
+            ingress_rules = [
+              {
+                description  = "ingress from 0.0.0.0/0 over TCP22"
+                stateless    = false
+                protocol     = "TCP"
+                src          = "0.0.0.0/0"
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              },
+              {
+                description  = "ingress from 0.0.0.0/0 over TCP443"
+                stateless    = false
+                protocol     = "TCP"
+                src          = "0.0.0.0/0"
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 443
+                dst_port_max = 443
+              }
+            ]
+          }
+
+          security_lists = {
+            SECLIST-LB-KEY = {
               display_name = "sl-lb"
 
               egress_rules = [
@@ -54,9 +99,7 @@ network_configuration = {
                   dst_port_max = 443
                 }
               ]
-            }
-
-          security_lists = {
+            },
             SECLIST-APP-KEY = {
               display_name = "sl-app"
 
@@ -141,7 +184,7 @@ network_configuration = {
                 sgw-route = {
                   network_entity_key = "SGW-KEY"
                   description        = "Route for sgw"
-                  destination        = "oci-fra-objectstorage"
+                  destination        = "objectstorage"
                   destination_type   = "SERVICE_CIDR_BLOCK"
                 },
                 natgw-route = {
@@ -314,6 +357,7 @@ network_configuration = {
             service_gateways = {
               SGW-KEY = {
                 display_name = "sgw-prod-vcn"
+                services     = "objectstorage"
               }
             }
           }

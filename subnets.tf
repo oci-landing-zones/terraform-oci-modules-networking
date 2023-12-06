@@ -1,5 +1,11 @@
-# Copyright (c) 2022, Oracle and/or its affiliates.
-# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+# ####################################################################################################### #
+# Copyright (c) 2023 Oracle and/or its affiliates,  All rights reserved.                                  #
+# Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
+# Author: Cosmin Tudor                                                                                    #
+# Author email: cosmin.tudor@oracle.com                                                                   #
+# Last Modified: Wed Nov 15 2023                                                                          #
+# Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
+# ####################################################################################################### #
 
 locals {
   one_dimension_processed_subnets = local.one_dimension_processed_vcns != null ? {
@@ -37,8 +43,23 @@ locals {
           prohibit_internet_ingress  = subnet_value.prohibit_internet_ingress
           prohibit_public_ip_on_vnic = subnet_value.prohibit_public_ip_on_vnic
           route_table_key            = subnet_value.route_table_key
-          route_table_id             = null
-          #route_table_id             = subnet_value.route_table_key != null ? merge(oci_core_route_table.these_gw_attached, oci_core_route_table.these_no_gw_attached, local.default_route_tables)[subnet_value.route_table_key].id : null
+          route_table_id = subnet_value.route_table_key != null ? merge(
+            {
+              for rt_key, rt_value in merge(
+                local.provisioned_non_gw_specific_remaining_route_tables,
+                local.provisioned_drga_specific_route_tables,
+                local.provisioned_lpg_specific_route_tables,
+                local.provisioned_sgw_specific_route_tables,
+                local.provisioned_igw_natgw_specific_route_tables) : rt_key => {
+                id = rt_value.id
+              }
+            },
+            {
+              "default_route_table" = {
+                id = oci_core_vcn.these[vcn_key].default_route_table_id
+              }
+            }
+          )[subnet_value.route_table_key].id : null
           security_list_keys = subnet_value.security_list_keys
           security_list_ids = subnet_value.security_list_keys != null ? length(subnet_value.security_list_keys) > 0 ? [
             for seclistname in subnet_value.security_list_keys : merge(
@@ -103,8 +124,23 @@ locals {
           prohibit_internet_ingress  = subnet_value.prohibit_internet_ingress
           prohibit_public_ip_on_vnic = subnet_value.prohibit_public_ip_on_vnic
           route_table_key            = subnet_value.route_table_key
-          route_table_id             = null
-          #route_table_id             = subnet_value.route_table_id != null ? subnet_value.route_table_id : subnet_value.route_table_key != null ? merge(oci_core_route_table.these_gw_attached, oci_core_route_table.these_no_gw_attached, local.default_route_tables)[subnet_value.route_table_key].id : null
+          route_table_id = subnet_value.route_table_key != null ? merge(
+            {
+              for rt_key, rt_value in merge(
+                local.provisioned_non_gw_specific_remaining_route_tables,
+                local.provisioned_drga_specific_route_tables,
+                local.provisioned_lpg_specific_route_tables,
+                local.provisioned_sgw_specific_route_tables,
+                local.provisioned_igw_natgw_specific_route_tables) : rt_key => {
+                id = rt_value.id
+              }
+            },
+            {
+              "default_route_table" = {
+                id = vcn_value.default_route_table_id
+              }
+            }
+          )[subnet_value.route_table_key].id : null
           security_list_keys = subnet_value.security_list_keys
           security_list_ids = concat(
             subnet_value.security_list_keys != null ? [
@@ -178,9 +214,12 @@ locals {
           subnet_key                     = subnet_key
           vcn_id                         = vcn_value.vcn_id
         }
-      ] : [vcn_value.default_security_list_id] : [vcn_value.default_security_list_id]
+      ] : [] : []
     ]) : flat_subnet.subnet_key => flat_subnet
   } : null
+
+  //merging new VCNs defined subnets with existing VCNs defined subnets into a single map
+  merged_one_dimension_processed_subnets = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)
 
   aux_provisioned_subnets = {
     for subnet_key, subnet_value in oci_core_subnet.these : subnet_key => {
@@ -189,7 +228,7 @@ locals {
       compartment_id             = subnet_value.compartment_id
       defined_tags               = subnet_value.defined_tags
       dhcp_options_id            = subnet_value.dhcp_options_id
-      dhcp_options_key           = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_id != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION" : "default_dhcp_options"
+      dhcp_options_key           = local.merged_one_dimension_processed_subnets[subnet_key].dhcp_options_id != null ? local.merged_one_dimension_processed_subnets[subnet_key].dhcp_options_key != null ? local.merged_one_dimension_processed_subnets[subnet_key].dhcp_options_key : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION" : "default_dhcp_options"
       display_name               = subnet_value.display_name
       dns_label                  = subnet_value.dns_label
       freeform_tags              = subnet_value.freeform_tags
@@ -200,8 +239,7 @@ locals {
       prohibit_internet_ingress  = subnet_value.prohibit_internet_ingress
       prohibit_public_ip_on_vnic = subnet_value.prohibit_public_ip_on_vnic
       route_table_id             = subnet_value.route_table_id
-      route_table_key            = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
-
+      route_table_key            = local.merged_one_dimension_processed_subnets[subnet_key].route_table_id != null ? local.merged_one_dimension_processed_subnets[subnet_key].route_table_key != null ? local.merged_one_dimension_processed_subnets[subnet_key].route_table_key : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION" : "default_route_table"
       security_lists = flatten(subnet_value.security_list_ids != null ? [
         for sec_list_id in subnet_value.security_list_ids : contains([
           for sec_list_key, sec_list_value in merge(
@@ -216,7 +254,7 @@ locals {
               "default_security_list" = {
                 sec_list_key = "default_security_list",
                 display_name = "default_security_list",
-                id           = oci_core_vcn.these[merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].vcn_key].default_security_list_id
+                id           = oci_core_vcn.these[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_security_list_id
               }
 
           }) : sec_list_value.id
@@ -235,7 +273,7 @@ locals {
               "default_security_list" = {
                 sec_list_key = "default_security_list",
                 display_name = "default_security_list",
-                id           = oci_core_vcn.these[merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].vcn_key].default_security_list_id
+                id           = oci_core_vcn.these[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_security_list_id
               }
 
             }) : {
@@ -250,15 +288,14 @@ locals {
           }
         ]
       ] : [])
-
       state                          = subnet_value.state
       subnet_domain_name             = subnet_value.subnet_domain_name
       time_created                   = subnet_value.time_created
       timeouts                       = subnet_value.timeouts
       vcn_id                         = subnet_value.vcn_id
-      vcn_key                        = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].vcn_key
-      vcn_name                       = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].vcn_name
-      network_configuration_category = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].network_configuration_category
+      vcn_key                        = local.merged_one_dimension_processed_subnets[subnet_key].vcn_key
+      vcn_name                       = local.merged_one_dimension_processed_subnets[subnet_key].vcn_name
+      network_configuration_category = local.merged_one_dimension_processed_subnets[subnet_key].network_configuration_category
       virtual_router_ip              = subnet_value.virtual_router_ip
       virtual_router_mac             = subnet_value.virtual_router_mac
       subnet_key                     = subnet_key
@@ -272,8 +309,8 @@ locals {
       compartment_id             = subnet_value.compartment_id
       defined_tags               = subnet_value.defined_tags
       dhcp_options_id            = subnet_value.dhcp_options_id
-      dhcp_options_key           = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_id != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key : "default_dhcp_options" : "default_dhcp_options"
-      dhcp_options_name          = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_id != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key == "default_dhcp_options" ? "default_dhcp_options" : can(oci_core_dhcp_options.these[merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key].display_name) ? oci_core_dhcp_options.these[merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].dhcp_options_key].display_name : "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : "default_dhcp_options" : "default_dhcp_options"
+      dhcp_options_key           = local.merged_one_dimension_processed_subnets[subnet_key].dhcp_options_id != null ? local.merged_one_dimension_processed_subnets[subnet_key].dhcp_options_key != null ? local.merged_one_dimension_processed_subnets[subnet_key].dhcp_options_key : "default_dhcp_options" : "default_dhcp_options"
+      dhcp_options_name          = local.merged_one_dimension_processed_subnets[subnet_key].dhcp_options_id != null ? local.merged_one_dimension_processed_subnets[subnet_key].dhcp_options_key != null ? local.merged_one_dimension_processed_subnets[subnet_key].dhcp_options_key == "default_dhcp_options" ? "default_dhcp_options" : can(oci_core_dhcp_options.these[local.merged_one_dimension_processed_subnets[subnet_key].dhcp_options_key].display_name) ? oci_core_dhcp_options.these[local.merged_one_dimension_processed_subnets[subnet_key].dhcp_options_key].display_name : "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : "default_dhcp_options" : "default_dhcp_options"
       display_name               = subnet_value.display_name
       dns_label                  = subnet_value.dns_label
       freeform_tags              = subnet_value.freeform_tags
@@ -283,10 +320,28 @@ locals {
       ipv6virtual_router_ip      = subnet_value.ipv6virtual_router_ip
       prohibit_internet_ingress  = subnet_value.prohibit_internet_ingress
       prohibit_public_ip_on_vnic = subnet_value.prohibit_public_ip_on_vnic
-      #route_table_id             = subnet_value.route_table_id
-      route_table_id   = oci_core_route_table_attachment.these[subnet_key].route_table_id
-      route_table_key  = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key != null ? merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
-      route_table_name = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key != null ? merge(oci_core_route_table.these_gw_attached, oci_core_route_table.these_no_gw_attached, local.default_route_tables)[merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].route_table_key].display_name : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+      route_table_id             = subnet_value.route_table_id
+      route_table_key = subnet_value.route_table_id == merge(
+        local.provisioned_vcns,
+        local.one_dimension_processed_existing_vcns
+      )[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_route_table_id ? "default_route_table" : local.merged_one_dimension_processed_subnets[subnet_key].route_table_key == null ? local.merged_one_dimension_processed_subnets[subnet_key].route_table_id != null ? "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null : local.merged_one_dimension_processed_subnets[subnet_key].route_table_key
+      route_table_name = subnet_value.route_table_id == merge(
+        local.provisioned_vcns,
+        local.one_dimension_processed_existing_vcns
+        )[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_route_table_id ? "default_route_table" : local.merged_one_dimension_processed_subnets[subnet_key].route_table_key == null ? local.merged_one_dimension_processed_subnets[subnet_key].route_table_id != null ? "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null : can(
+        merge(
+          local.provisioned_non_gw_specific_remaining_route_tables,
+          local.provisioned_drga_specific_route_tables,
+          local.provisioned_lpg_specific_route_tables,
+          local.provisioned_sgw_specific_route_tables,
+          local.provisioned_igw_natgw_specific_route_tables
+        )[local.merged_one_dimension_processed_subnets[subnet_key].route_table_key].display_name) ? merge(
+        local.provisioned_non_gw_specific_remaining_route_tables,
+        local.provisioned_drga_specific_route_tables,
+        local.provisioned_lpg_specific_route_tables,
+        local.provisioned_sgw_specific_route_tables,
+        local.provisioned_igw_natgw_specific_route_tables
+      )[local.merged_one_dimension_processed_subnets[subnet_key].route_table_key].display_name : "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION"
       security_lists = {
         for sec_list in subnet_value.security_lists : sec_list.sec_list_id => {
           display_name = sec_list.display_name
@@ -298,9 +353,9 @@ locals {
       time_created                   = subnet_value.time_created
       timeouts                       = subnet_value.timeouts
       vcn_id                         = subnet_value.vcn_id
-      vcn_key                        = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].vcn_key
-      vcn_name                       = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].vcn_name
-      network_configuration_category = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)[subnet_key].network_configuration_category
+      vcn_key                        = local.merged_one_dimension_processed_subnets[subnet_key].vcn_key
+      vcn_name                       = local.merged_one_dimension_processed_subnets[subnet_key].vcn_name
+      network_configuration_category = local.merged_one_dimension_processed_subnets[subnet_key].network_configuration_category
       virtual_router_ip              = subnet_value.virtual_router_ip
       virtual_router_mac             = subnet_value.virtual_router_mac
       subnet_key                     = subnet_key
@@ -309,7 +364,7 @@ locals {
 }
 
 resource "oci_core_subnet" "these" {
-  for_each = merge(local.one_dimension_processed_subnets, local.one_dimension_processed_injected_subnets)
+  for_each = local.merged_one_dimension_processed_subnets
   #Required
   cidr_block     = each.value.cidr_block
   compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
@@ -326,6 +381,12 @@ resource "oci_core_subnet" "these" {
   ipv6cidr_blocks            = each.value.ipv6cidr_blocks
   prohibit_internet_ingress  = each.value.prohibit_internet_ingress
   prohibit_public_ip_on_vnic = each.value.prohibit_public_ip_on_vnic
-  #route_table_id             = data.oci_core_route_tables.these_default_route_tables[each.value.vcn_key].id
+  route_table_id = each.value.route_table_id != null ? each.value.route_table_id : each.value.route_table_key != null ? merge(
+    local.provisioned_non_gw_specific_remaining_route_tables,
+    local.provisioned_drga_specific_route_tables,
+    local.provisioned_lpg_specific_route_tables,
+    local.provisioned_sgw_specific_route_tables,
+    local.provisioned_igw_natgw_specific_route_tables
+  )[each.value.route_table_key].id : null
   security_list_ids = each.value.security_list_ids
 }

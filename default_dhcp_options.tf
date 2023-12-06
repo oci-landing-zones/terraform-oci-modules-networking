@@ -1,3 +1,12 @@
+# ####################################################################################################### #
+# Copyright (c) 2023 Oracle and/or its affiliates,  All rights reserved.                                  #
+# Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
+# Author: Cosmin Tudor                                                                                    #
+# Author email: cosmin.tudor@oracle.com                                                                   #
+# Last Modified: Wed Nov 15 2023                                                                          #
+# Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
+# ####################################################################################################### #
+
 locals {
   one_dimension_processed_default_dhcp_options = local.one_dimension_processed_vcns != null ? {
     for flat_default_dhcp_option in flatten([
@@ -43,8 +52,8 @@ locals {
           options                        = vcn_value.default_dhcp_options.options
           network_configuration_category = vcn_value.network_configuration_category
           vcn_key                        = vcn_key
-          vcn_id                         = oci_core_vcn.these[vcn_key].id
-          vcn_name                       = vcn_value.display_name
+          vcn_id                         = vcn_value.vcn_id
+          vcn_name                       = vcn_value.vcn_name
           dhcp_option_key                = "CUSTOM-DEFAULT-DHCP-OPTIONS-${vcn_key}"
         }
       ] if vcn_value.default_dhcp_options != null
