@@ -91,7 +91,6 @@ locals {
       vcn_non_specific_gw_value.inject_into_existing_drgs != null ? length(vcn_non_specific_gw_value.inject_into_existing_drgs) > 0 ? [
         for existing_drg_key, existing_drg_value in vcn_non_specific_gw_value.inject_into_existing_drgs : {
           drg_id                         = length(regexall("^ocid1.*$", existing_drg_value.drg_id)) > 0 ? existing_drg_value.drg_id : var.network_dependency["dynamic_routing_gateways"][existing_drg_value.drg_id].id
-          #drg_id                         = existing_drg_value.drg_id
           category_compartment_id        = vcn_non_specific_gw_value.category_compartment_id
           default_compartment_id         = vcn_non_specific_gw_value.default_compartment_id
           category_defined_tags          = vcn_non_specific_gw_value.category_defined_tags
@@ -113,7 +112,7 @@ locals {
       for network_configuration_category_key, network_configuration_category_value in var.network_configuration.network_configuration_categories :
       network_configuration_category_value.inject_into_existing_vcns != null ? length(network_configuration_category_value.inject_into_existing_vcns) > 0 ? [
         for vcn_key, vcn_value in network_configuration_category_value.inject_into_existing_vcns : {
-          vcn_id  = vcn_value.vcn_id
+          vcn_id  = length(regexall("^ocid1.*$", vcn_value.vcn_id)) > 0 ? vcn_value.vcn_id : var.network_dependency["vcns"][vcn_value.vcn_id].id
           vcn_key = vcn_key
         }
       ] : [] : []
@@ -126,7 +125,7 @@ locals {
       network_configuration_category_value.inject_into_existing_vcns != null ? length(network_configuration_category_value.inject_into_existing_vcns) > 0 ? [
         for vcn_key, vcn_value in network_configuration_category_value.inject_into_existing_vcns : {
           vcn_key                        = vcn_key
-          vcn_id                         = vcn_value.vcn_id
+          vcn_id                         = length(regexall("^ocid1.*$", vcn_value.vcn_id)) > 0 ? vcn_value.vcn_id : var.network_dependency["vcns"][vcn_value.vcn_id].id
           network_configuration_category = network_configuration_category_key
           vcn_name                       = data.oci_core_vcn.existing_vcns[vcn_key].display_name
           compartment_id                 = data.oci_core_vcn.existing_vcns[vcn_key].compartment_id
