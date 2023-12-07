@@ -297,7 +297,7 @@ resource "oci_core_network_security_group_security_rule" "egress" {
 
   description = each.value.description
 
-  destination      = each.value.dst_type != "NETWORK_SECURITY_GROUP" ? each.value.dst : oci_core_network_security_group.these[each.value.dst].id
+  destination      = each.value.dst_type != "NETWORK_SECURITY_GROUP" ? (each.value.dst_type != "SERVICE_CIDR_BLOCK" ? each.value.dst : local.oci_services_details[each.value.dst].cidr_block) : oci_core_network_security_group.these[each.value.dst].id
   destination_type = each.value.dst_type != "NETWORK_SECURITY_GROUP" ? each.value.dst_type : "NETWORK_SECURITY_GROUP"
   stateless        = each.value.stateless
   dynamic "tcp_options" {
