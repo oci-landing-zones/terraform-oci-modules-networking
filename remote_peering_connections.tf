@@ -3,7 +3,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
 # Author: Cosmin Tudor                                                                                    #
 # Author email: cosmin.tudor@oracle.com                                                                   #
-# Last Modified: Wed Nov 15 2023                                                                          #
+# Last Modified: Mon Dec 11 2023                                                                          #
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
@@ -116,7 +116,7 @@ resource "oci_core_remote_peering_connection" "oci_requestor_remote_peering_conn
   for_each = local.one_dimension_processed_requestor_remote_peering_connections
   #Required
   compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
-  drg_id = each.value.drg_id
+  drg_id         = each.value.drg_id
   #Optional
   defined_tags  = each.value.defined_tags
   display_name  = each.value.display_name
@@ -124,5 +124,8 @@ resource "oci_core_remote_peering_connection" "oci_requestor_remote_peering_conn
 
   peer_region_name = each.value.peer_region_name
 
-  peer_id = each.value.peer_id != null ? each.value.peer_id : each.value.peer_key != null ? oci_core_remote_peering_connection.oci_acceptor_remote_peering_connections[each.value.peer_key].id : null
+  peer_id = each.value.peer_id != null ? each.value.peer_id : each.value.peer_key != null ? merge(
+    oci_core_remote_peering_connection.oci_acceptor_remote_peering_connections,
+    var.network_dependency[each.value.peer_key]
+  ).id : null
 }
