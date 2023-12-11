@@ -3,12 +3,12 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
 # Author: Cosmin Tudor                                                                                    #
 # Author email: cosmin.tudor@oracle.com                                                                   #
-# Last Modified: Wed Nov 15 2023                                                                          #
+# Last Modified: Mon Dec 11 2023                                                                          #
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
 network_configuration = {
-  default_compartment_id = "ocid1.compartment.oc1..aaaaaaaaqgesrpmt675pazv7mjz7sscaruh4z5yoww7jupwbeizsqm4yl7ea"
+  default_compartment_id = "ocid1.compartment.oc1..aaaaaaaaj5g7v2ookfz2rkfaxsfdr2odmygwubwposcsnuu6pnnncv2i4vaa"
   default_freeform_tags = {
     "vision-environment" = "vision"
   }
