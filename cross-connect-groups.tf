@@ -39,7 +39,7 @@ resource "oci_core_cross_connect_group" "these" {
   for_each = local.one_dimension_cross_connect_groups
 
   #Required
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
 
   #Optional
   customer_reference_name = each.value.customer_reference_name

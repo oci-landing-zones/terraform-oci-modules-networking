@@ -140,7 +140,7 @@ locals {
 resource "oci_load_balancer_load_balancer" "these" {
   for_each = local.one_dimension_processed_l7_load_balancers != null ? local.one_dimension_processed_l7_load_balancers : {}
   #Required
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   display_name   = each.value.display_name
   shape          = each.value.shape
   subnet_ids     = each.value.subnet_ids

@@ -544,8 +544,8 @@ resource "oci_core_route_table" "igw_natgw_specific_route_tables" {
   for_each = local.igw_natgw_attachable_specific_route_tables != null ? local.igw_natgw_attachable_specific_route_tables : {}
 
   display_name   = each.value.display_name
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   vcn_id         = each.value.vcn_id
-  compartment_id = each.value.compartment_id
   defined_tags   = each.value.defined_tags
   freeform_tags  = each.value.freeform_tags
   dynamic "route_rules" {
@@ -573,7 +573,7 @@ resource "oci_core_route_table" "sgw_specific_route_tables" {
 
   display_name   = each.value.display_name
   vcn_id         = each.value.vcn_id
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   defined_tags   = each.value.defined_tags
   freeform_tags  = each.value.freeform_tags
   dynamic "route_rules" {
@@ -600,8 +600,8 @@ resource "oci_core_route_table" "lpg_specific_route_tables" {
   for_each = local.lpg_attachable_specific_route_tables != null ? local.lpg_attachable_specific_route_tables : {}
 
   display_name   = each.value.display_name
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   vcn_id         = each.value.vcn_id
-  compartment_id = each.value.compartment_id
   defined_tags   = each.value.defined_tags
   freeform_tags  = each.value.freeform_tags
   dynamic "route_rules" {
@@ -629,7 +629,7 @@ resource "oci_core_route_table" "drga_specific_route_tables" {
 
   display_name   = each.value.display_name
   vcn_id         = each.value.vcn_id
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   defined_tags   = each.value.defined_tags
   freeform_tags  = each.value.freeform_tags
   dynamic "route_rules" {
@@ -658,7 +658,7 @@ resource "oci_core_route_table" "non_gw_specific_remaining_route_tables" {
 
   display_name   = each.value.display_name
   vcn_id         = each.value.vcn_id
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   defined_tags   = each.value.defined_tags
   freeform_tags  = each.value.freeform_tags
   dynamic "route_rules" {
