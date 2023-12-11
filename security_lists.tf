@@ -32,7 +32,7 @@ locals {
               stateless    = e_rule.stateless
               protocol     = local.network_terminology["${e_rule.protocol}"]
               description  = e_rule.description
-              dst          = e_rule.dst
+              dst          = e_rule.dst_type != "SERVICE_CIDR_BLOCK" ? e_rule.dst : local.oci_services_details[e_rule.dst].cidr_block
               dst_type     = e_rule.dst_type
               src_port_min = e_rule.src_port_min
               src_port_max = e_rule.src_port_max
@@ -90,7 +90,7 @@ locals {
               stateless    = e_rule.stateless
               protocol     = local.network_terminology["${e_rule.protocol}"]
               description  = e_rule.description
-              dst          = e_rule.dst
+              dst          = e_rule.dst_type != "SERVICE_CIDR_BLOCK" ? e_rule.dst : local.oci_services_details[e_rule.dst].cidr_block
               dst_type     = e_rule.dst_type
               src_port_min = e_rule.src_port_min
               src_port_max = e_rule.src_port_max
@@ -201,7 +201,7 @@ resource "oci_core_security_list" "these" {
     }
   }
   #Required
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   vcn_id         = each.value.vcn_id
 
   #Optional

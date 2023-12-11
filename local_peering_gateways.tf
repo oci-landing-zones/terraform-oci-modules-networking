@@ -113,7 +113,7 @@ locals {
 resource "oci_core_local_peering_gateway" "oci_acceptor_local_peering_gateways" {
   for_each = local.one_dimension_processed_acceptor_local_peering_gateways
   #Required
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   vcn_id         = each.value.vcn_id != null ? each.value.vcn_id : oci_core_vcn.these[each.value.vcn_key].id
 
   #Optional
@@ -141,7 +141,7 @@ resource "oci_core_local_peering_gateway" "oci_acceptor_local_peering_gateways" 
 resource "oci_core_local_peering_gateway" "oci_requestor_local_peering_gateways" {
   for_each = local.one_dimension_processed_requestor_local_peering_gateways
   #Required
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   vcn_id         = each.value.vcn_id != null ? each.value.vcn_id : oci_core_vcn.these[each.value.vcn_key].id
 
   #Optional
