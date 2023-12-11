@@ -126,6 +126,6 @@ resource "oci_core_remote_peering_connection" "oci_requestor_remote_peering_conn
 
   peer_id = each.value.peer_id != null ? each.value.peer_id : each.value.peer_key != null ? merge(
     oci_core_remote_peering_connection.oci_acceptor_remote_peering_connections,
-    var.network_dependency[each.value.peer_key]
-  ).id : null
+    var.network_dependency
+  )[each.value.peer_key].id : null
 }
