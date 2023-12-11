@@ -109,7 +109,7 @@ resource "oci_network_firewall_network_firewall" "these" {
   for_each = local.one_dimension_network_firewalls != null ? length(local.one_dimension_network_firewalls) > 0 ? local.one_dimension_network_firewalls : {} : {}
 
   #Required
-  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
+  compartment_id             = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   network_firewall_policy_id = each.value.network_firewall_policy_id
   subnet_id                  = each.value.subnet_id
 
