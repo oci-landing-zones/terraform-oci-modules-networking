@@ -100,7 +100,7 @@ locals {
 resource "oci_core_nat_gateway" "these" {
   for_each = local.merged_one_dimension_processed_nat_gateways
   #Required
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   vcn_id         = each.value.vcn_id
 
   #Optional
