@@ -51,3 +51,4 @@ Temporary Items
 # Test 
 sdf-oci-terraform-test/
 test-environment.sh
+creds/

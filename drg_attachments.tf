@@ -74,7 +74,7 @@ locals {
       ) : vcn_value.default_route_table_id => {
       id  = vcn_value.default_route_table_id
       key = "${vcn_key}_default_route_table"
-    }
+    } if vcn_value.default_route_table_id != null
   }
 
   provisioned_drg_attachments = {
