@@ -3,7 +3,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
 # Author: Cosmin Tudor                                                                                    #
 # Author email: cosmin.tudor@oracle.com                                                                   #
-# Last Modified: Wed Nov 22 2023                                                                          #
+# Last Modified: Tue Dec 12 2023                                                                          #
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
@@ -65,6 +65,56 @@ output "provisioned_networking_resources" {
     fc_vc_drg_attachments = local.fc_vc_drg_attachments
   }
 }
+
+output "flat_map_of_provisioned_networking_resources" {
+  description = "Flat map of provisioned networking resources - to facilitate the integration with other networking modules via network dependency mechanism"
+  value = merge(
+    local.provisioned_vcns,
+    local.provisioned_subnets,
+    local.provisioned_service_gateways,
+    local.provisioned_default_security_lists,
+    local.provisioned_security_lists,
+    local.provisioned_igw_natgw_specific_default_route_tables,
+    local.provisioned_sgw_specific_default_route_tables,
+    local.provisioned_lpg_specific_default_route_tables,
+    local.provisioned_drga_specific_default_route_tables,
+    local.provisioned_non_gw_specific_remaining_default_route_tables,
+    local.provisioned_igw_natgw_specific_route_tables,
+    local.provisioned_sgw_specific_route_tables,
+    local.provisioned_lpg_specific_route_tables,
+    local.provisioned_drga_specific_route_tables,
+    local.provisioned_non_gw_specific_remaining_route_tables,
+    local.provisioned_route_tables_attachments,
+    local.provisioned_remote_peering_connections,
+    local.provisioned_network_security_groups,
+    local.provisioned_network_security_groups_ingress_rules,
+    local.provisioned_network_security_groups_egress_rules,
+    local.provisioned_oci_network_firewall_network_firewalls,
+    local.provisioned_oci_network_firewall_network_firewall_policies,
+    local.provisioned_nat_gateways,
+    local.provisioned_local_peering_gateways,
+    local.provisioned_internet_gateways,
+    local.provisioned_dynamic_gateways,
+    local.provisioned_drg_route_tables,
+    local.provisioned_drg_route_tables_route_rules,
+    local.provisioned_drg_route_distributions,
+    local.provisioned_drg_route_distributions_statements,
+    local.provisioned_drg_attachments,
+    local.provisioned_default_dhcp_options,
+    local.provisioned_dhcp_options,
+    module.l7_load_balancers.provisioned_l7_load_balancers,
+    local.provisioned_oci_core_public_ip_pools,
+    local.provisioned_oci_core_public_ips,
+    local.provisioned_customer_premises_equipments,
+    local.provisioned_ipsecs,
+    local.provisioned_ipsec_connection_tunnels_management,
+    local.provisioned_fast_connect_virtual_circuits,
+    oci_core_cross_connect_group.these,
+    oci_core_cross_connect.these,
+    local.fc_vc_drg_attachments
+  )
+}
+
 
 
 
