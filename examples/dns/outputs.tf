@@ -7,9 +7,9 @@
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
-module "terraform_oci_networking" {
-  source = "../../"
 
-  network_configuration = var.network_configuration
+output "provisioned_networking_resources" {
+  description = "Provisioned networking resources"
+  value       = module.terraform_oci_networking.provisioned_networking_resources
 }
 
