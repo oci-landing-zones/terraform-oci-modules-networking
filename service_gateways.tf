@@ -3,11 +3,12 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
 # Author: Cosmin Tudor                                                                                    #
 # Author email: cosmin.tudor@oracle.com                                                                   #
-# Last Modified: Wed Nov 15 2023                                                                          #
+# Last Modified: Tue Dec 19 2023                                                                          #
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
 data "oci_core_services" "oci_services" {
+  count = var.network_configuration != null ? 1 : 0
 }
 
 locals {
@@ -16,7 +17,7 @@ locals {
   //   - all-services
   //   - objectstorage
   oci_services_details = {
-    for oci_service in data.oci_core_services.oci_services.services : length(regexall("services-in-oracle-services-network", oci_service.cidr_block)) > 0 ? "all-services" : length(regexall("objectstorage", oci_service.cidr_block)) > 0 ? "objectstorage" : oci_service.cidr_block => oci_service
+    for oci_service in length(data.oci_core_services.oci_services) > 0 ? data.oci_core_services.oci_services[0].services : [] : length(regexall("services-in-oracle-services-network", oci_service.cidr_block)) > 0 ? "all-services" : length(regexall("objectstorage", oci_service.cidr_block)) > 0 ? "objectstorage" : oci_service.cidr_block => oci_service
   }
 
   one_dimension_processed_service_gateways = local.one_dimension_processed_vcn_specific_gateways != null ? {
