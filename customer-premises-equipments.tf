@@ -30,7 +30,7 @@ locals {
           ip_address                     = cpe_value.ip_address
           network_configuration_category = vcn_non_specific_gw_value.network_configuration_category
           cpe_device_shape_vendor_name   = cpe_value.cpe_device_shape_vendor_name
-          cpe_device_shape_id            = cpe_value.cpe_device_shape_id != null ? cpe_value.cpe_device_shape_id : cpe_value.cpe_device_shape_vendor_name != null ? [for cpe_shape in data.oci_core_cpe_device_shapes.0.cpe_device_shapes.cpe_device_shapes : cpe_shape.cpe_device_shape_id if cpe_shape.cpe_device_info[0].vendor == cpe_value.cpe_device_shape_vendor_name][0] : [for cpe_shape in data.oci_core_cpe_device_shapes.0.cpe_device_shapes.cpe_device_shapes : cpe_shape.cpe_device_shape_id if cpe_shape.cpe_device_info[0].vendor == "Other"][0]
+          cpe_device_shape_id            = cpe_value.cpe_device_shape_id != null ? cpe_value.cpe_device_shape_id : cpe_value.cpe_device_shape_vendor_name != null ? [for cpe_shape in length(data.oci_core_cpe_device_shapes.cpe_device_shapes) > 0 ? data.oci_core_cpe_device_shapes.cpe_device_shapes[0].cpe_device_shapes : [] : cpe_shape.cpe_device_shape_id if cpe_shape.cpe_device_info[0].vendor == cpe_value.cpe_device_shape_vendor_name][0] : [for cpe_shape in length(data.oci_core_cpe_device_shapes.cpe_device_shapes) > 0 ? data.oci_core_cpe_device_shapes.cpe_device_shapes[0].cpe_device_shapes : [] : cpe_shape.cpe_device_shape_id if cpe_shape.cpe_device_info[0].vendor == "Other"][0]
           cpe_key                        = cpe_key
         }
       ] : [] : []
@@ -49,7 +49,7 @@ locals {
       timeouts                       = cpe_value.timeouts
       network_configuration_category = local.one_dimension_customer_premises_equipments[cpe_key].network_configuration_category
       cpe_device_shape_id            = cpe_value.cpe_device_shape_id
-      cpe_device_shape_details       = [for cpe_shape in data.oci_core_cpe_device_shapes.0.cpe_device_shapes.cpe_device_shapes : cpe_shape if cpe_shape.cpe_device_shape_id == cpe_value.cpe_device_shape_id][0],
+      cpe_device_shape_details       = [for cpe_shape in length(data.oci_core_cpe_device_shapes.cpe_device_shapes) > 0 ? data.oci_core_cpe_device_shapes.cpe_device_shapes[0].cpe_device_shapes : [] : cpe_shape if cpe_shape.cpe_device_shape_id == cpe_value.cpe_device_shape_id][0],
       cpe_key                        = cpe_key
     }
   }
