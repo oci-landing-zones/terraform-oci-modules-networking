@@ -3,7 +3,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
 # Author: Cosmin Tudor                                                                                    #
 # Author email: cosmin.tudor@oracle.com                                                                   #
-# Last Modified: Tue Dec 12 2023                                                                          #
+# Last Modified: Wed Jan 03 2024                                                                          #
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
@@ -45,6 +45,7 @@ output "provisioned_networking_resources" {
     drg_route_distributions                        = local.provisioned_drg_route_distributions
     drg_route_distributions_statements             = local.provisioned_drg_route_distributions_statements
     drg_attachments                                = local.provisioned_drg_attachments
+    drg_attachments_non_vcn                        = local.provisioned_non_vcn_drg_attachments
     default_dhcp_options                           = local.provisioned_default_dhcp_options
     dhcp_options                                   = local.provisioned_dhcp_options
     l7_load_balancers                              = module.l7_load_balancers.provisioned_l7_load_balancers
