@@ -11,8 +11,8 @@ terraform {
   required_version = "< 1.4.0"
   required_providers {
     oci = {
-      source                = "oracle/oci"
-      version               = "<= 5.16.0"
+      source  = "oracle/oci"
+      version = "<= 5.16.0"
     }
   }
   experiments = [module_variable_optional_attrs]

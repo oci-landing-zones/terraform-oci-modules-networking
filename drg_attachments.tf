@@ -3,7 +3,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
 # Author: Cosmin Tudor                                                                                    #
 # Author email: cosmin.tudor@oracle.com                                                                   #
-# Last Modified: Fri Nov 17 2023                                                                          #
+# Last Modified: Wed Jan 03 2024                                                                          #
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
@@ -32,7 +32,7 @@ locals {
           } : null
           network_configuration_category = drg_value.network_configuration_category
           drga_key                       = drga_key
-        }
+        } if drga_value.network_details.type == "VCN"
       ] : [] : []
     ]) : flat_drga.drga_key => flat_drga
   } : null : null
@@ -60,7 +60,7 @@ locals {
           } : null
           network_configuration_category = drg_value.network_configuration_category
           drga_key                       = drga_key
-        }
+        } if drga_value.network_details.type == "VCN"
       ] : [] : []
     ]) : flat_drga.drga_key => flat_drga
   } : null : null
