@@ -73,16 +73,6 @@ locals {
 
   one_dimension_processed_non_vcn_drg_attachments = merge(local.one_dimension_processed_non_vcn_drg_attachments_1, local.one_dimension_injected_non_vcn_drg_attachments)
 
-  all_known_vcn_default_route_tables = {
-    for vcn_key, vcn_value in merge(
-      local.provisioned_vcns,
-      local.one_dimension_processed_existing_vcns
-      ) : vcn_value.default_route_table_id => {
-      id  = vcn_value.default_route_table_id
-      key = "${vcn_key}_default_route_table"
-    } if vcn_value.default_route_table_id != null
-  }
-
   provisioned_non_vcn_drg_attachments = {
     for drga_key, drga_value in oci_core_drg_attachment_management.these : drga_key => {
       compartment_id                   = drga_value.compartment_id
