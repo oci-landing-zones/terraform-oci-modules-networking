@@ -90,38 +90,38 @@ locals {
       id                               = drga_value.id
       is_cross_tenancy                 = drga_value.is_cross_tenancy
 
-      network_details = drga_value.network_details != null ? [
+      network_details = drga_value.network_details != null ? 
         {
-          id = drga_value.network_details[0].id
+          id = drga_value.network_details.id
           attached_resource_name = can([for resource_key, resource_value in merge(
             local.provisioned_remote_peering_connections,
             local.provisioned_fast_connect_virtual_circuits,
             local.provisioned_ipsec_connection_tunnels_management
-            ) : resource_value.display_name if resource_value.id == drga_value.network_details[0].id][0]) ? [for resource_key, resource_value in merge(
+            ) : resource_value.display_name if resource_value.id == drga_value.network_details.id][0]) ? [for resource_key, resource_value in merge(
             local.provisioned_remote_peering_connections,
             local.provisioned_fast_connect_virtual_circuits,
             local.provisioned_ipsec_connection_tunnels_management
-          ) : resource_value.display_name if resource_value.id == drga_value.network_details[0].id][0] : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+          ) : resource_value.display_name if resource_value.id == drga_value.network_details.id][0] : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
           attached_resource_key = can([for resource_key, resource_value in merge(
             local.provisioned_remote_peering_connections,
             local.provisioned_fast_connect_virtual_circuits,
             local.provisioned_ipsec_connection_tunnels_management
-            ) : resource_key if resource_value.id == drga_value.network_details[0].id][0]) ? [for resource_key, resource_value in merge(
+            ) : resource_key if resource_value.id == drga_value.network_details.id][0]) ? [for resource_key, resource_value in merge(
             local.provisioned_remote_peering_connections,
             local.provisioned_fast_connect_virtual_circuits,
             local.provisioned_ipsec_connection_tunnels_management
-          ) : resource_key if resource_value.id == drga_value.network_details[0].id][0] : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
-          ipsec_connection_id = drga_value.network_details[0].ipsec_connection_id
-          route_table_id      = drga_value.network_details[0].route_table_id
+          ) : resource_key if resource_value.id == drga_value.network_details.id][0] : "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+          ipsec_connection_id = drga_value.network_details.ipsec_connection_id
+          route_table_id      = drga_value.network_details.route_table_id
           route_table_key = contains(
             keys(local.all_known_vcn_default_route_tables),
-            drga_value.network_details[0].route_table_id
-          ) ? local.all_known_vcn_default_route_tables[drga_value.network_details[0].route_table_id].key : can(local.one_dimension_processed_non_vcn_drg_attachments[drga_key].route_table_key) ? local.one_dimension_processed_non_vcn_drg_attachments[drga_key].route_table_key == null ? local.one_dimension_processed_non_vcn_drg_attachments[drga_key].route_table_id != null ? "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null : local.one_dimension_processed_non_vcn_drg_attachments[drga_key].route_table_key : null
+            drga_value.network_details.route_table_id
+          ) ? local.all_known_vcn_default_route_tables[drga_value.network_details.route_table_id].key : can(local.one_dimension_processed_non_vcn_drg_attachments[drga_key].route_table_key) ? local.one_dimension_processed_non_vcn_drg_attachments[drga_key].route_table_key == null ? local.one_dimension_processed_non_vcn_drg_attachments[drga_key].route_table_id != null ? "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null : local.one_dimension_processed_non_vcn_drg_attachments[drga_key].route_table_key : null
 
           route_table_name = contains(
             keys(local.all_known_vcn_default_route_tables),
-            drga_value.network_details[0].route_table_id
-            ) ? local.all_known_vcn_default_route_tables[drga_value.network_details[0].route_table_id].key : can(local.one_dimension_processed_non_vcn_drg_attachments[drga_key].route_table_key) ? local.one_dimension_processed_non_vcn_drg_attachments[drga_key].route_table_key == null ? local.one_dimension_processed_non_vcn_drg_attachments[drga_key].route_table_id != null ? "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null : can(
+            drga_value.network_details.route_table_id
+            ) ? local.all_known_vcn_default_route_tables[drga_value.network_details.route_table_id].key : can(local.one_dimension_processed_non_vcn_drg_attachments[drga_key].route_table_key) ? local.one_dimension_processed_non_vcn_drg_attachments[drga_key].route_table_key == null ? local.one_dimension_processed_non_vcn_drg_attachments[drga_key].route_table_id != null ? "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null : can(
             merge(
               local.provisioned_igw_natgw_specific_route_tables,
               local.provisioned_drga_specific_route_tables,
@@ -131,9 +131,8 @@ locals {
             local.provisioned_drga_specific_route_tables,
             local.provisioned_lpg_specific_route_tables
           )[local.one_dimension_processed_non_vcn_drg_attachments[drga_key].route_table_key].display_name : "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null
-          type = drga_value.network_details[0].type
-        }
-      ] : []
+          type = drga_value.network_details.type
+        } : null
       vcn_id                                       = drga_value.vcn_id
       export_drg_route_distribution_id             = drga_value.export_drg_route_distribution_id
       remove_export_drg_route_distribution_trigger = drga_value.remove_export_drg_route_distribution_trigger
