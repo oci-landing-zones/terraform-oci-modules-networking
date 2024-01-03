@@ -150,7 +150,7 @@ resource "oci_core_drg_attachment_management" "these" {
   for_each = local.one_dimension_processed_non_vcn_drg_attachments != null ? local.one_dimension_processed_non_vcn_drg_attachments : {}
   #Required
   attachment_type = each.value.network_details.type
-  compartment_id  = each.value.compartment_id
+  compartment_id  = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   network_id = each.value.network_details.attached_resource_id != null ? each.value.network_details.attached_resource_id : each.value.network_details.attached_resource_key != null ? merge(
     local.provisioned_remote_peering_connections,
     local.provisioned_fast_connect_virtual_circuits,
