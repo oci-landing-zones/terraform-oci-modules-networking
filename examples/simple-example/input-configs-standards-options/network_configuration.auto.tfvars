@@ -3,7 +3,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
 # Author: Cosmin Tudor                                                                                    #
 # Author email: cosmin.tudor@oracle.com                                                                   #
-# Last Modified: Wed Nov 15 2023                                                                          #
+# Last Modified: Thu Jan 04 2024                                                                          #
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
@@ -30,6 +30,40 @@ network_configuration = {
           is_create_igw                    = false
           is_attach_drg                    = false
           block_nat_traffic                = false
+          default_security_list = {
+            display_name = "sl-lb"
+
+            egress_rules = [
+              {
+                description = "egress to 0.0.0.0/0 over ALL protocols"
+                stateless   = false
+                protocol    = "ALL"
+                dst         = "0.0.0.0/0"
+                dst_type    = "CIDR_BLOCK"
+              }
+            ]
+
+            ingress_rules = [
+              {
+                description  = "ingress from 0.0.0.0/0 over TCP22"
+                stateless    = false
+                protocol     = "TCP"
+                src          = "0.0.0.0/0"
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 22
+                dst_port_max = 22
+              },
+              {
+                description  = "ingress from 0.0.0.0/0 over TCP443"
+                stateless    = false
+                protocol     = "TCP"
+                src          = "0.0.0.0/0"
+                src_type     = "CIDR_BLOCK"
+                dst_port_min = 443
+                dst_port_max = 443
+              }
+            ]
+          }
 
           security_lists = {
 
