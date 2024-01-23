@@ -1,9 +1,9 @@
 <!-- BEGIN_TF_DOCS -->
-# OKE Native networking architecture - topology provisioning 
+# OKE Flannel networking architecture - topology provisioning 
 
 ## Description
 
-This is an example for a VCN NATIVE CNI with Private API Endpoint, Private Worker Nodes and Public Load Balancers instantiation of the ```terraform-oci-cis-landing-zone-networking``` networking core module.
+This is an example for a Flannel CNI with Private API Endpoint, Private Worker Nodes and Public Load Balancers instantiation of the ```terraform-oci-cis-landing-zone-networking``` networking core module.
 
 It is designed to use NSGS instead of Security Lists.
 
@@ -15,17 +15,16 @@ This example is leveraging the fully dynamic characteristics of the complex netw
 - single networking category defined
 - the category will contain one single VCN (10.0.0.0/16)
 - the VCN will contain the following:
-    - Five security lists:
+    - Four security lists:
         - an api endpoint security list allowing ingress for ICMP (Path Discovery).
         - a workers security list allowing ingress for ICMP (Path Discovery).
-        - a pods security list allowing ingress for ICMP (Path Discovery).
-        - an operator security list allowing ingress for ICMP (Path Discovery).
+        - three operator security list. One ingress for ICMP (Path Discovery) and Two egress for allowing connectivity to the OKE Private api endpoint and managed ssh access to workers in the Node Pool subnet.
         - a services security list allowing ingress for ICMP (Path Discovery).
     - Three gateways:
         - One Internet Gateway
         - One NAT Gateway
         - One Service Gateway
-    - Five route tables:
+    - Four route tables:
         - ```rt-services``` defines a route to the Internet Gateway
         - ```rt-api``` defines two routes:
             - a route to the NAT GW;
@@ -33,25 +32,19 @@ This example is leveraging the fully dynamic characteristics of the complex netw
         - ```rt-workers``` defines two routes:
             - a route to the NAT GW;
             - a route to the Service GW;
-        - ```rt-pods``` defines two routes:
-            - a route to the NAT GW;
-            - a route to the Service GW;            
         - ```rt-operator``` defines two routes:
             - a route to the NAT GW;
             - a route to the Service GW;                        
-    - Five Network Security Groups (NSGs)
+    - Three Network Security Groups (NSGs)
         - ```nsg-api```
-        - ```nsg-operator``` 
         - ```nsg-workers``` 
-        - ```nsg-pods``` 
         - ```nsg-services```
     - all NSGs contain the rules to allow a Kubernetes Cluster with Flannel CNI to run correctly.
-    - Five subnets:
+    - Four subnets:
         - ```sub-api``` (10.0.0.0/30) for the api endpoint. This subnet will be using the ```rt-api``` route table, default VCN DHCP options and the api security list.
-        -  ```sub-workers``` (10.0.1.0/24) for the workers. This subnet will be using the ```rt-workers``` route table, default VCN DHCP options and the workers security list.
-        -  ```sub-pods``` (10.0.32.0/19) for the pods. This subnet will be using the ```rt-pods``` route table, default VCN DHCP options and the pods security list.
-        - ```sub-services``` (10.0.2.0/24) for the load balancers. This subnet will be using the ```rt-services``` route table, default VCN DHCP options and the services security list.
-        - ```sub-operator``` (10.0.3.0/30) for the operator instance. This subnet will be using the ```rt-operator``` route table, default VCN DHCP options and the operator security list.
+        -  ```sub-workers``` (10.0.1.0/24) for the application tier. This subnet will be using the ```rt-workers``` route table, default VCN DHCP options and the workers security list.
+        - ```sub-services``` (10.0.2.0/24)for the load balancers. This subnet will be using the ```rt-services``` route table, default VCN DHCP options and the services security list.
+        - ```sub-operator``` (10.0.3.0/28) for allowing Bastion service access to the kubernetes api in the **sub-api** subnet and managed ssh to workers in the **sub-workers** subnet. This subnet will be using the ```rt-operator``` route table, default VCN DHCP options and the operator security list.
 
 
 
