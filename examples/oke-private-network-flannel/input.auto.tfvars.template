@@ -1,8 +1,29 @@
+# Copyright (c) 2023 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+#--------------------------------------------------------------------------------------------------------------------------------------
+# 1. Rename this file to <project-name>.auto.tfvars, where <project-name> is a name of your choice.
+# 2. Provide values for "Tenancy Connectivity Variables".
+# 3. Replace <REPLACE-BY-*> placeholder with appropriate value.
+#--------------------------------------------------------------------------------------------------------------------------------------
+
+#---------------------------------------
+# Tenancy Connectivity Variables
+#---------------------------------------
+
+tenancy_ocid         = "<tenancy OCID>"            # Get this from OCI Console (after logging in, go to top-right-most menu item and click option "Tenancy: <your tenancy name>").
+user_ocid            = "<user OCID>"               # Get this from OCI Console (after logging in, go to top-right-most menu item and click option "My profile").
+fingerprint          = "<PEM key fingerprint>"     # The fingerprint can be gathered from your user account. In the "My profile page, click "API keys" on the menu in left hand side.
+private_key_path     = "<path to the private key>" # This is the full path on your local system to the API signing private key.
+private_key_password = ""                          # This is the password that protects the private key, if any.
+region               = "<your tenancy region>"     # The region name.
+
+#---------------------------------------
+# Input variable
+#---------------------------------------
+
 network_configuration = {
-  #default_compartment_id    = "<REPLACE-BY-COMPARTMENT-OCID>"
-  default_compartment_id    = "ocid1.compartment.oc1..aaaaaaaalonbktzlys2nb6hoh4fsvrms2535pr7uijeqyazcvevw35yz2hqq"
-  default_freeform_tags     = {}
-  default_enable_cis_checks = false
+  default_compartment_id    = "<REPLACE-BY-COMPARTMENT-OCID>"
   network_configuration_categories = {
     production = {
       category_freeform_tags = {
@@ -47,37 +68,37 @@ network_configuration = {
                 }
               ]
             }
-            SECLIST-OPERATOR-KEY = {
+            SECLIST-OPERATOR-KEY = { # The TCP egress and ingress rules are to support communication within the subnet itself. A use case is when deploying a Bastion service endpoint for accessing the operator host.
               display_name = "sl-operator"
               egress_rules = [
                 {
-                  description  = "Egress for bastion service to api endpoint"
+                  description  = "Allows outbound SSH traffic from operator subnet to hosts in the operator subnet, for Bastion service."
                   stateless    = false
                   protocol     = "TCP"
-                  dst          = "10.0.0.0/30"
-                  dst_type     = "CIDR_BLOCK"
-                  dst_port_min = 6443
-                  dst_port_max = 6443
-                },
-                {
-                  description  = "Egress for bastion service to worker nodes"
-                  stateless    = false
-                  protocol     = "TCP"
-                  dst          = "10.0.1.0/24"
+                  dst          = "10.0.3.0/28"
                   dst_type     = "CIDR_BLOCK"
                   dst_port_min = 22
                   dst_port_max = 22
-                }
-              ]
+                },
+              ],
               ingress_rules = [
                 {
-                  description = "Ingress ICMP for path discovery"
+                  description = "Allows inbound ICMP traffic for path discovery."
                   stateless   = false
                   protocol    = "ICMP"
                   src         = "0.0.0.0/0"
                   src_type    = "CIDR_BLOCK"
                   icmp_type   = 3
                   icmp_code   = 4
+                },
+                {
+                  description  = "Allows inbound SSH traffic from hosts in the operator subnet to the operator subnet, for Bastion service."
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "10.0.3.0/28"
+                  src_type     = "CIDR_BLOCK"
+                  dst_port_min = 22
+                  dst_port_max = 22
                 }
               ]
             }
@@ -192,7 +213,6 @@ network_configuration = {
               ipv6cidr_blocks            = []
               prohibit_internet_ingress  = false
               prohibit_public_ip_on_vnic = false
-              route_table_id             = null
               route_table_key            = "RT-SERVICES-KEY"
               security_list_keys         = ["SECLIST-SERVICES-KEY"]
             }
@@ -471,8 +491,35 @@ network_configuration = {
                 }
               }
             }
+            NSG-OPERATOR-KEY = {
+              display_name = "nsg-operator"
+              egress_rules = {
+                sgw-tcp = {
+                  description = "Allows TCP outbound traffic from operator subnet to OCI Services Network (OSN)."
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "all-services"
+                  dst_type    = "SERVICE_CIDR_BLOCK"
+                }
+                api-tcp = {
+                  description  = "Allows TCP outbound traffic from operator subnet to Kubernetes API server, for OKE management."
+                  stateless    = false
+                  protocol     = "TCP"
+                  dst          = "10.0.0.0/30"
+                  dst_type     = "CIDR_BLOCK"
+                  dst_port_min = 6443
+                  dst_port_max = 6443
+                }
+                anywhere-tcp = {
+                  description = "Allows TCP egress from operator subnet to everywhere else."
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "0.0.0.0/0"
+                  dst_type    = "CIDR_BLOCK"
+                }
+              }
+            }
           }
-
           vcn_specific_gateways = {
             internet_gateways = {
               IGW-KEY = {
