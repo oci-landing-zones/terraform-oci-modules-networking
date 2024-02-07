@@ -22,8 +22,11 @@ region               = "<your tenancy region>"     # The region name.
 # Input variable
 #---------------------------------------
 
+
 network_configuration = {
   default_compartment_id    = "<REPLACE-BY-COMPARTMENT-OCID>"
+  default_freeform_tags     = {}
+  default_enable_cis_checks = false
   network_configuration_categories = {
     production = {
       category_freeform_tags = {
@@ -68,37 +71,18 @@ network_configuration = {
                 }
               ]
             }
-            SECLIST-OPERATOR-KEY = { # The TCP egress and ingress rules are to support communication within the subnet itself. A use case is when deploying a Bastion service endpoint for accessing the operator host.
-              display_name = "sl-operator"
-              egress_rules = [
-                {
-                  description  = "Allows outbound SSH traffic from operator subnet to hosts in the operator subnet, for Bastion service."
-                  stateless    = false
-                  protocol     = "TCP"
-                  dst          = "10.0.3.0/28"
-                  dst_type     = "CIDR_BLOCK"
-                  dst_port_min = 22
-                  dst_port_max = 22
-                },
-              ],
+            SECLIST-PODS-KEY = {
+              display_name = "sl-pods"
+              egress_rules = []
               ingress_rules = [
                 {
-                  description = "Allows inbound ICMP traffic for path discovery."
+                  description = "Ingress ICMP for path discovery"
                   stateless   = false
                   protocol    = "ICMP"
                   src         = "0.0.0.0/0"
                   src_type    = "CIDR_BLOCK"
                   icmp_type   = 3
                   icmp_code   = 4
-                },
-                {
-                  description  = "Allows inbound SSH traffic from hosts in the operator subnet to the operator subnet, for Bastion service."
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = "10.0.3.0/28"
-                  src_type     = "CIDR_BLOCK"
-                  dst_port_min = 22
-                  dst_port_max = 22
                 }
               ]
             }
@@ -115,6 +99,41 @@ network_configuration = {
                   icmp_type   = 3
                   icmp_code   = 4
                 }
+              ]
+            }
+            SECLIST-OPERATOR-KEY = { # The TCP egress and ingress rules are to support communication within the subnet itself. A use case is when deploying a Bastion service endpoint for accessing the operator host.
+              display_name = "sl-operator"
+              egress_rules = [
+                {
+                  description  = "Allows outbound SSH traffic from operator subnet to hosts in the operator subnet, for Bastion service."
+                  stateless    = false
+                  protocol     = "TCP"
+                  dst          = "10.0.3.0/28"
+                  dst_type     = "CIDR_BLOCK"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                },
+              ]
+              ingress_rules = [
+                {
+                  description = "Ingress ICMP for path discovery"
+                  stateless   = false
+                  protocol    = "ICMP"
+                  src         = "0.0.0.0/0"
+                  src_type    = "CIDR_BLOCK"
+                  icmp_type   = 3
+                  icmp_code   = 4
+                },
+                {
+                  description  = "Allows inbound SSH traffic from hosts in the operator subnet to the operator subnet, for Bastion service."
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "10.0.3.0/28"
+                  src_type     = "CIDR_BLOCK"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                }
+
               ]
             }
           }
@@ -138,6 +157,23 @@ network_configuration = {
             }
             RT-WORKERS-KEY = {
               display_name = "rt-workers"
+              route_rules = {
+                sgw-route = {
+                  network_entity_key = "SGW-KEY"
+                  description        = "Route for sgw"
+                  destination        = "all-services"
+                  destination_type   = "SERVICE_CIDR_BLOCK"
+                },
+                natgw-route = {
+                  network_entity_key = "NATGW-KEY"
+                  description        = "Route for internet access via NAT GW"
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
+              }
+            }
+            RT-PODS-KEY = {
+              display_name = "rt-pods"
               route_rules = {
                 sgw-route = {
                   network_entity_key = "SGW-KEY"
@@ -205,6 +241,17 @@ network_configuration = {
               route_table_key            = "RT-WORKERS-KEY"
               security_list_keys         = ["SECLIST-WORKERS-KEY"]
             }
+            PODS-SUBNET-KEY = {
+              cidr_block                 = "10.0.32.0/19"
+              dhcp_options_key           = "default_dhcp_options"
+              display_name               = "sub-pods"
+              dns_label                  = "podssub"
+              ipv6cidr_blocks            = []
+              prohibit_internet_ingress  = true
+              prohibit_public_ip_on_vnic = true
+              route_table_key            = "RT-PODS-KEY"
+              security_list_keys         = ["SECLIST-PODS-KEY"]
+            }
             SERVICES-SUBNET-KEY = {
               cidr_block                 = "10.0.2.0/24"
               dhcp_options_key           = "default_dhcp_options"
@@ -213,6 +260,7 @@ network_configuration = {
               ipv6cidr_blocks            = []
               prohibit_internet_ingress  = false
               prohibit_public_ip_on_vnic = false
+              route_table_id             = null
               route_table_key            = "RT-SERVICES-KEY"
               security_list_keys         = ["SECLIST-SERVICES-KEY"]
             }
@@ -275,6 +323,14 @@ network_configuration = {
                   icmp_type   = 3
                   icmp_code   = 4
                 }
+                #native
+                pods_all = {
+                  description = "Allow Kubernetes API endpoint to communicate with pods."
+                  stateless   = false
+                  protocol    = "ALL"
+                  dst         = "NSG-PODS-KEY"
+                  dst_type    = "NETWORK_SECURITY_GROUP"
+                }
               }
               ingress_rules = {
                 api_intercommunication = {
@@ -286,12 +342,12 @@ network_configuration = {
                   dst_port_min = 6443
                   dst_port_max = 6443
                 }
-                bastion_service_access = {
-                  description  = "Bastion service access to Kubernetes API endpoint"
+                operator_client_access = {
+                  description  = "Operator access to Kubernetes API endpoint"
                   stateless    = false
                   protocol     = "TCP"
-                  src          = "10.0.3.0/28"
-                  src_type     = "CIDR_BLOCK"
+                  src          = "NSG-OPERATOR-KEY"
+                  src_type     = "NETWORK_SECURITY_GROUP"
                   dst_port_min = 6443
                   dst_port_max = 6443
                 }
@@ -330,6 +386,25 @@ network_configuration = {
                   src_type    = "NETWORK_SECURITY_GROUP"
                   icmp_type   = 3
                   icmp_code   = 4
+                }
+                #native
+                pods_tcp_6443 = {
+                  description  = "Pod to Kubernetes API endpoint communication (when using VCN-native pod networking)"
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "NSG-PODS-KEY"
+                  src_type     = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 6443
+                  dst_port_max = 6443
+                }
+                pods_tcp_12250 = {
+                  description  = "Pod to Kubernetes API endpoint communication (when using VCN-native pod networking)"
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "NSG-PODS-KEY"
+                  src_type     = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 12250
+                  dst_port_max = 12250
                 }
               }
             }
@@ -386,6 +461,14 @@ network_configuration = {
                   icmp_type   = 3
                   icmp_code   = 4
                 }
+                #native
+                pods_all = {
+                  description = "Allow worker nodes to access pods."
+                  stateless   = false
+                  protocol    = "ALL"
+                  dst         = "NSG-PODS-KEY"
+                  dst_type    = "NETWORK_SECURITY_GROUP"
+                }
                 anywhere_tcp = {
                   description = "(optional) Allow worker nodes to communicate with internet."
                   stateless   = false
@@ -437,20 +520,97 @@ network_configuration = {
                   icmp_type   = 3
                   icmp_code   = 4
                 }
-                bastion_service_access = {
-                  description  = "Bastion service ssh access to workers"
+                operator_ssh_access = {
+                  description  = "Operator ssh access to workers"
                   stateless    = false
                   protocol     = "TCP"
-                  src          = "10.0.3.0/28"
-                  src_type     = "CIDR_BLOCK"
+                  src          = "NSG-OPERATOR-KEY"
+                  src_type     = "NETWORK_SECURITY_GROUP"
                   dst_port_min = 22
                   dst_port_max = 22
+                }
+              }
+            }
+            NSG-PODS-KEY = {
+              display_name = "nsg-pods"
+              egress_rules = {
+                pods_traffic = {
+                  description = "Allow pods to communicate with other pods."
+                  stateless   = false
+                  protocol    = "ALL"
+                  dst         = "NSG-PODS-KEY"
+                  dst_type    = "NETWORK_SECURITY_GROUP"
+                }
+                sgw_icmp = {
+                  description = "Path Discovery."
+                  stateless   = false
+                  protocol    = "ICMP"
+                  dst         = "all-services"
+                  dst_type    = "SERVICE_CIDR_BLOCK"
+                  icmp_type   = 3
+                  icmp_code   = 4
+                }
+                sgw_tcp = {
+                  description = "Allow TCP egress from pods to OCI Services."
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "all-services"
+                  dst_type    = "SERVICE_CIDR_BLOCK"
+                }
+                anywhere_tcp = {
+                  description = "(optional) Allow pods nodes to communicate with internet."
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "0.0.0.0/0"
+                  dst_type    = "CIDR_BLOCK"
+                }
+                api_tcp_6443 = {
+                  description  = "Allow TCP egress from pods to Kubernetes API server."
+                  stateless    = false
+                  protocol     = "TCP"
+                  dst          = "NSG-API-KEY"
+                  dst_type     = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 6443
+                  dst_port_max = 6443
+                }
+                api_tcp_12250 = {
+                  description  = "Allow TCP egress from pods to OKE control plane."
+                  stateless    = false
+                  protocol     = "TCP"
+                  dst          = "NSG-API-KEY"
+                  dst_type     = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 12250
+                  dst_port_max = 12250
+                }
+              }
+              ingress_rules = {
+                workers_all = {
+                  description = "Allow worker nodes to access pods."
+                  stateless   = false
+                  protocol    = "ALL"
+                  src         = "NSG-WORKERS-KEY"
+                  src_type    = "NETWORK_SECURITY_GROUP"
+                }
+                api_all = {
+                  description = "Allow Kubernetes API endpoint to communicate with pods."
+                  stateless   = false
+                  protocol    = "ALL"
+                  src         = "NSG-API-KEY"
+                  src_type    = "NETWORK_SECURITY_GROUP"
+                }
+                pods_all = {
+                  description = "	Allow pods to communicate with other pods."
+                  stateless   = false
+                  protocol    = "ALL"
+                  src         = "NSG-PODS-KEY"
+                  src_type    = "NETWORK_SECURITY_GROUP"
                 }
               }
             }
             NSG-SERVICES-KEY = {
               display_name = "nsg-services"
               egress_rules = {
+
                 workers_traffic = {
                   description  = "Allow TCP egress from public load balancers to workers nodes for NodePort traffic"
                   stateless    = false
@@ -505,8 +665,8 @@ network_configuration = {
                   description  = "Allows TCP outbound traffic from operator subnet to Kubernetes API server, for OKE management."
                   stateless    = false
                   protocol     = "TCP"
-                  dst          = "10.0.0.0/30"
-                  dst_type     = "CIDR_BLOCK"
+                  dst          = "NSG-API-KEY"
+                  dst_type     = "NETWORK_SECURITY_GROUP"
                   dst_port_min = 6443
                   dst_port_max = 6443
                 }
