@@ -1,45 +1,44 @@
 <!-- BEGIN_TF_DOCS -->
-# OKE Flannel Private Networking Architecture
+# OKE Flannel Private Networking with External Access Example
 
-This is an example for a Flannel CNI with Private API Endpoint, Private Worker Nodes and Public Load Balancers instantiation of the ```terraform-oci-cis-landing-zone-networking``` core Networking module. It is preconfigured for Bastion service access to api endpoint and workers from Node Pool subnet and designed to primarily use Network Security Groups (NSGs) instead of Security Lists.
+## Introduction
 
-For detailed description of the ```terraform-oci-cis-landing-zone-networking``` core Networking module, please refer to the core module specific [README.md](../../README.md) and [SPEC.md](../../SPEC.md).
+This is an example of a network topology to host an OKE cluster that utilizes Flannel CNI, private API endpoint, private worker nodes and public load balancers. It is deployed via the [terraform-oci-cis-landing-zone-networking module](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking). The network setup assumes cluster access occurs from an OKE client that is external to the tenancy (as a user laptop) through the OCI Bastion service. 
 
-This example is leveraging the fully dynamic characteristics of the Networking module input to describe the following networking topology:
+Examples of OKE configurations that deploy in this network topology:
+- [Flannel Basic](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/flannel/basic): a Flannel-based OKE cluster with no cluster access automation.
+- [Flannel Full Access Automation from localhost](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/flannel/private-cluster-access-via-localhost): a Flannel-based OKE cluster with full access automation via the OCI Bastion service. The OKE client is external to the tenancy (as a user laptop).
 
-- Single VCN in the compartment referred by *default_compartment_id* attribute containing the following:
-    - Four security lists:
-        - an api endpoint security list allowing ingress for ICMP (Path Discovery).
-        - a workers security list allowing ingress for ICMP (Path Discovery).
-        - three operator security list. One ingress for ICMP (Path Discovery) and Two egress for allowing connectivity to the OKE Private api endpoint and managed ssh access to workers in the Node Pool subnet.
-        - a services security list allowing ingress for ICMP (Path Discovery).
-    - Three gateways:
-        - One Internet Gateway
-        - One NAT Gateway
-        - One Service Gateway
-    - Four route tables:
-        - ```rt-services``` defines a route to the Internet Gateway
-        - ```rt-api``` defines two routes:
-            - a route to the NAT GW;
-            - a route to the Service GW;
-        - ```rt-workers``` defines two routes:
-            - a route to the NAT GW;
-            - a route to the Service GW;
-        - ```rt-operator``` defines two routes:
-            - a route to the NAT GW;
-            - a route to the Service GW;                        
-    - Three Network Security Groups (NSGs)
-        - ```nsg-api```
-        - ```nsg-workers``` 
-        - ```nsg-services```
-    - all NSGs contain the rules to allow a Kubernetes Cluster with Flannel CNI to run correctly.
+### Resources Deployed by this Example
+
+The following resources are deployed by this example:
+
+- Single VCN in the compartment referred by *default_compartment_id* attribute, containing the following:
     - Four subnets:
-        - ```sub-api``` (10.0.0.0/30) for the api endpoint. This subnet will be using the ```rt-api``` route table, default VCN DHCP options and the api security list.
-        - ```sub-workers``` (10.0.1.0/24) for the application tier. This subnet will be using the ```rt-workers``` route table, default VCN DHCP options and the workers security list.
-        - ```sub-services``` (10.0.2.0/24)for the load balancers. This subnet will be using the ```rt-services``` route table, default VCN DHCP options and the services security list.
-        - ```sub-operator``` (10.0.3.0/28) for allowing Bastion service access to the kubernetes api in the **sub-api** subnet and managed ssh to workers in the **sub-workers** subnet. This subnet will be using the ```rt-operator``` route table, default VCN DHCP options and the operator security list.
-
-__NOTE:__ Please note that the entire configuration is a single complex input parameter and you're able to edit it and change the resources names and any of their configuration (like VCN and subnet CIDR blocks, dns labels...) and, also, you're able to change the input configuration topology/structure like adding more categories, more VCNs inside a category, more subnets inside a VCN or inject new resources into existing VCNs and this will reflect into the topology that terraform will provision.
+        - **sub-api** (10.0.0.0/30) for the APIi endpoint. This subnet utilizes the **rt-api** route table, default VCN DHCP options and the **sl-api** security list.
+        - **sub-workers** (10.0.1.0/24) for the application tier. This subnet utilizes the **rt-workers** route table, default VCN DHCP options and the **sl-workers** security list.
+        - **sub-services** (10.0.2.0/24) for the load balancers. This subnet utilizes the **rt-services** route table, default VCN DHCP options and the **sl-services** security list.
+        - **sub-bastion** (10.0.3.0/28) for OCI Bastion service endpoint. This subnet utilizes the **rt-bastion** route table, default VCN DHCP options and the **sl-bastion** security list.
+    Three route tables:
+        - **rt-services**: defines a route to the Internet Gateway.
+        - **rt-api**: defines two routes:
+            - a route to the NAT GW.
+            - a route to the Service GW.
+        - **rt-workers**: defines two routes:
+            - a route to the NAT GW.
+            - a route to the Service GW.   
+        - **rt-bastion**: defines one route:
+            - a route to the Service GW.   
+    - Three security lists:
+        - **sl-api**: for the API endpoint subnet, allowing ingress for ICMP (Path Discovery).
+        - **sl-workers**: for the workers subnet, allowing ingress for ICMP (Path Discovery).
+        - **sl-services**: for the services subnet, allowing ingress for ICMP (Path Discovery).
+        - **sl-bastion**: for the bastion subnet, allowing egress to API subnet, egress to Workers subnet and ingress for ICMP (Path Discovery).
+    - Three Network Security Groups (NSGs): **nsg-api**, **nsg-workers** and **nsg-services**, containing security rules to allow a Kubernetes Cluster with Flannel CNI to run correctly.    
+    - Three gateways:
+        - One Internet Gateway.
+        - One NAT Gateway.
+        - One Service Gateway.
 
 See [input.auto.tfvars.template](./input.auto.tfvars.template) for the variables configuration.
 
@@ -49,7 +48,7 @@ See [input.auto.tfvars.template](./input.auto.tfvars.template) for the variables
 2. Within *\<project-name\>.auto.tfvars*, provide tenancy connectivity information and adjust the input variables, by making the appropriate substitutions:
    - Replace \<REPLACE-BY-\*\> placeholder with appropriate value. 
    
-Refer to [Networking module README.md](../../README.md) for overall attributes usage.
+Refer to [Networking module README.md](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking/blob/main/README.md) for overall attributes usage.
 
 3. In this folder, run the typical Terraform workflow:
 ```
