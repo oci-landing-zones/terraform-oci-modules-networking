@@ -212,6 +212,12 @@ network_configuration = {
                   description        = "Route for sgw"
                   destination        = "all-services"
                   destination_type   = "SERVICE_CIDR_BLOCK"
+                },
+                natgw-route = {
+                  network_entity_key = "NATGW"
+                  description        = "Route for internet access via NAT GW"
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
                 }
               }
             }
@@ -506,6 +512,13 @@ network_configuration = {
                   dst_type     = "NETWORK_SECURITY_GROUP"
                   dst_port_min = 22
                   dst_port_max = 22
+                }
+                anywhere-tcp = {
+                  description  = "Allows outbound connections to anywhere."
+                  stateless    = false
+                  protocol     = "TCP"
+                  dst          = "0.0.0.0/0"
+                  dst_type     = "CIDR_BLOCK"
                 }
               }
               ingress_rules = {
