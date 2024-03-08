@@ -7,7 +7,9 @@ This is an example of a network topology to host an OKE cluster that utilizes Fl
 
 The network configuration assumes cluster access occurs from an OKE client that is either external to the tenancy (as a user laptop) or a Compute instance in the VCN *mgmt* subnet. In both cases, access to OKE API endpoint and worker nodes is expected to occur via the OCI Bastion service. Providing an access path via a jump host in a public subnet is also an option, however such topology is not in the scope of this example. 
 
-![Flannel_Network_Topology](diagrams/oke-flannel-network.drawio.svg)
+![Flannel_Network_Topology](diagrams/oke-flannel-network.drawio.png)
+
+[Click here](./diagrams/oke-flannel-network.drawio.svg) to download the SVG version.
 
 The diagram shows the network topology that is created. The subnets in orange color are required by a Flannel-based deployment. The one in red (*mgmt-subnet*) is an add-on, used as an access path into the OKE cluster for management purposes. The communication patterns are enabled by route tables, security lists and NSGs (Network Security Groups). The design favors NSGs for a more fine grained control. Security lists are used for generic ICMP ingress rules and for OCI Bastion service support, as Bastion service endpoints do not support NSGs. Everything else is expressed in NSG rules.
 
