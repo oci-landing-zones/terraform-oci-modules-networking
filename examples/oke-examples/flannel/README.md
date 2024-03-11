@@ -19,8 +19,8 @@ This topology is also discussed in the [OCI documentation](https://docs.oracle.c
 
 Examples of OKE configurations that deploy in this network topology:
 - [Flannel Basic No Access Automation](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/flannel/basic): a Flannel-based OKE cluster with no cluster access automation.
-- [Flannel Basic with Access Automation via OCI Bastion Service - Access from localhost](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/flannel/bastion-svc-access-via-localhost): a Flannel-based OKE cluster with full access automation via the OCI Bastion service. The OKE client is external to the tenancy (as a user laptop).
-- [Flannel Basic with Access Automation via OCI Bastion Service - Access from operator host](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/flannel/bastion-svc-access-via-operator-host): a Flannel-based OKE cluster with full access automation via the OCI Bastion service. The OKE client is a Compute instance in the VCN *mgmt* subnet.
+- [Flannel Basic with Access Automation via OCI Bastion Service - Access from localhost](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/flannel/basic-access-via-bastion-from-localhost/): a Flannel-based OKE cluster with full access automation via the OCI Bastion service. The OKE client is external to the tenancy (as a user laptop).
+- [Flannel Basic with Access Automation via OCI Bastion Service - Access from operator host](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/flannel/basic-access-via-bastion-from-operator-host): a Flannel-based OKE cluster with full access automation via the OCI Bastion service. The OKE client is a Compute instance in the VCN *mgmt* subnet.
 
 ### Resources Deployed by this Example
 
