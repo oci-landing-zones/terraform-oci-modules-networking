@@ -78,7 +78,7 @@ module "l7_load_balancers" {
       subnets                 = local.provisioned_subnets
       network_security_groups = local.provisioned_network_security_groups
     },
-    l7_load_balancers       = local.one_dimension_processed_l7_load_balancers
-    compartments_dependency = var.compartments_dependency
+    l7_load_balancers = local.one_dimension_processed_l7_load_balancers
   }
+  compartments_dependency = var.compartments_dependency
 }
