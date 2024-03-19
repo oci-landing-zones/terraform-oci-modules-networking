@@ -1023,6 +1023,12 @@ variable "network_configuration" {
   })
 }
 
+variable module_name {
+  description = "The module name."
+  type = string
+  default = "networking"
+}
+
 variable "compartments_dependency" {
   description = "A map of objects containing the externally managed compartments this module may depend on. All map objects must have the same type and must contain an 'id' attribute of string type set with the compartment OCID. See External Dependencies section in README.md (https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking#ext-dep) for details."
   type = map(object({
