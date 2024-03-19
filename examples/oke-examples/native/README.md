@@ -9,8 +9,8 @@ The network configuration assumes cluster access occurs from an OKE client that 
 
 Examples of OKE configurations that deploy in this network configuration:
 - [Native Basic No Access Automation](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/native/basic): a Native-based OKE cluster with no cluster access automation.
-- [Native Basic with Access Automation via OCI Bastion Service - Access from localhost](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/native/private-cluster-access-via-localhost): a Native-based OKE cluster with full access automation via the OCI Bastion service. The OKE client is external to the tenancy (as a user laptop).
-- [Native Basic with Access Automation via OCI Bastion Service - Access from operator host](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/native/private-cluster-access-via-operator): a Native-based OKE cluster with full access automation via the OCI Bastion service. The OKE client is a Compute instance in the VCN *access* subnet.
+- [Native Basic with Access Automation via OCI Bastion Service - Access from localhost](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/native/basic-access-via-bastion-from-localhost): a Native-based OKE cluster with full access automation via the OCI Bastion service. The OKE client is external to the tenancy (as a user laptop).
+- [Native Basic with Access Automation via OCI Bastion Service - Access from operator host](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/native/basic-access-via-bastion-from-operator-host): a Native-based OKE cluster with full access automation via the OCI Bastion service. The OKE client is a Compute instance in the VCN *access* subnet.
 
 ### Resources Deployed by this Example
 
