@@ -143,7 +143,7 @@ resource "oci_core_drg_attachment" "these" {
   defined_tags       = each.value.defined_tags
   display_name       = each.value.display_name
   drg_route_table_id = each.value.drg_route_table_id != null ? each.value.drg_route_table_id : each.value.drg_route_table_key != null ? oci_core_drg_route_table.these[each.value.drg_route_table_key].id : null
-  freeform_tags      = each.value.freeform_tags
+  freeform_tags      = merge(local.cislz_module_tag, each.value.freeform_tags)
   dynamic "network_details" {
     iterator = net_det
     for_each = each.value.network_details != null ? [each.value.network_details] : []

@@ -147,7 +147,7 @@ resource "oci_load_balancer_load_balancer" "these" {
 
   #Optional
   defined_tags               = each.value.defined_tags
-  freeform_tags              = each.value.freeform_tags
+  freeform_tags              = merge(local.cislz_module_tag, each.value.freeform_tags)
   ip_mode                    = each.value.ip_mode
   is_private                 = each.value.is_private
   network_security_group_ids = each.value.network_security_group_ids

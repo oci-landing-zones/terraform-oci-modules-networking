@@ -216,7 +216,7 @@ resource "oci_core_default_security_list" "these" {
 
   #Optional
   defined_tags  = each.value.defined_tags
-  freeform_tags = each.value.freeform_tags
+  freeform_tags = merge(local.cislz_module_tag, each.value.freeform_tags)
 
   # egress, protocol: ICMP with ICMP type
   dynamic "egress_security_rules" {
