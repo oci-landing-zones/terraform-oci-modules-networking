@@ -1030,7 +1030,7 @@ variable "compartments_dependency" {
 }
 
 variable "network_dependency" {
-  description = "A map of objects containing the externally managed network resources this module may depend on. All map objects must have the same type and must contain at least an 'id' attribute (representing the network resource OCID) of string type."
+  description = "A map of objects containing the externally managed network resources this module may depend on. The map must have at least two other maps, with their keys equal to 'vcns' and 'dynamic_routing_gateways'. Each of these submaps mas have at least with one object with the 'id' attribute set (representing the VCN or DRG OCID) of string type. See External Dependencies section in README.md (https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking#ext-dep) for details."
   type        = map(any)
   default     = null
 }
