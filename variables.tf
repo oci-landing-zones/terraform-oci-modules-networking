@@ -3,7 +3,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
 # Author: Cosmin Tudor                                                                                    #
 # Author email: cosmin.tudor@oracle.com                                                                   #
-# Last Modified: Wed Nov 15 2023                                                                          #
+# Last Modified: Tue Dec 12 2023                                                                          #
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
@@ -201,8 +201,8 @@ variable "network_configuration" {
             stateless    = optional(bool),
             src          = optional(string),
             src_type     = optional(string),
-            dst_port_min = optional(number),
-            dst_port_max = optional(number),
+            dst_port_min = number,
+            dst_port_max = number,
             src_port_min = optional(number),
             src_port_max = optional(number),
             icmp_type    = optional(number),
@@ -222,126 +222,7 @@ variable "network_configuration" {
             icmp_code    = optional(number)
           })))
         })))
-        dns_resolver = optional(object({
-          display_name  = optional(string),
-          defined_tags  = optional(map(string)),
-          freeform_tags = optional(map(string)),
-          attached_views = optional(map(object({
-            existing_view_id = optional(string) # an existing externally managed view. Assign either this attribute or the others for having this module managing the view.
-            compartment_id = optional(string),
-            display_name   = optional(string),
-            defined_tags   = optional(map(string)),
-            freeform_tags  = optional(map(string)),
-            dns_zones = optional(map(object({
-              compartment_id = optional(string),
-              name           = optional(string),
-              defined_tags   = optional(map(string)),
-              freeform_tags  = optional(map(string)),
-              scope          = optional(string),
-              zone_type      = optional(string),
-              external_downstreams = optional(list(object({
-                address  = optional(string),
-                ports    = optional(string),
-                tsig_key = optional(string),
-              }))),
-              external_masters = optional(list(object({
-                address  = optional(string),
-                port     = optional(string),
-                tsig_key = optional(string),
-              }))),
-              dns_records = optional(map(object({
-                domain         = optional(string),
-                compartment_id = optional(string),
-                rtype          = optional(string),
-                rdata          = optional(string),
-                ttl            = optional(number),
-              })))
-              dns_rrset = optional(map(object({
-                compartment_id = optional(string)
-                domain = optional(string),
-                rtype  = optional(string),
-                scope  = optional(string),
-                items = optional(list(object({
-                  domain = optional(string),
-                  rdata  = optional(string),
-                  rtype  = optional(string),
-                  ttl    = optional(string),
-                })))
-              })))
-              dns_steering_policies = optional(map(object({
-                compartment_id = optional(string),
-                domain_name    = optional(string),
-                display_name   = optional(string),
-                template       = optional(string),
-                answers = optional(list(object({
-                  name        = optional(string),
-                  rdata       = optional(string),
-                  rtype       = optional(string),
-                  is_disabled = optional(bool),
-                  pool        = optional(string),
-                }))),
-                defined_tags            = optional(map(string)),
-                freeform_tags           = optional(map(string)),
-                health_check_monitor_id = optional(string)
-                rules = optional(list(object({
-                  rule_type = optional(string)
-                  cases = optional(list(object({
-                    answer_data = optional(object({
-                      answer_condition = optional(string)
-                      should_keep      = optional(string)
-                      value            = optional(string)
-                    })),
-                    case_condition = optional(string),
-                    count          = optional(number)
-                  }))),
-                  default_answer_data = optional(object({
-                    answer_condition = optional(string),
-                    should_keep      = optional(bool),
-                    value            = optional(string),
-                  })),
-                  default_count = optional(number),
-                  description   = optional(string),
-                }))),
-                ttl = optional(string),
-              }))),
-            }))),
-          }))),
-          rules = optional(list(object({
-            action                    = optional(string),
-            destination_address       = optional(list(string)),
-            source_endpoint_name      = optional(string),
-            client_address_conditions = optional(list(string)),
-            qname_cover_conditions    = optional(list(string)),
-          }))),
-          resolver_endpoints = optional(map(object({
-            name               = optional(string),
-            is_forwarding      = optional(string),
-            is_listening       = optional(string),
-            subnet             = optional(string),
-            endpoint_type      = optional(string),
-            forwarding_address = optional(string),
-            listening_address  = optional(string),
-            nsg                = optional(list(string)),
-          }))),
-          tsig_keys = optional(map(object({
-            compartment_id = optional(string),
-            algorithm      = optional(string),
-            name           = optional(string),
-            secret         = optional(string),
-            defined_tags   = optional(map(string)),
-            freeform_tags  = optional(map(string)),
-          }))),
-        }))
 
-        security = optional(object({
-          zpr_attributes = optional(list(object({
-            namespace = optional(string,"oracle-zpr")
-            attr_name = string
-            attr_value = string
-            mode = optional(string,"enforce")
-            })))
-        }))
-        
         vcn_specific_gateways = optional(object({
           internet_gateways = optional(map(object({
             compartment_id  = optional(string),
@@ -484,6 +365,7 @@ variable "network_configuration" {
             network_entity_id  = optional(string),
             network_entity_key = optional(string),
             description        = optional(string),
+            description        = optional(string),
             // Supported values:
             //    - "a cidr block"
             //    - "objectstorage" or "all-services" - only for "SERVICE_CIDR_BLOCK"
@@ -576,115 +458,6 @@ variable "network_configuration" {
             icmp_code    = optional(number)
           })))
         })))
-
-        dns_resolver = optional(object({
-          display_name  = optional(string),
-          defined_tags  = optional(map(string)),
-          freeform_tags = optional(map(string)),
-          attached_views = optional(map(object({
-            compartment_id = optional(string),
-            display_name   = optional(string),
-            defined_tags   = optional(map(string)),
-            freeform_tags  = optional(map(string)),
-            dns_zones = optional(map(object({
-              compartment_id = optional(string),
-              name           = optional(string),
-              defined_tags   = optional(map(string)),
-              freeform_tags  = optional(map(string)),
-              scope          = optional(string),
-              zone_type      = optional(string),
-              external_downstreams = optional(list(object({
-                address  = optional(string),
-                ports    = optional(string),
-                tsig_key = optional(string),
-              }))),
-              external_masters = optional(list(object({
-                address  = optional(string),
-                port     = optional(string),
-                tsig_key = optional(string),
-              }))),
-              dns_records = optional(map(object({
-                domain         = optional(string),
-                compartment_id = optional(string),
-                rtype          = optional(string),
-                rdata          = optional(string),
-                ttl            = optional(string),
-              })))
-              dns_rrset = optional(map(object({
-                domain = optional(string),
-                rtype  = optional(string),
-                scope  = optional(string),
-                items = optional(list(object({
-                  domain = optional(string),
-                  rdata  = optional(string),
-                  rtype  = optional(string),
-                  ttl    = optional(string),
-                })))
-              })))
-              dns_steering_policies = optional(map(object({
-                compartment_id = optional(string),
-                domain_name    = optional(string),
-                display_name   = optional(string),
-                template       = optional(string),
-                answers = optional(list(object({
-                  name        = optional(string),
-                  rdata       = optional(string),
-                  rtype       = optional(string),
-                  is_disabled = optional(bool),
-                  pool        = optional(string),
-                }))),
-                defined_tags            = optional(map(string)),
-                freeform_tags           = optional(map(string)),
-                health_check_monitor_id = optional(string)
-                rules = optional(list(object({
-                  rule_type = optional(string)
-                  cases = optional(list(object({
-                    answer_data = optional(object({
-                      answer_condition = optional(string)
-                      should_keep      = optional(string)
-                      value            = optional(string)
-                    })),
-                    case_condition = optional(string),
-                    count          = optional(number)
-                  }))),
-                  default_answer_data = optional(object({
-                    answer_condition = optional(string),
-                    should_keep      = optional(bool),
-                    value            = optional(string),
-                  })),
-                  default_count = optional(number),
-                  description   = optional(string),
-                }))),
-                ttl = optional(string),
-              }))),
-            }))),
-          }))),
-          rules = optional(list(object({
-            action                   = optional(string),
-            destination_address      = optional(string),
-            source_endpoint_name     = optional(string),
-            client_address_condition = optional(string),
-            qname_cover_condtions    = optional(string),
-          }))),
-          resolver_endpoints = optional(map(object({
-            name               = optional(string),
-            is_forwarding      = optional(bool),
-            is_listening       = optional(bool),
-            subnet             = optional(string),
-            endpoint_type      = optional(string),
-            forwarding_address = optional(string),
-            listening_address  = optional(string),
-            nsg                = optional(string),
-          }))),
-          tsig_keys = optional(map(object({
-            compartment_id = optional(string),
-            algorithm      = optional(string),
-            name           = optional(string),
-            secret         = optional(string),
-            defined_tags   = optional(map(string)),
-            freeform_tags  = optional(map(string)),
-          }))),
-        }))
 
         vcn_specific_gateways = optional(object({
           internet_gateways = optional(map(object({
@@ -855,8 +628,8 @@ variable "network_configuration" {
                 oracle_interface_ip   = optional(string)
               }))
               encryption_domain_config = optional(object({
-                cpe_traffic_selector    = optional(list(string)),
-                oracle_traffic_selector = optional(list(string))
+                cpe_traffic_selector    = optional(string),
+                oracle_traffic_selector = optional(string)
               }))
               shared_secret = optional(string),
               ike_version   = optional(string)
@@ -869,8 +642,8 @@ variable "network_configuration" {
                 oracle_interface_ip   = optional(string)
               }))
               encryption_domain_config = optional(object({
-                cpe_traffic_selector    = optional(list(string)),
-                oracle_traffic_selector = optional(list(string))
+                cpe_traffic_selector    = optional(string),
+                oracle_traffic_selector = optional(string)
               }))
               shared_secret = optional(string),
               ike_version   = optional(string)
@@ -1022,75 +795,66 @@ variable "network_configuration" {
             defined_tags   = optional(map(string)),
             display_name   = optional(string),
             freeform_tags  = optional(map(string)),
-            services = optional(map(object({
-              name = string
-              type = optional(string) # Valid values: "TCP_SERVICE" or "UDP_SERVICE"
-              minimum_port = number
-              maximum_port = optional(number)
-            })))
-            service_lists = optional(map(object({
-              name     = string
-              services = list(string)
-            })))
-            applications = optional(map(object({
-              name      = string,
-              type      = string,
-              icmp_type = number,
-              icmp_code = optional(number),
-            })))
             application_lists = optional(map(object({
-              name = string,
-              applications = list(string)
-            }))),
+              application_list_name = string,
+              application_values = map(object({
+                type         = string,
+                icmp_type    = optional(string),
+                icmp_code    = optional(string),
+                minimum_port = optional(number),
+                maximum_port = optional(number)
+              }))
+            })))
+            decryption_profiles = optional(map(object({
+              is_out_of_capacity_blocked            = bool,
+              is_unsupported_cipher_blocked         = bool,
+              is_unsupported_version_blocked        = bool,
+              type                                  = string,
+              key                                   = string,
+              are_certificate_extensions_restricted = optional(bool),
+              is_auto_include_alt_name              = optional(bool),
+              is_expired_certificate_blocked        = optional(bool),
+              is_revocation_status_timeout_blocked  = optional(bool),
+              is_unknown_revocation_status_blocked  = optional(bool),
+              is_untrusted_issuer_blocked           = optional(bool)
+            })))
+            decryption_rules = optional(map(object({
+              action             = string,
+              name               = string,
+              decryption_profile = optional(string),
+              secret             = optional(string),
+              conditions = map(object({
+                destinations = optional(list(string)),
+                sources      = optional(list(string))
+              }))
+            })))
+            ip_address_lists = optional(map(object({
+              ip_address_list_name  = string,
+              ip_address_list_value = list(string)
+            })))
             mapped_secrets = optional(map(object({
-              name            = string,
-              type            = string, # Valid values: SSL_FORWARD_PROXY, SSL_INBOUND_INSPECTION
-              source          = string, # Valid value: OCI_VAULT
+              key             = optional(string),
+              type            = string,
               vault_secret_id = string,
               version_number  = string,
-            }))),
-            decryption_profiles = optional(map(object({
-              type                                  = string, # Valid values: "SSL_FORWARD_PROXY", "SSL_INBOUND_INSPECTION"
-              name                                  = string,
-              is_out_of_capacity_blocked            = optional(bool),
-              is_unsupported_cipher_blocked         = optional(bool),
-              is_unsupported_version_blocked        = optional(bool),
-              are_certificate_extensions_restricted = optional(bool), # Applicable only when type = "SSL_FORWARD_PROXY"
-              is_auto_include_alt_name              = optional(bool), # Applicable only when type = "SSL_FORWARD_PROXY"
-              is_expired_certificate_blocked        = optional(bool), # Applicable only when type = "SSL_FORWARD_PROXY"
-              is_revocation_status_timeout_blocked  = optional(bool), # Applicable only when type = "SSL_FORWARD_PROXY"
-              is_unknown_revocation_status_blocked  = optional(bool), # Applicable only when type = "SSL_FORWARD_PROXY"
-              is_untrusted_issuer_blocked           = optional(bool)  # Applicable only when type = "SSL_FORWARD_PROXY"
-            }))),
-            decryption_rules = optional(map(object({
-              name                        = string,
-              action                      = string,
-              decryption_profile_id       = optional(string),
-              secret                      = optional(string),
-              source_ip_address_list      = optional(string),
-              destination_ip_address_list = optional(string)
-            }))),
-            address_lists = optional(map(object({
-              name = string,
-              type = string, # Valid values: "FQND", "IP"
-              addresses = list(string)
+            })))
+            security_rules = optional(map(object({
+              action     = string,
+              inspection = optional(string),
+              name       = string
+              conditions = map(object({
+                applications = optional(list(string)),
+                destinations = optional(list(string)),
+                sources      = optional(list(string)),
+                urls         = optional(list(string))
+              }))
             })))
             url_lists = optional(map(object({
-              name    = string,
-              pattern = string,
-              type    = string # Valid value: SIMPLE
-            }))),
-            security_rules = optional(map(object({
-              action = string, # Valid values: ALLOW,DROP,REJECT,INSPECT
-              name   = string,
-              application_lists         = optional(list(string)),
-              destination_address_lists = optional(list(string)),
-              service_lists             = optional(list(string)),
-              source_address_lists      = optional(list(string)),
-              url_lists                 = optional(list(string)),
-              inspection  = optional(string), # This is only applicable if action is INSPECT
-              after_rule  = optional(string),
-              before_rule = optional(string)
+              url_list_name = string,
+              url_list_values = map(object({
+                type    = string,
+                pattern = string
+              }))
             })))
           })))
         }))
@@ -1259,55 +1023,14 @@ variable "network_configuration" {
   })
 }
 
-variable module_name {
-  description = "The module name."
-  type = string
-  default = "networking"
-}
-
 variable "compartments_dependency" {
-  description = "A map of objects containing the externally managed compartments this module may depend on. All map objects must have the same type and must contain an 'id' attribute of string type set with the compartment OCID. See External Dependencies section in README.md (https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking#ext-dep) for details."
-  type = map(object({
-    id = string
-  }))
-  default = null
+  description = "A map of objects containing the externally managed compartments this module may depend on. All map objects must have the same type and must contain at least an 'id' attribute (representing the compartment OCID) of string type."
+  type        = map(any)
+  default     = null
 }
 
 variable "network_dependency" {
-  description = "An object containing the externally managed network resources this module may depend on. Supported resources are 'vcns', 'dynamic_routing_gateways', 'drg_attachments', 'local_peering_gateways', 'remote_peering_connections', and 'dns_private_views', represented as map of objects. Each object, when defined, must have an 'id' attribute of string type set with the VCN, DRG OCID, DRG Attachment OCID, Local Peering Gateway OCID or Remote Peering Connection OCID. 'remote_peering_connections' must also pass the peer region name in the region_name attribute. See External Dependencies section in README.md (https://github.com/oci-landing-zones/terraform-oci-modules-networking#ext-dep) for details."
-  type = object({
-    vcns = optional(map(object({
-      id = string # the VCN OCID
-    })))
-    dynamic_routing_gateways = optional(map(object({
-      id = string # the DRG OCID
-    })))
-    drg_attachments = optional(map(object({
-      id = string # the DRG attachment OCID
-    })))
-    local_peering_gateways = optional(map(object({
-      id = string # the LPG OCID
-    })))
-    remote_peering_connections = optional(map(object({
-      id = string # the peer RPC OCID
-      region_name = string # the peer RPC region name
-    })))
-    dns_private_views = optional(map(object({
-      id = string # the DNS private view OCID
-    })))
-  })
-  default = null
-}
-
-variable "private_ips_dependency" {
-  description = "An object containing the externally managed Private IP resources this module may depend on. All map objects must have the same type and must contain an 'id' attribute of string type set with the Private IP OCID. See External Dependencies section in README.md (https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking#ext-dep) for details."
-  type = map(object({
-    id = string
-  }))
-  default = null
-}
-
-variable "tenancy_ocid" {
-  description = "The tenancy OCID"
-  default = null
+  description = "A map of objects containing the externally managed network resources this module may depend on. The map must have at least two other maps, with their keys equal to 'vcns' and 'dynamic_routing_gateways'. Each of these submaps mas have at least with one object with the 'id' attribute set (representing the VCN or DRG OCID) of string type. See External Dependencies section in README.md (https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking#ext-dep) for details."
+  type        = map(any)
+  default     = null
 }
