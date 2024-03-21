@@ -290,7 +290,7 @@ Example:
 	}
 }
 ```
-- **network_dependency** &ndash; A map of map of objects containing the externally managed network resources this module depends on. This mechanism allows for the usage of referring keys (instead of OCIDs) in *vcn_id* and *drg_id* attributes of *inject_into_existing_vcns* and *inject_into_existing_drgs*, respectively. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a [Networking module](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking) client. This module requires VCNs indexed with the **"vcns"** key and DRGs indexed with the **"dynamic_routing_gateways"** key. Each VCN and DRG must contain the same attributes, with at least and **"id"** attribute (to which the actual OCID is assigned), as in the example below:
+- **network_dependency** &ndash; A map of map of objects containing the externally managed network resources this module depends on. This mechanism allows for the usage of referring keys (instead of OCIDs) in *vcn_id* and *drg_id* attributes of *inject_into_existing_vcns* and *inject_into_existing_drgs*, respectively. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a [Networking module](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking) client. This module requires VCNs indexed with the **"vcns"** key and DRGs indexed with the **"dynamic_routing_gateways"** key. Each VCN and DRG must contain the **"id"** attribute (to which the actual OCID is assigned), as in the example below:
 
 Example:
 ```

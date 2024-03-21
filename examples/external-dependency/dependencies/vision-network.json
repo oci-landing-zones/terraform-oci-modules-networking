@@ -1,0 +1,8 @@
+{
+  "dynamic_routing_gateways": {},
+  "vcns": {
+    "VISION-VCN": {
+      "id": "ocid1.vcn.oc1.phx.amaaaaaa...npq"
+    }
+  }
+}
