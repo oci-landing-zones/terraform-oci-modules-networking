@@ -16,6 +16,7 @@ Check [module specification](./SPEC.md) for a full description of module require
   - [With Resource Manager](#with-rms)
 - [Module Functioning](#functioning)
   - [External Dependencies](#ext-dep)
+  - [Available Examples](#howtoexample)
 - [Related Documentation](#related)
 - [Known Issues](#issues)
 
@@ -290,7 +291,7 @@ Example:
 	}
 }
 ```
-- **network_dependency** &ndash; A map of map of objects containing the externally managed network resources this module depends on. This mechanism allows for the usage of referring keys (instead of OCIDs) in *vcn_id* and *drg_id* attributes of *inject_into_existing_vcns* and *inject_into_existing_drgs*, respectively. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a [Networking module](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking) client. This module requires VCNs indexed with the **"vcns"** key and DRGs indexed with the **"dynamic_routing_gateways"** key. Each VCN and DRG must contain the **"id"** attribute (to which the actual OCID is assigned), as in the example below:
+- **network_dependency** &ndash; A map of map of objects containing the externally managed network resources this module depends on. This mechanism allows for the usage of referring keys (instead of OCIDs) in *vcn_id* and *drg_id* attributes of *inject_into_existing_vcns* and *inject_into_existing_drgs*, respectively. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a client of this module. Within *network_dependency*, VCNs must be indexed with the **"vcns"** key and DRGs indexed with the **"dynamic_routing_gateways"** key. Each VCN and DRG must contain the **"id"** attribute (to which the actual OCID is assigned), as in the example below:
 
 Example:
 ```
@@ -307,16 +308,12 @@ Example:
   }  
 } 
 ```          
+See [external-dependency example](./examples/external-dependency/) for a complete example.
 
-This module can be used directly by copying one of the provided [examples](examples/) and modify to match the use-case.
+### <a name="howtoexample">Available Examples</a>
 
-It can also be integrated with other core modules into an orchestrated solution. It might be needed to apply some customizations to the complex type.
-
-When using this module in stand-alone mode, but leave some options, customizations may be required, too.
-
-<a name="howtoexample"></a>
-### Examples
-
+- [Simple Three-Tier VCN - Vision](examples/vision/)
+- [External Dependency](examples/external-dependency/) 
 - [Simple Example](examples/simple-example/)
 - [Provision a load balancer on top of an existing VCN](examples/simple-no_vcn-oci-native-l7-lbaas-example)
 - [Provision a complete VCN and a load balancer](examples/standard-vcn-oci-native-l7-lbaas-example)
@@ -324,7 +321,7 @@ When using this module in stand-alone mode, but leave some options, customizatio
    - [Fast Connect Examples](examples/edge-connectivity/fast-connect-examples/)
       - [Generic OCI Fast Connect Partner](examples/edge-connectivity/fast-connect-examples/generic-oci-fastconnect-partner/)
    - [IPSec VPN Examples](examples/edge-connectivity/ipsec-examples/)
-      - [Generic OCI IPSec BGP VPN](examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/)
+      - [Generic OCI IPSec BGP VPN](examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/)     
 
 ## <a name="related">Related Documentation
 - [OCI Networking Overview](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/overview.htm)
