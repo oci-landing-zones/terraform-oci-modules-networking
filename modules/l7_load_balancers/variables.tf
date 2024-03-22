@@ -23,7 +23,7 @@ variable "l7_load_balancers_configuration" {
         dns_label                      = string,
         freeform_tags                  = map(string),
         id                             = string,
-        ipv6cidr_block                 = bool,
+        ipv6cidr_block                 = string,
         ipv6cidr_blocks                = list(string),
         ipv6virtual_router_ip          = string,
         prohibit_internet_ingress      = string,
@@ -103,7 +103,7 @@ variable "l7_load_balancers_configuration" {
         health_checker = object({
           protocol            = string,
           interval_ms         = number,
-          is_force_plain_text = bool,
+          is_force_plain_text = optional(bool),
           port                = number,
           response_body_regex = optional(string),
           retries             = number,
