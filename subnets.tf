@@ -254,7 +254,8 @@ locals {
               "default_security_list" = {
                 sec_list_key = "default_security_list",
                 display_name = "default_security_list",
-                id           = oci_core_vcn.these[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_security_list_id
+                id           = contains(keys(oci_core_vcn.these),local.merged_one_dimension_processed_subnets[subnet_key].vcn_key) ? oci_core_vcn.these[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_security_list_id : data.oci_core_vcn.existing_vcns[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_security_list_id
+                #id          = oci_core_vcn.these[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_security_list_id
               }
 
           }) : sec_list_value.id
@@ -273,7 +274,8 @@ locals {
               "default_security_list" = {
                 sec_list_key = "default_security_list",
                 display_name = "default_security_list",
-                id           = oci_core_vcn.these[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_security_list_id
+                id           = contains(keys(oci_core_vcn.these),local.merged_one_dimension_processed_subnets[subnet_key].vcn_key) ? oci_core_vcn.these[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_security_list_id : data.oci_core_vcn.existing_vcns[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_security_list_id
+                #id          = oci_core_vcn.these[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_security_list_id
               }
 
             }) : {
