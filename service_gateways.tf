@@ -121,7 +121,7 @@ resource "oci_core_service_gateway" "these" {
   #Optional
   defined_tags  = each.value.defined_tags
   display_name  = each.value.display_name
-  freeform_tags = each.value.freeform_tags
+  freeform_tags = merge(local.cislz_module_tag, each.value.freeform_tags)
   // Searching for the id based on the key in the:
   //       - IGW and NAT GW specific route tables: local.provisioned_igw_natgw_specific_route_tables
   //       - SGW specific route tables: local.provisioned_sgw_specific_route_tables + the default route table

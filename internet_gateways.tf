@@ -102,7 +102,7 @@ resource "oci_core_internet_gateway" "these" {
   enabled       = each.value.enabled
   defined_tags  = each.value.defined_tags
   display_name  = each.value.display_name
-  freeform_tags = each.value.freeform_tags
+  freeform_tags = merge(local.cislz_module_tag, each.value.freeform_tags)
   // Searching for the id based on the key in the:
   //       - IGW and NAT GW specific route tables: local.provisioned_igw_natgw_specific_route_tables + the default route table
   route_table_id = each.value.route_table_id != null ? each.value.route_table_id : each.value.route_table_key != null ? merge(

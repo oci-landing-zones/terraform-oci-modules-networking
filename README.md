@@ -41,8 +41,9 @@ This repository is part of a broader collection of repositories containing modul
 - [Identity & Access Management ](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam)
 - [Networking](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking) - current repository
 - [Governance](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-governance)
-- Security (coming soon)
+- [Security](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-security)
 - [Observability & Monitoring](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability)
+- [Secure Workloads](https://github.com/oracle-quickstart/terraform-oci-secure-workloads)
 
 The modules in this collection are designed for flexibility, are straightforward to use, and enforce CIS OCI Foundations Benchmark recommendations when possible.
 <br />

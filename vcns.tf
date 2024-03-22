@@ -102,7 +102,7 @@ resource "oci_core_vcn" "these" {
   defined_tags            = each.value.defined_tags
   display_name            = each.value.display_name
   dns_label               = each.value.dns_label
-  freeform_tags           = each.value.freeform_tags
+  freeform_tags           = merge(local.cislz_module_tag, each.value.freeform_tags)
   ipv6private_cidr_blocks = each.value.ipv6private_cidr_blocks
   is_ipv6enabled          = each.value.is_ipv6enabled
   # is_oracle_gua_allocation_enabled = each.value.is_oracle_gua_allocation_enabled

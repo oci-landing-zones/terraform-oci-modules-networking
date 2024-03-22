@@ -201,7 +201,7 @@ resource "oci_core_network_security_group" "these" {
   vcn_id         = each.value.vcn_id
   display_name   = each.value.nsg_name
   defined_tags   = each.value.defined_tags
-  freeform_tags  = each.value.freeform_tags
+  freeform_tags  = merge(local.cislz_module_tag, each.value.freeform_tags)
 }
 
 resource "oci_core_network_security_group_security_rule" "ingress" {

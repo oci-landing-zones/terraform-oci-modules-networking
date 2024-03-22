@@ -378,7 +378,7 @@ resource "oci_core_subnet" "these" {
   dhcp_options_id            = each.value.dhcp_options_id
   display_name               = each.value.display_name
   dns_label                  = each.value.dns_label
-  freeform_tags              = each.value.freeform_tags
+  freeform_tags              = merge(local.cislz_module_tag, each.value.freeform_tags)
   ipv6cidr_block             = each.value.ipv6cidr_block
   ipv6cidr_blocks            = each.value.ipv6cidr_blocks
   prohibit_internet_ingress  = each.value.prohibit_internet_ingress
