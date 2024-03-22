@@ -103,7 +103,7 @@ variable "l7_load_balancers_configuration" {
         health_checker = object({
           protocol            = string,
           interval_ms         = number,
-          is_force_plain_text = optional(bool),
+          is_force_plain_text = bool,
           port                = number,
           response_body_regex = optional(string),
           retries             = number,
