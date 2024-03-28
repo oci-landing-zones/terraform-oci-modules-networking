@@ -30,16 +30,12 @@ nlb_configuration = {
     VISION-NLB = {
       display_name = "vision-nlb"
       is_private = true
-      security = {
-        zpr_attributes = {namespace = "<REPLACE-WITH-SEC-NAMESPACE>", attr_name = "<REPLACE-WITH-SEC-ATTR-NAME>", attr_value = "<REPLACE-WITH-SEC-ATTR-VALUE>"}
-      }
       listeners = {
         LISTENER-1 = {
           port = "<REPLACE-WITH-LISTENER-PORT-NUMBER>"
           protocol = "TCP"
           backend_set = {
             name = "default-backend-set"
-            #is_preserve_source = false  # To Disable NLB preserves the source IP of the packet when it is forwarded to backend
             health_checker = {
               protocol = "TCP"
             }

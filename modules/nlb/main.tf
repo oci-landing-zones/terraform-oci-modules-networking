@@ -15,18 +15,9 @@ resource "oci_network_load_balancer_network_load_balancer" "these" {
         id = each.value.id
       }
     }
-    is_preserve_source_destination = each.value.skip_source_dest_check
+    is_preserve_source_destination = coalesce(each.value.skip_source_dest_check,true)
     defined_tags  = each.value.defined_tags != null ? each.value.defined_tags : var.nlb_configuration.default_defined_tags
     freeform_tags = merge(local.cislz_module_tag, each.value.freeform_tags != null ? each.value.freeform_tags : var.nlb_configuration.default_freeform_tags)
-    security_attributes = try(each.value.security.zpr_attributes, null) != null ? merge([for a in each.value.security.zpr_attributes : { "${a.namespace}.${a.attr_name}.value" : a.attr_value, "${a.namespace}.${a.attr_name}.mode" : a.mode }]...) : null
-    is_symmetric_hash_enabled = each.value.enable_symmetric_hashing
-    lifecycle {
-      ## VALIDATION ZPR attributes - check for duplicates
-      precondition {
-        condition     = try(each.value.security.zpr_attributes, null) != null ? length(toset([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}"])) == length([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}"]) : true
-        error_message = try(each.value.security.zpr_attributes, null) != null ? "VALIDATION FAILURE in VCN \"${each.key}\": ZPR security attribute assigned more than once. \"security.zpr_attributes.namespace/security.zpr_attributes.attr_name\" pairs must be unique." : "__void__"
-      }
-    }
 }
 
 locals {
@@ -40,7 +31,6 @@ locals {
         port         = listener_value.port
         ip_version   = listener_value.ip_version
         backend_set  =  listener_value.backend_set
-
       }
     ]
   ])
@@ -80,13 +70,11 @@ resource "oci_network_load_balancer_backend_set" "these" {
                 hc_return_code   = l.backend_set.health_checker.return_code
                 hc_timeout       = l.backend_set.health_checker.timeout_in_millis
                 hc_url_path      = coalesce(l.backend_set.health_checker.url_path,"/")
-                is_preserve_source = l.backend_set.is_preserve_source
   }}  
 
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.these[each.value.nlb_key].id
   name = each.value.name
   policy = each.value.policy
-  is_preserve_source = each.value.is_preserve_source
   health_checker {
     protocol           = each.value.hc_protocol
     interval_in_millis = each.value.hc_interval
@@ -140,7 +128,8 @@ resource "oci_network_load_balancer_backend" "these" {
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.these["${each.value.nlb_key}"].id
   backend_set_name = oci_network_load_balancer_backend_set.these["${each.value.nlb_key}.${each.value.listener_key}.BACKENDSET"].name
   name             = each.value.name
-  ip_address       = each.value.ip_address != null ? (length(regexall("(\\d{1,3}?).(\\d{1,3}?).(\\d{1,3}?).(\\d{1,3}?)", each.value.ip_address)) > 0 ? each.value.ip_address : var.instances_dependency[each.value.ip_address].private_ip) : null
+  #ip_address       = each.value.ip_address
+  ip_address       = each.value.ip_address != null ? (length(regexall("(\\d{1,3}?).(\\d{1,3}?).(\\d{1,3}?).(\\d{1,3}?)", each.value.ip_address)) > 0 ? each.value.ip_address : var.instances_dependency[each.value.ip_address].create_vnic_details[0].private_ip) : null
   port             = each.value.port
   weight           = each.value.weight
   is_backup        = coalesce(each.value.is_backup,false)
@@ -149,13 +138,3 @@ resource "oci_network_load_balancer_backend" "these" {
   target_id        = each.value.target_id != null ? (length(regexall("^ocid1.*$", each.value.target_id)) > 0 ? each.value.target_id : var.instances_dependency[each.value.target_id].id) : null
 }
 
-data "oci_core_private_ips" "these" {
-  for_each = {for k, v in oci_network_load_balancer_network_load_balancer.these : k => v if v.is_private == true}
-    ip_address = [for a in each.value.ip_addresses: a.ip_address][0]
-    subnet_id = each.value.subnet_id
-}
-
-data "oci_core_public_ip" "these" {
-  for_each = {for k, v in oci_network_load_balancer_network_load_balancer.these : k => v if v.is_private == false}
-    ip_address = [for a in each.value.ip_addresses: a.ip_address][0]
-}    
