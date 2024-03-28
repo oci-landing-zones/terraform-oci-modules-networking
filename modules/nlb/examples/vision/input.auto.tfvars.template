@@ -1,0 +1,59 @@
+# Copyright (c) 2023 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+#---------------------------------------------------------------------------------------------------------------------
+# 1. Rename this file to <project-name>.auto.tfvars, where <project-name> is a name of your choice.
+# 2. Provide values for "Tenancy Connectivity Variables".
+# 3. Replace <REPLACE-WITH-*> placeholders with appropriate values. 
+#----------------------------------------------------------------------------------------------------------------------
+
+#---------------------------------------
+# Tenancy Connectivity Variables
+#---------------------------------------
+
+tenancy_ocid         = "<tenancy OCID>"             # Get this from OCI Console (after logging in, go to top-right-most menu item and click option "Tenancy: <your tenancy name>").
+user_ocid            = "<user OCID>"                # Get this from OCI Console (after logging in, go to top-right-most menu item and click option "My profile").
+fingerprint          = "<PEM key fingerprint>"      # The fingerprint can be gathered from your user account. In the "My profile page, click "API keys" on the menu in left hand side.
+private_key_path     = "<path to the private key>"  # This is the full path on your local system to the API signing private key.
+private_key_password = ""                           # This is the password that protects the private key, if any.
+region               = "<your tenancy home region>" # This is your tenancy home region.
+
+
+#---------------------------------------
+# Input variable
+#---------------------------------------
+
+nlb_configuration = {
+  default_compartment_id = "<REPLACE-WITH-COMPARTMENT-OCID>"
+  default_subnet_id = "<REPLACE-WITH-SUBNET-OCID>"
+  nlbs = {
+    VISION-NLB = {
+      display_name = "vision-nlb"
+      is_private = true
+      listeners = {
+        LISTENER-1 = {
+          port = "<REPLACE-WITH-LISTENER-PORT-NUMBER>"
+          protocol = "TCP"
+          backend_set = {
+            name = "default-backend-set"
+            health_checker = {
+              protocol = "TCP"
+            }
+            backends = {
+              BACKEND-1 = {
+                name = "backend-1"
+                port = "<REPLACE-WITH-PORT-NUMBER>"
+                ip_address = "<REPLACE-WITH-IP-ADDRESS>"
+              }
+              BACKEND-2 = {
+                name = "backend-2"
+                port = "<REPLACE-WITH-PORT-NUMBER>"
+                ip_address = "<REPLACE-WITH-IP-ADDRESS>"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
