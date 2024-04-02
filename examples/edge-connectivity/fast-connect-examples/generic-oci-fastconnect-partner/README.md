@@ -3,11 +3,11 @@
 
 ## Description
 
-This is an example of a standard OCI BGP Fast Connect Partner configuration and provisioning using the ```terraform-oci-cis-landing-zone-networking``` networking core module.
+This is an example of a standard OCI BGP Fast Connect Partner configuration and provisioning using the ```terraform-oci-landing-zones-networking``` networking core module.
 
 This example is automating the provisioning of the OCI BGP Fast Connect Partner topology described by the [OCI Documentation blog entry](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/fastconnectprovider.htm).
 
-For a detailed description of the ```terraform-oci-cis-landing-zone-networking``` networking core module please refer to the core module specific [README.md](../../../../README.md) and [SPEC.md](../../../../SPEC.md).
+For a detailed description of the ```terraform-oci-landing-zones-networking``` networking core module please refer to the core module specific [README.md](../../../../README.md) and [SPEC.md](../../../../SPEC.md).
 
 This example leverages the fully dynamic characteristics of the complex networking module input to describe the following networking topology:
 
@@ -58,7 +58,7 @@ For clarity and proper separation and isolation, we've separated the input param
 ### Using the Module with ORM**
 [ff](../generic-oci-fastconnect-partn)
 For an ad-hoc use where you can select your resources, follow these guidelines:
-1. [![Deploy_To_OCI](../../../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking/archive/refs/heads/main.zip&zipUrlVariables={"input_config_file_url":"https://raw.githubusercontent.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking/main/examples/edge-connectivity/fast-connect-examples/generic-oci-fastconnect-partner/input-configs-standards-options/oci_network_configuration.json"})
+1. [![Deploy_To_OCI](../../../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/terraform-oci-landing-zones-networking/archive/refs/heads/main.zip&zipUrlVariables={"input_config_file_url":"https://raw.githubusercontent.com/oracle-quickstart/terraform-oci-landing-zones-networking/main/examples/edge-connectivity/fast-connect-examples/generic-oci-fastconnect-partner/input-configs-standards-options/oci_network_configuration.json"})
 2. Accept terms,  wait for the configuration to load. 
 3. Set the working directory to “orm-facade”. 
 4. Set the stack name you prefer.

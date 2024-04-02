@@ -1,10 +1,10 @@
 <!-- BEGIN_TF_DOCS -->
-# CIS OCI Landing Zone OCI Native Application(L7) Load Balancer(LBaaS) Module
+# OCI Landing Zone OCI Native Application(L7) Load Balancer(LBaaS) Module
 
 ![Landing Zone logo](../../images/landing_zone_300.png)
 
 
-The ```terraform-oci-cis-landing-zone-l7-lbaas``` module is a Terraform layer 7 application load balancer core module that facilitates, in an optional fashion, the provisioning of a CIS compliant set of l7 application load balancers topology for the entire topology or for specific areas of the topology.
+The ```terraform-oci-landing-zones-l7-lbaas``` module is a Terraform layer 7 application load balancer core module that facilitates, in an optional fashion, the provisioning of a CIS compliant set of l7 application load balancers topology for the entire topology or for specific areas of the topology.
 
 It aims to facilitate the provisioning of any OCI l7 lbaas topology.
 
@@ -29,11 +29,11 @@ The separation of code and configuration supports DevOps key concepts for operat
 This repository is part of a broader collection of repositories containing modules that help customers align their OCI implementations with the CIS OCI Foundations Benchmark recommendations:
 <br />
 
-- [Identity & Access Management ](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam)
-- [Networking](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking) - current repository
-- [Governance](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-governance)
+- [Identity & Access Management ](https://github.com/oracle-quickstart/terraform-oci-landing-zones-iam)
+- [Networking](https://github.com/oracle-quickstart/terraform-oci-landing-zones-networking) - current repository
+- [Governance](https://github.com/oracle-quickstart/terraform-oci-landing-zones-governance)
 - Security (coming soon)
-- [Observability & Monitoring](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability)
+- [Observability & Monitoring](https://github.com/oracle-quickstart/terraform-oci-landing-zones-observability)
 
 
 The modules in this collection are designed for flexibility, are straightforward to use, and enforce CIS OCI Foundations Benchmark recommendations when possible.
@@ -98,7 +98,7 @@ module "l7_load_balancers" {
 For invoking the module remotely, set the module *source* attribute to the networking module repository, as shown:
 ```
 module "l7_load_balancers" {
-  source = "git@github.com:oracle-quickstart/terraform-oci-cis-landing-zone-networking.git/modules/l7_load_balancers"
+  source = "git@github.com:oracle-quickstart/terraform-oci-landing-zones-networking.git/modules/l7_load_balancers"
   l7_load_balancers_configuration = {
     dependencies = {
       public_ips              = local.provisioned_oci_core_public_ips
@@ -111,7 +111,7 @@ module "l7_load_balancers" {
 ```
 For referring to a specific module version, append *ref=\<version\>* to the *source* attribute value, as in:
 ```
-  source = "git@github.com:oracle-quickstart/terraform-oci-cis-landing-zone-networking.git?ref=v0.1.0/modules/l7_load_balancers"
+  source = "git@github.com:oracle-quickstart/terraform-oci-landing-zones-networking.git?ref=v0.1.0/modules/l7_load_balancers"
 ```
 
 ## How to use the module

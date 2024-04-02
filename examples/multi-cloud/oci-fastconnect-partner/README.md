@@ -4,9 +4,9 @@
 ## Description
 
 This is an example for a private Multicloud connection using OCI FastConnect and a FastConnect Partner.
-This scenario will use simple/basic instantiation of the ```terraform-oci-cis-landing-zone-networking``` networking core module.
+This scenario will use simple/basic instantiation of the ```terraform-oci-landing-zones-networking``` networking core module.
 
-For detailed description of the ```terraform-oci-cis-landing-zone-networking``` networking core module please refer to the core module specific [README.md](../../README.md) and [SPEC.md](../../SPEC.md).
+For detailed description of the ```terraform-oci-landing-zones-networking``` networking core module please refer to the core module specific [README.md](../../README.md) and [SPEC.md](../../SPEC.md).
 
 This example is leveraging the fully dynamic characteristics of the complex networking module input to describe the following networking topology:
 
@@ -41,7 +41,7 @@ For clarity and proper separation and isolation we've separated the input parame
 ### Using the Module with ORM**
 
 For an ad-hoc use where you can select your resources, follow these guidelines:
-1. [![Deploy_To_OCI](../../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking/archive/refs/heads/main.zip&zipUrlVariables={"input_config_file_url":"https://raw.githubusercontent.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking/main/examples/multi-cloud/oci-fastconnect-partner/input-configs-standards-options/oci_network_configuration.auto.json"})
+1. [![Deploy_To_OCI](../../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/terraform-oci-landing-zones-networking/archive/refs/heads/main.zip&zipUrlVariables={"input_config_file_url":"https://raw.githubusercontent.com/oracle-quickstart/terraform-oci-landing-zones-networking/main/examples/multi-cloud/oci-fastconnect-partner/input-configs-standards-options/oci_network_configuration.auto.json"})
 2. Accept terms,  wait for the configuration to load. 
 3. Set the working directory to “orm-facade”. 
 4. Set the stack name you prefer.
