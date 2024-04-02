@@ -1,24 +1,16 @@
+<!-- BEGIN_TF_DOCS -->
 # OCI Landing Zones Networking Module
 
 ![Landing Zone logo](./images/landing_zone_300.png)
 
-Welcome to the [OCI Landing Zones (OLZ) Community](https://github.com/oci-landing-zones)! 
 
-The **OCI Landing Zones Networking** module is a Terraform networking core module that facilitates, in an optional fashion, the provisioning of a CIS compliant network topology for the entire topology or for specific areas of the topology.
+The ```terraform-oci-landing-zones-networking``` module is a Terraform networking core module that facilitates, in an optional fashion, the provisioning of a CIS compliant network topology for the entire topology or for specific areas of the topology.
 
 It aims to facilitate the provisioning of any OCI networking topology, covering the internal OCI networking, entirely, and the edge networking, partially.
 
 Check [module specification](./SPEC.md) for a full description of module requirements, supported variables, managed resources and outputs.
 
-- [CIS OCI Foundations Benchmark Modules Collection](#cis-collection)
-- [Requirements](#requirements)
-- [How to Invoke the Module](#invoke)
-  - [With Resource Manager](#with-rms)
-- [Module Functioning](#functioning)
-  - [External Dependencies](#ext-dep)
-  - [Available Examples](#howtoexample)
-- [Related Documentation](#related)
-- [Known Issues](#issues)
+In future releases, it will also cover associated networking services like DNS, Load Balancers, 3rd-party firewalls, etc.
 
 This module uses Terraform complex types and optional attributes, in order to create a new abstraction layer on top of Terraform. 
 This abstraction layer allows the specification of any networking topology containing any number of networking resources like VCNs, subnets, DRGs and others and mapping those on any existing compartments topology.
@@ -33,17 +25,16 @@ The main advantage of this approach is that there will be one single code reposi
 
 The separation of code and configuration supports DevOps key concepts for operations design, change management, pipelines.
 
-## <a name="cis-collection">CIS OCI Foundations Benchmark Modules Collection
+## CIS OCI Foundations Benchmark Modules Collection
 
 This repository is part of a broader collection of repositories containing modules that help customers align their OCI implementations with the CIS OCI Foundations Benchmark recommendations:
 <br />
 
-- [Identity & Access Management ](https://github.com/oci-landing-zones/terraform-oci-modules-iam)
-- [Networking](https://github.com/oci-landing-zones/terraform-oci-modules-networking) - current repository
-- [Governance](https://github.com/oci-landing-zones/terraform-oci-modules-governance)
-- [Security](https://github.com/oci-landing-zones/terraform-oci-modules-security)
-- [Observability & Monitoring](https://github.com/oci-landing-zones/terraform-oci-modules-observability)
-- [Secure Workloads](https://github.com/oci-landing-zones/terraform-oci-modules-workloads)
+- [Identity & Access Management ](https://github.com/oracle-quickstart/terraform-oci-landing-zones-iam)
+- [Networking](https://github.com/oracle-quickstart/terraform-oci-landing-zones-networking) - current repository
+- [Governance](https://github.com/oracle-quickstart/terraform-oci-landing-zones-governance)
+- Security (coming soon)
+- [Observability & Monitoring](https://github.com/oracle-quickstart/terraform-oci-landing-zones-observability)
 
 The modules in this collection are designed for flexibility, are straightforward to use, and enforce CIS OCI Foundations Benchmark recommendations when possible.
 <br />
@@ -51,12 +42,7 @@ The modules in this collection are designed for flexibility, are straightforward
 Using these modules does not require a user extensive knowledge of Terraform or OCI resource types usage. Users declare a JSON object describing the OCI resources according to each module’s specification and minimal Terraform code to invoke the modules. The modules generate outputs that can be consumed by other modules as inputs, allowing for the creation of independently managed operational stacks to automate your entire OCI infrastructure.
 <br />
 
-## <a name="requirements">Requirements
-
-### Terraform Version >= 1.3.0
-
-This module requires Terraform binary version 1.3.0 or greater, as it relies on Optional Object Type Attributes feature. The feature shortens the amount of input values in complex of having Terraform automatically inserting a default value for any missing optional attributes.
-
+## Requirements
 
 ### IAM Permissions
 
@@ -67,7 +53,31 @@ Allow group <group-name> to manage virtual-network-family in compartment <compar
 Allow group <group-name> to manage drgs in compartment <compartment-name>
 ```
 
-## <a name="invoke">How to Invoke the Module
+### Terraform Version < 1.3.x and Optional Object Type Attributes
+
+This module relies on [Terraform Optional Object Type Attributes feature](https://developer.hashicorp.com/terraform/language/expressions/type-constraints#optional-object-type-attributes), which is experimental from Terraform 0.14.x to 1.2.x. It shortens the amount of input values in complex object types, by having Terraform automatically inserting a default value for any missing optional attributes. The feature has been promoted and it is no longer experimental in Terraform 1.3.x.
+
+Upon running *terraform plan* with Terraform versions prior to 1.3.x, Terraform displays the following warning:
+```
+Warning: Experimental feature "module_variable_optional_attrs" is active
+```
+
+Note the warning is harmless. The code has been tested with Terraform 1.3.x and the implementation is fully compatible.
+
+If you really want to use Terraform 1.3.x, in [providers.tf](./providers.tf):
+1. Change the terraform version requirement to:
+
+```
+required_version = ">= 1.3.0"
+```
+
+2. Remove the line:
+
+```
+experiments = [module_variable_optional_attrs]
+```
+
+## How to Invoke the Module
 
 Terraform modules can be invoked locally or remotely. 
 
@@ -81,27 +91,28 @@ module "terraform-oci-landing-zones-networking" {
 
 For invoking the module remotely, set the module *source* attribute to the networking module repository, as shown:
 ```
-module "terraform-oci-landing-zone-networking" {
-  source = "github.com/oci-landing-zones/terraform-oci-modules-networking"
+module "terraform-oci-landing-zones-networking" {
+  source = "git@github.com:oracle-quickstart/terraform-oci-landing-zones-networking.git"
   network_configuration = var.network_configuration
 }
 ```
 For referring to a specific module version, append *ref=\<version\>* to the *source* attribute value, as in:
 ```
-  source = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.1.0"
+  source = "git@github.com:oracle-quickstart/terraform-oci-landing-zones-networking.git?ref=v0.1.0"
 ```
 
-### <a name="with-orm">Using the Module with Resource Manager
+### Using the Module with ORM**
 
 For an ad-hoc use where you can select your resources, follow these guidelines:
-1. [![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-modules-networking/archive/refs/heads/main.zip)
+1. [![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/terraform-oci-landing-zones-networking/archive/refs/heads/main.zip)
 2. Accept terms,  wait for the configuration to load. 
 3. Set the working directory to “orm-facade”. 
 4. Set the stack name you prefer.
-5. Add your JSON/YAML configuration files. Click Next.
-6. Un-check run apply. Click Create.
+5. Set the terraform version to 1.2.x. Click Next. 
+6. Add your json/yaml configuration files. Click Next.
+8. Un-check run apply. Click Create.
 
-## <a name="functioning">Module Functioning
+## How to use the module
 
 The input parameters for the module can be divided into two categories, for which we recommend to create two different ```*.tfvars.*``` files:
  1. OCI REST API authentication information (secrets) - ```terraform.tfvars``` (HCL) or ```terraform.tfvars.json``` (JSON):
@@ -116,6 +127,7 @@ The input parameters for the module can be divided into two categories, for whic
 The ```network_configuration``` complex type can accept any new networking topology together or separated with injecting resources into existing networking topologies, and all those can map on any compartments topology.
 
 The ```network_configuration``` complex type fully supports optional attributes as long as they do not break any dependency imposed by OCI.
+
 
 The ```network_configuration``` is a multidimensional complex object:
 - ```default_compartment_id``` holds the compartment id that will be used if no compartment id has been set at the specific resource or category (see ```network_configuration_categories``` for details) level. 
@@ -139,21 +151,7 @@ The ```network_configuration``` is a multidimensional complex object:
               - ```SERVICE_CIDR_BLOCK``` - only for SGW
       - ```dhcp_options```, 
       - ```subnets```, 
-      - ```network_security_groups```,
-      - ```security```
-          - ```zpr_attributes``` - Zero-Packet-Routing attributes
-              - ```namespace``` - The security attribute namespace
-              - ```attr_name``` - Name of the security attribute key
-              - ```attr_value```- Security attribute value
-              - ```mode``` - Mode of security attribute
-            ```
-            security = {
-                zpr_attributes = [
-                  {namespace = "lz-zpr", attr_name = "network", attr_value = "prod"}
-                ]
-            }
-            ```
-
+      - ```network_security_groups``` and
       - ```vcn_specific_gateways``` like: 
         - ```internet_gateways```,
         - ```nat_gateways```,
@@ -272,119 +270,15 @@ The ```network_configuration``` is a multidimensional complex object:
         - ```certificates``` represents an optional attribute that allows the definition of zero, one or multiple certificates that will be associated with the current load balancer. All the OCI ```certificates``` attributes are covered: ```certificate_name```, ```ca_certificate```, ```passphrase```, ```private_key``` and ```public_certificate```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
         - ```listeners``` represents an optional attribute that allows the definition of zero, one or multiple listeners that will be associated with the current load balancer. All the OCI ```listeners``` attributes are covered: ```default_backend_set_key```, ```name```, ```port```, ```protocol```, ```connection_configuration```, ```hostname_keys```, ```path_route_set_key```, ```routing_policy_key```, ```rule_set_keys``` and ```ssl_configuration```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
 
-### <a name="ext-dep">External Dependencies</a>
-An optional feature, external dependencies are resources managed elsewhere that resources managed by this module depends on. The following dependencies are supported:
+This module can be used directly by copying one of the provided [examples](examples/) and modify to match the use-case.
 
-#### compartments_dependency (Optional)
-A map of objects containing the externally managed compartments this module may depend on. All map objects must have the same type and must contain at least an *id* attribute with the compartment OCID. This mechanism allows for the usage of referring keys (instead of OCIDs) in *default_compartment_id* and *compartment_id* attributes. The module replaces the keys by the OCIDs provided within *compartments_dependency* map. Contents of *compartments_dependency* is typically the output of a [Compartments module](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/compartments) client.
+It can also be integrated with other core modules into an orchestrated solution. It might be needed to apply some customizations to the complex type.
 
-Example:
-```
-{
-  "NETWORK-CMP": {
-    id": "ocid1.compartment.oc1..aaaaaaaa...7xq"
-  }
-}
-```
+When using this module in stand-alone mode, but leave some options, customizations may be required, too.
 
-Attributes that support a compartment referring key:
-  - *default_compartment_id*
-  - *compartment_id*
+<a name="howtoexample"></a>
+### Examples
 
-#### network_dependency (Optional)
-A map of map of objects containing the externally managed network resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a client of this module. Within *network_dependency*, VCNs must be indexed with the **vcns** key, DRGs indexed with the **dynamic_routing_gateways** key, DRG attachments indexed with **drg_attachments** key, Local Peering Gateways (LPG) indexed with **local_peering_gateways**, Remote Peering Connections (RPC) indexed with **remote_peering_connections** key, DNS Private Views indexed by **dns_private_views**. Each VCN, DRG, DRG attachment, LPG, RPC and DNS Private View must contain the *id* attribute (to which the actual OCID is assigned). RPCs must also pass the peer region name in the *region_name* attribute.
-
-*network_dependency* example:
-```
-{
-  "vcns" : {
-    "XYZ-VCN" : {
-      "id" : "ocid1.vcn.oc1.iad.aaaaaaaax...e7a"
-    }
-  },
-  "dynamic_routing_gateways" : {  
-    "XYZ-DRG" : {
-      "id" : "ocid1.drg.oc1.iad.aaaaaaaa...xlq"
-    }
-  },
-  "drg_attachments" : {  
-    "XYZ-DRG-ATTACH" : {
-      "id" : "ocid1.drgattachment.oc1.iad.aaaaaaa...xla"
-    }
-  },
-  "local_peering_gateways" : {  
-    "XYZ-LPG" : {
-      "id" : "ocid1.localpeeringgateway.oc1.us-ashburn-1.aaaaaaaa...3oa"
-    }
-  },
-  "remote_peering_connections" : {  
-    "XYZ-RPC" : {
-      "id" : "ocid1.remotepeeringconnection.oc1.us-ashburn-1.aaaaaaaa...4rt",
-      "region_name" : "us-ashburn-1"
-    }
-  }  
-  "dns_private_views" : {  
-    "XYZ-DNS-VIEW" : {
-      "id" : "ocid1.dnsview.oc1.phx.aaaaaaaa...nhq",
-    }
-  }
-} 
-```
-**Note**: **vcns**, **dynamic_routing_gateways**, **drg_attachments**, **local_peering_gateways**, **remote_peering_connections** and **dns_private_views** attributes are all optional. They only become mandatory if the *network_configuration* refers to one of these resources through a referring key. Below are the attributes where a referring key is supported:
-
-*network_dependency* attribute | Attribute names in *network_configuration* where the referring key can be utilized
---------------|-------------
-**vcns** | *vcn_id* in *inject_into_existing_vcns*
-**dynamic_routing_gateways** | *drg_id* in *inject_into_existing_drgs*, *network_entity_key* in *route_tables'* *route_rules*
-**drg_attachments** | *drg_attachment_key*
-**local_peering_gateways** | *peer_key* in *local_peering_gateways*
-**remote_peering_connections** | *peer_key* in *remote_peering_connections*
-**dns_private_views** | *existing_view_id* in *dns_resolver's* *attached_views*.
-
-#### private_ips_dependency (Optional)
-A map of map of objects containing the externally managed private IP resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *private_ips_dependency* map. Each private IP must contain the **"id"** attribute (to which the actual OCID is assigned), as in the example below:
-
-Example:
-```
-{
-  "INDOOR-NLB": {
-    "id": "ocid1.privateip.oc1.iad.abyhql...nrq"
-  }
-}
-```
-
-Attributes that support a private IP referring key:
-  - *network_entity_key* in *route_tables'* *route_rules*
-
-
-#### Wrapping Example
-Note how the *network_configuration* snippet example below refers to keys in *compartments_dependency* (*NETWORK-CMP*) and *network_dependency* (*XYZ-VCN*):
-```
-network_configuration = {
-  default_compartment_id = "NETWORK-CMP" # This key is defined in compartments_dependency
-  network_configuration_categories = {
-    production = {
-      inject_into_existing_vcns = {
-        VISION-VCN-INJECTED = {
-          vcn_id = "XYZ-VCN" # This key is defined in network_dependency, under the vcns attribute.
-          subnets = {
-            SUPPLEMENT-SUBNET = {
-              display_name = "supplement-subnet"
-              cidr_block = "10.0.0.96/27"
-            }
-          }
-        }  
-      }
-    }
-  }
-}
-```
-See [external-dependency example](./examples/external-dependency/) for a functional example.
-
-### <a name="howtoexample">Available Examples</a>
-
-- [Simple Three-Tier VCN - Vision](examples/vision/)
-- [External Dependency](examples/external-dependency/) 
 - [Simple Example](examples/simple-example/)
 - [Provision a load balancer on top of an existing VCN](examples/simple-no_vcn-oci-native-l7-lbaas-example)
 - [Provision a complete VCN and a load balancer](examples/standard-vcn-oci-native-l7-lbaas-example)
@@ -392,34 +286,11 @@ See [external-dependency example](./examples/external-dependency/) for a functio
    - [Fast Connect Examples](examples/edge-connectivity/fast-connect-examples/)
       - [Generic OCI Fast Connect Partner](examples/edge-connectivity/fast-connect-examples/generic-oci-fastconnect-partner/)
    - [IPSec VPN Examples](examples/edge-connectivity/ipsec-examples/)
-      - [Generic OCI IPSec BGP VPN](examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/)    
-- [Local Peering Gateways](examples/local-peering-gateways/)     
-- [Remote Peering Connections](examples/remote-peering-connections/)  
+      - [Generic OCI IPSec BGP VPN](examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/)
 
-## <a name="related">Related Documentation
+## Related Documentation
 - [OCI Networking Overview](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/overview.htm)
 
-## Help
-
-Open an issue in this repository.
-
-## Contributing
-
-This project welcomes contributions from the community. Before submitting a pull request, please [review our contribution guide](./CONTRIBUTING.md).
-
-## Security
-
-Please consult the [security guide](./SECURITY.md) for our responsible security vulnerability disclosure process.
-
-## License
-
-Copyright (c) 2023,2024 Oracle and/or its affiliates.
-
-*Replace this statement if your project is not licensed under the UPL*
-
-Released under the Universal Permissive License v1.0 as shown at
-<https://oss.oracle.com/licenses/upl/>.
-
-## <a name="issues">Known Issues
+## Known Issues
 
 - On some corner case situations, a ```cycle-graph``` exception might be raised when using route tables attached to GWs. This issue will be addressed in one of the next releases.

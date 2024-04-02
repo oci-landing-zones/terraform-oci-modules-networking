@@ -29,11 +29,11 @@ The separation of code and configuration supports DevOps key concepts for operat
 This repository is part of a broader collection of repositories containing modules that help customers align their OCI implementations with the CIS OCI Foundations Benchmark recommendations:
 <br />
 
-- [Identity & Access Management ](https://github.com/oracle-oci-landing-zones/terraform-oci-landing-zones-iam)
-- [Networking](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking) - current repository
-- [Governance](https://github.com/oracle-oci-landing-zones/terraform-oci-landing-zones-governance)
+- [Identity & Access Management ](https://github.com/oracle-quickstart/terraform-oci-landing-zones-iam)
+- [Networking](https://github.com/oracle-quickstart/terraform-oci-landing-zones-networking) - current repository
+- [Governance](https://github.com/oracle-quickstart/terraform-oci-landing-zones-governance)
 - Security (coming soon)
-- [Observability & Monitoring](https://github.com/oracle-oci-landing-zones/terraform-oci-landing-zones-observability)
+- [Observability & Monitoring](https://github.com/oracle-quickstart/terraform-oci-landing-zones-observability)
 
 
 The modules in this collection are designed for flexibility, are straightforward to use, and enforce CIS OCI Foundations Benchmark recommendations when possible.
@@ -44,17 +44,36 @@ Using these modules does not require a user extensive knowledge of Terraform or 
 
 ## Requirements
 
-### Terraform Version >= 1.3.0
-
-This module requires Terraform binary version 1.3.0 or greater, as it relies on Optional Object Type Attributes feature. The feature shortens the amount of input values in complex of having Terraform automatically inserting a default value for any missing optional attributes.
-
-
 ### IAM Permissions
 
 This module requires the following OCI IAM permissions:
 ```
 Allow group <group-name> to manage load-balancers in compartment <compartment-name>
 
+```
+
+### Terraform Version < 1.3.x and Optional Object Type Attributes
+
+This module relies on [Terraform Optional Object Type Attributes feature](https://developer.hashicorp.com/terraform/language/expressions/type-constraints#optional-object-type-attributes), which is experimental from Terraform 0.14.x to 1.2.x. It shortens the amount of input values in complex object types, by having Terraform automatically inserting a default value for any missing optional attributes. The feature has been promoted and it is no longer experimental in Terraform 1.3.x.
+
+Upon running *terraform plan* with Terraform versions prior to 1.3.x, Terraform displays the following warning:
+```
+Warning: Experimental feature "module_variable_optional_attrs" is active
+```
+
+Note the warning is harmless. The code has been tested with Terraform 1.3.x and the implementation is fully compatible.
+
+If you really want to use Terraform 1.3.x, in [providers.tf](./providers.tf):
+1. Change the terraform version requirement to:
+
+```
+required_version = ">= 1.3.0"
+```
+
+2. Remove the line:
+
+```
+experiments = [module_variable_optional_attrs]
 ```
 
 ## How to Invoke the Module
@@ -79,7 +98,7 @@ module "l7_load_balancers" {
 For invoking the module remotely, set the module *source* attribute to the networking module repository, as shown:
 ```
 module "l7_load_balancers" {
-  source = "git@github.com:oracle-quickstart/terraform-oci-cis-landing-zone-networking.git/modules/l7_load_balancers"
+  source = "git@github.com:oracle-quickstart/terraform-oci-landing-zones-networking.git/modules/l7_load_balancers"
   l7_load_balancers_configuration = {
     dependencies = {
       public_ips              = local.provisioned_oci_core_public_ips
@@ -92,7 +111,7 @@ module "l7_load_balancers" {
 ```
 For referring to a specific module version, append *ref=\<version\>* to the *source* attribute value, as in:
 ```
-  source = "git@github.com:oracle-quickstart/terraform-oci-cis-landing-zone-networking.git?ref=v0.1.0/modules/l7_load_balancers"
+  source = "git@github.com:oracle-quickstart/terraform-oci-landing-zones-networking.git?ref=v0.1.0/modules/l7_load_balancers"
 ```
 
 ## How to use the module
