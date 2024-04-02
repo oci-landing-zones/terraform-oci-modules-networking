@@ -30,11 +30,11 @@ The separation of code and configuration supports DevOps key concepts for operat
 This repository is part of a broader collection of repositories containing modules that help customers align their OCI implementations with the CIS OCI Foundations Benchmark recommendations:
 <br />
 
-- [Identity & Access Management ](https://github.com/oracle-quickstart/terraform-oci-landing-zones-iam)
-- [Networking](https://github.com/oracle-quickstart/terraform-oci-landing-zones-networking) - current repository
-- [Governance](https://github.com/oracle-quickstart/terraform-oci-landing-zones-governance)
+- [Identity & Access Management ](https://github.com/oracle-oci-landing-zones/terraform-oci-landing-zones-iam)
+- [Networking](https://github.com/oracle-oci-landing-zones/terraform-oci-landing-zones-networking) - current repository
+- [Governance](https://github.com/oracle-oci-landing-zones/terraform-oci-landing-zones-governance)
 - Security (coming soon)
-- [Observability & Monitoring](https://github.com/oracle-quickstart/terraform-oci-landing-zones-observability)
+- [Observability & Monitoring](https://github.com/oracle-oci-landing-zones/terraform-oci-landing-zones-observability)
 
 The modules in this collection are designed for flexibility, are straightforward to use, and enforce CIS OCI Foundations Benchmark recommendations when possible.
 <br />
@@ -92,19 +92,19 @@ module "terraform-oci-landing-zones-networking" {
 For invoking the module remotely, set the module *source* attribute to the networking module repository, as shown:
 ```
 module "terraform-oci-landing-zones-networking" {
-  source = "git@github.com:oracle-quickstart/terraform-oci-landing-zones-networking.git"
+  source = "git@github.com:oracle-oci-landing-zones/terraform-oci-landing-zones-networking.git"
   network_configuration = var.network_configuration
 }
 ```
 For referring to a specific module version, append *ref=\<version\>* to the *source* attribute value, as in:
 ```
-  source = "git@github.com:oracle-quickstart/terraform-oci-landing-zones-networking.git?ref=v0.1.0"
+  source = "git@github.com:oracle-oci-landing-zones/terraform-oci-landing-zones-networking.git?ref=v0.1.0"
 ```
 
 ### Using the Module with ORM**
 
 For an ad-hoc use where you can select your resources, follow these guidelines:
-1. [![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/terraform-oci-landing-zones-networking/archive/refs/heads/main.zip)
+1. [![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-oci-landing-zones/terraform-oci-landing-zones-networking/archive/refs/heads/main.zip)
 2. Accept terms,  wait for the configuration to load. 
 3. Set the working directory to “orm-facade”. 
 4. Set the stack name you prefer.
