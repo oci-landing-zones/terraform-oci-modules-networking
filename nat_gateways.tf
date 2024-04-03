@@ -107,7 +107,7 @@ resource "oci_core_nat_gateway" "these" {
   block_traffic = each.value.block_traffic
   defined_tags  = each.value.defined_tags
   display_name  = each.value.display_name
-  freeform_tags = each.value.freeform_tags
+  freeform_tags = merge(local.cislz_module_tag, each.value.freeform_tags)
   public_ip_id  = each.value.public_ip_id
   // Searching for the id based on the key in the:
   //       - IGW and NAT GW specific route tables: local.provisioned_igw_natgw_specific_route_tables + the default route table

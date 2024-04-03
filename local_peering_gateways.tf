@@ -119,7 +119,7 @@ resource "oci_core_local_peering_gateway" "oci_acceptor_local_peering_gateways" 
   #Optional
   defined_tags  = each.value.defined_tags
   display_name  = each.value.display_name
-  freeform_tags = each.value.freeform_tags
+  freeform_tags = merge(local.cislz_module_tag, each.value.freeform_tags)
   peer_id       = null
   route_table_id = each.value.route_table_id != null ? each.value.route_table_id : each.value.route_table_key != null ? merge(
     {
@@ -147,7 +147,7 @@ resource "oci_core_local_peering_gateway" "oci_requestor_local_peering_gateways"
   #Optional
   defined_tags  = each.value.defined_tags
   display_name  = each.value.display_name
-  freeform_tags = each.value.freeform_tags
+  freeform_tags = merge(local.cislz_module_tag, each.value.freeform_tags)
   route_table_id = each.value.route_table_id != null ? each.value.route_table_id : each.value.route_table_key != null ? merge(
     {
       for rt_key, rt_value in merge(

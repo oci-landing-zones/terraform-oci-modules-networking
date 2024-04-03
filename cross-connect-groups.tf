@@ -45,5 +45,5 @@ resource "oci_core_cross_connect_group" "these" {
   customer_reference_name = each.value.customer_reference_name
   defined_tags            = each.value.defined_tags
   display_name            = each.value.display_name
-  freeform_tags           = each.value.freeform_tags
+  freeform_tags           = merge(local.cislz_module_tag, each.value.freeform_tags)
 }

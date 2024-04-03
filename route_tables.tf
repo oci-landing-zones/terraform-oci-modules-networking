@@ -660,7 +660,7 @@ resource "oci_core_route_table" "non_gw_specific_remaining_route_tables" {
   vcn_id         = each.value.vcn_id
   compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   defined_tags   = each.value.defined_tags
-  freeform_tags  = each.value.freeform_tags
+  freeform_tags  = merge(local.cislz_module_tag, each.value.freeform_tags)
   dynamic "route_rules" {
     iterator = rule
     for_each = each.value.route_rules != null ? [
