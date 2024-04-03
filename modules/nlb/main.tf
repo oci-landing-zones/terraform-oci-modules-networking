@@ -128,8 +128,7 @@ resource "oci_network_load_balancer_backend" "these" {
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.these["${each.value.nlb_key}"].id
   backend_set_name = oci_network_load_balancer_backend_set.these["${each.value.nlb_key}.${each.value.listener_key}.BACKENDSET"].name
   name             = each.value.name
-  #ip_address       = each.value.ip_address
-  ip_address       = each.value.ip_address != null ? (length(regexall("(\\d{1,3}?).(\\d{1,3}?).(\\d{1,3}?).(\\d{1,3}?)", each.value.ip_address)) > 0 ? each.value.ip_address : var.instances_dependency[each.value.ip_address].create_vnic_details[0].private_ip) : null
+  ip_address       = each.value.ip_address != null ? (length(regexall("(\\d{1,3}?).(\\d{1,3}?).(\\d{1,3}?).(\\d{1,3}?)", each.value.ip_address)) > 0 ? each.value.ip_address : var.instances_dependency[each.value.ip_address].private_ip) : null
   port             = each.value.port
   weight           = each.value.weight
   is_backup        = coalesce(each.value.is_backup,false)
