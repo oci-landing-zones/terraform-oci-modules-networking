@@ -7,7 +7,6 @@
 *.zip*
 terraform.tfvars
 *.tfvars.json
-*.auto.tfvars
 
 # log files
 *.log
@@ -49,7 +48,7 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
-.idea/*
+.idea
 
 # Test 
 sdf-oci-terraform-test/
