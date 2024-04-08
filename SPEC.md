@@ -13,9 +13,7 @@
 
 ## Modules
 
-| Name | Source | Version |
-|------|--------|---------|
-| <a name="module_l7_load_balancers"></a> [l7\_load\_balancers](#module\_l7\_load\_balancers) | ./modules/l7_load_balancers | n/a |
+No modules.
 
 ## Resources
 
