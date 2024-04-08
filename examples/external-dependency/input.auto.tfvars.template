@@ -1,0 +1,71 @@
+# Copyright (c) 2024 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+#-------------------------------------------------------------------------------------------------------------------------------------------------
+# 1. Rename this file to <project-name>.auto.tfvars, where <project-name> is a name of your choice.
+# 2. Provide values for "Tenancy Connectivity Variables".
+# 3. Make sure ./dependencies/vision-compartments.json has the NETWORK-CMP key defined with the id attribute set with a valid compartment OCID.
+# 4. Make sure ./dependencies/vision-network.json has the VISION-VCN key defined with the id attribute set with a valid VCN OCID.
+#-------------------------------------------------------------------------------------------------------------------------------------------------
+
+#---------------------------------------
+# Tenancy Connectivity Variables
+#---------------------------------------
+
+# tenancy_ocid         = "<tenancy OCID>"            # Get this from OCI Console (after logging in, go to top-right-most menu item and click option "Tenancy: <your tenancy name>").
+# user_ocid            = "<user OCID>"               # Get this from OCI Console (after logging in, go to top-right-most menu item and click option "My profile").
+# fingerprint          = "<PEM key fingerprint>"     # The fingerprint can be gathered from your user account. In the "My profile page, click "API keys" on the menu in left hand side.
+# private_key_path     = "<path to the private key>" # This is the full path on your local system to the API signing private key.
+# private_key_password = ""                          # This is the password that protects the private key, if any.
+# region               = "<your tenancy region>"     # The region name.
+
+#---------------------------------------
+# Input variable
+#---------------------------------------
+
+network_configuration = {
+  default_compartment_id = "NETWORK-CMP" # This key is defined in ./dependencies/vision-compartments.json
+  network_configuration_categories = {
+    production = {
+      inject_into_existing_vcns = {
+        VISION-VCN-INJECTED = {
+          vcn_id = "VISION-VCN" # This key is defined in ./dependencies/vision-network.json
+          subnets = {
+            SUPPLEMENT-SUBNET = {
+              display_name = "supplement-subnet"
+              cidr_block = "10.0.0.96/27"
+              security_list_keys = ["SUPPLEMENT-SECURITY-LIST"]
+            }
+          }
+          security_lists = {
+            SUPPLEMENT-SECURITY-LIST = {
+              display_name = "supplement-security-list"
+              ingress_rules = [
+                {
+                  description  = "Ingress on UDP type 3 code 4."
+                  stateless    = false
+                  protocol     = "UDP"
+                  src          = "0.0.0.0/0"
+                  src_type     = "CIDR_BLOCK"
+                  icmp_type    = 3
+                  icmp_code    = 4
+                }
+              ]
+              egress_rules = [
+                {
+                  description = "Egress to Oracle Services Network."
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "all-services"
+                  dst_type    = "SERVICE_CIDR_BLOCK"
+                  dst_port_min = 443
+                  dst_port_max = 443
+                }
+              ]
+            }
+          }
+        }  
+      }
+    }
+  }
+}
