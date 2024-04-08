@@ -254,7 +254,8 @@ locals {
               "default_security_list" = {
                 sec_list_key = "default_security_list",
                 display_name = "default_security_list",
-                id           = oci_core_vcn.these[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_security_list_id
+                id           = contains(keys(oci_core_vcn.these),local.merged_one_dimension_processed_subnets[subnet_key].vcn_key) ? oci_core_vcn.these[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_security_list_id : data.oci_core_vcn.existing_vcns[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_security_list_id
+                #id          = oci_core_vcn.these[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_security_list_id
               }
 
           }) : sec_list_value.id
@@ -273,7 +274,8 @@ locals {
               "default_security_list" = {
                 sec_list_key = "default_security_list",
                 display_name = "default_security_list",
-                id           = oci_core_vcn.these[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_security_list_id
+                id           = contains(keys(oci_core_vcn.these),local.merged_one_dimension_processed_subnets[subnet_key].vcn_key) ? oci_core_vcn.these[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_security_list_id : data.oci_core_vcn.existing_vcns[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_security_list_id
+                #id          = oci_core_vcn.these[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_security_list_id
               }
 
             }) : {
@@ -376,7 +378,7 @@ resource "oci_core_subnet" "these" {
   dhcp_options_id            = each.value.dhcp_options_id
   display_name               = each.value.display_name
   dns_label                  = each.value.dns_label
-  freeform_tags              = each.value.freeform_tags
+  freeform_tags              = merge(local.cislz_module_tag, each.value.freeform_tags)
   ipv6cidr_block             = each.value.ipv6cidr_block
   ipv6cidr_blocks            = each.value.ipv6cidr_blocks
   prohibit_internet_ingress  = each.value.prohibit_internet_ingress

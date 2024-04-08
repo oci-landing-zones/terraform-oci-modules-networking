@@ -117,7 +117,7 @@ resource "oci_network_firewall_network_firewall" "these" {
   availability_domain        = each.value.availability_domain
   defined_tags               = each.value.defined_tags
   display_name               = each.value.display_name
-  freeform_tags              = each.value.freeform_tags
+  freeform_tags              = merge(local.cislz_module_tag, each.value.freeform_tags)
   ipv4address                = each.value.ipv4address
   ipv6address                = each.value.ipv6address
   network_security_group_ids = each.value.network_security_group_ids

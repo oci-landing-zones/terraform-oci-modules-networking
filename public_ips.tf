@@ -69,7 +69,7 @@ resource "oci_core_public_ip" "these" {
   #Optional
   defined_tags      = each.value.defined_tags
   display_name      = each.value.display_name
-  freeform_tags     = each.value.freeform_tags
+  freeform_tags     = merge(local.cislz_module_tag, each.value.freeform_tags)
   private_ip_id     = each.value.private_ip_id
   public_ip_pool_id = each.value.public_ip_pool_id
 }

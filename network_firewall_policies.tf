@@ -75,7 +75,7 @@ resource "oci_network_firewall_network_firewall_policy" "these" {
   compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   defined_tags   = each.value.defined_tags
   display_name   = each.value.display_name
-  freeform_tags  = each.value.freeform_tags
+  freeform_tags  = merge(local.cislz_module_tag, each.value.freeform_tags)
 
   dynamic "application_lists" {
     for_each = each.value.application_lists != null ? length(each.value.application_lists) > 0 ? [
