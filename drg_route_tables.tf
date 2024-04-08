@@ -87,7 +87,7 @@ resource "oci_core_drg_route_table" "these" {
   #Optional
   defined_tags                     = each.value.defined_tags
   display_name                     = each.value.display_name
-  freeform_tags                    = each.value.freeform_tags
+  freeform_tags                    = merge(local.cislz_module_tag, each.value.freeform_tags)
   import_drg_route_distribution_id = each.value.import_drg_route_distribution_id
   is_ecmp_enabled                  = each.value.is_ecmp_enabled
 }
