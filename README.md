@@ -10,7 +10,15 @@ It aims to facilitate the provisioning of any OCI networking topology, covering 
 
 Check [module specification](./SPEC.md) for a full description of module requirements, supported variables, managed resources and outputs.
 
-In future releases, it will also cover associated networking services like DNS, Load Balancers, 3rd-party firewalls, etc.
+- [CIS OCI Foundations Benchmark Modules Collection](#cis-collection)
+- [Requirements](#requirements)
+- [How to Invoke the Module](#invoke)
+  - [With Resource Manager](#with-rms)
+- [Module Functioning](#functioning)
+  - [External Dependencies](#ext-dep)
+  - [Available Examples](#howtoexample)
+- [Related Documentation](#related)
+- [Known Issues](#issues)
 
 This module uses Terraform complex types and optional attributes, in order to create a new abstraction layer on top of Terraform. 
 This abstraction layer allows the specification of any networking topology containing any number of networking resources like VCNs, subnets, DRGs and others and mapping those on any existing compartments topology.
@@ -25,7 +33,7 @@ The main advantage of this approach is that there will be one single code reposi
 
 The separation of code and configuration supports DevOps key concepts for operations design, change management, pipelines.
 
-## CIS OCI Foundations Benchmark Modules Collection
+## <a name="cis-collection">CIS OCI Foundations Benchmark Modules Collection
 
 This repository is part of a broader collection of repositories containing modules that help customers align their OCI implementations with the CIS OCI Foundations Benchmark recommendations:
 <br />
@@ -33,8 +41,9 @@ This repository is part of a broader collection of repositories containing modul
 - [Identity & Access Management ](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam)
 - [Networking](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking) - current repository
 - [Governance](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-governance)
-- Security (coming soon)
+- [Security](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-security)
 - [Observability & Monitoring](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability)
+- [Secure Workloads](https://github.com/oracle-quickstart/terraform-oci-secure-workloads)
 
 The modules in this collection are designed for flexibility, are straightforward to use, and enforce CIS OCI Foundations Benchmark recommendations when possible.
 <br />
@@ -42,7 +51,7 @@ The modules in this collection are designed for flexibility, are straightforward
 Using these modules does not require a user extensive knowledge of Terraform or OCI resource types usage. Users declare a JSON object describing the OCI resources according to each module’s specification and minimal Terraform code to invoke the modules. The modules generate outputs that can be consumed by other modules as inputs, allowing for the creation of independently managed operational stacks to automate your entire OCI infrastructure.
 <br />
 
-## Requirements
+## <a name="requirements">Requirements
 
 ### IAM Permissions
 
@@ -77,7 +86,7 @@ required_version = ">= 1.3.0"
 experiments = [module_variable_optional_attrs]
 ```
 
-## How to Invoke the Module
+## <a name="invoke">How to Invoke the Module
 
 Terraform modules can be invoked locally or remotely. 
 
@@ -92,16 +101,16 @@ module "terraform-oci-cis-landing-zone-networking" {
 For invoking the module remotely, set the module *source* attribute to the networking module repository, as shown:
 ```
 module "terraform-oci-cis-landing-zone-networking" {
-  source = "git@github.com:oracle-quickstart/terraform-oci-cis-landing-zone-networking.git"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking"
   network_configuration = var.network_configuration
 }
 ```
 For referring to a specific module version, append *ref=\<version\>* to the *source* attribute value, as in:
 ```
-  source = "git@github.com:oracle-quickstart/terraform-oci-cis-landing-zone-networking.git?ref=v0.1.0"
+  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking?ref=v0.1.0"
 ```
 
-### Using the Module with ORM**
+### <a name="with-orm">Using the Module with Resource Manager
 
 For an ad-hoc use where you can select your resources, follow these guidelines:
 1. [![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking/archive/refs/heads/main.zip)
@@ -112,7 +121,7 @@ For an ad-hoc use where you can select your resources, follow these guidelines:
 6. Add your json/yaml configuration files. Click Next.
 8. Un-check run apply. Click Create.
 
-## How to use the module
+## <a name="functioning">Module Functioning
 
 The input parameters for the module can be divided into two categories, for which we recomend to create two different ```*.tfvars.*``` files:
  1. OCI REST API authentication information (secrets) - ```terraform.tfvars``` (HCL) or ```terraform.tfvars.json``` (JSON):
@@ -270,15 +279,42 @@ The ```network_configuration``` is a multidimensional complex object:
         - ```certificates``` represents an optional attribute that allows the definition of zero, one or multiple certificates that will be associated with the current load balancer. All the OCI ```certificates``` attributes are covered: ```certificate_name```, ```ca_certificate```, ```passphrase```, ```private_key``` and ```public_certificate```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
         - ```listeners``` represents an optional attribute that allows the definition of zero, one or multiple listeners that will be associated with the current load balancer. All the OCI ```listeners``` attributes are covered: ```default_backend_set_key```, ```name```, ```port```, ```protocol```, ```connection_configuration```, ```hostname_keys```, ```path_route_set_key```, ```routing_policy_key```, ```rule_set_keys``` and ```ssl_configuration```. Please refer to the OCI LBaaS documentation that is covering all the upper mentioned resource attributes.
 
-This module can be used directly by copying one of the provided [examples](examples/) and modify to match the use-case.
+### <a name="ext-dep">External Dependencies</a>
+An optional feature, external dependencies are resources managed elsewhere that resources managed by this module depends on. The following dependencies are supported:
 
-It can also be integrated with other core modules into an orchestrated solution. It might be needed to apply some customizations to the complex type.
+- **compartments_dependency** &ndash; A map of objects containing the externally managed compartments this module depends on. All map objects must have the same type and must contain at least an *id* attribute with the compartment OCID. This mechanism allows for the usage of referring keys (instead of OCIDs) in *default_compartment_id* and *compartment_id* attributes. The module replaces the keys by the OCIDs provided within *compartments_dependency* map. Contents of *compartments_dependency* is typically the output of a [Compartments module](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/compartments) client.
 
-When using this module in stand-alone mode, but leave some options, customizations may be required, too.
+Example:
+```
+{
+	"NETWORK-CMP": {
+		"id": "ocid1.compartment.oc1..aaaaaaaa...7xq"
+	}
+}
+```
+- **network_dependency** &ndash; A map of map of objects containing the externally managed network resources this module depends on. This mechanism allows for the usage of referring keys (instead of OCIDs) in *vcn_id* and *drg_id* attributes of *inject_into_existing_vcns* and *inject_into_existing_drgs*, respectively. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a client of this module. Within *network_dependency*, VCNs must be indexed with the **"vcns"** key and DRGs indexed with the **"dynamic_routing_gateways"** key. Each VCN and DRG must contain the **"id"** attribute (to which the actual OCID is assigned), as in the example below:
 
-<a name="howtoexample"></a>
-### Examples
+Example:
+```
+{
+  "vcns" : {
+    "XYZ-VCN" : {
+      "id" : "ocid1.vcn.oc1.iad.aaaaaaaax...e7a"
+    }
+  },
+  "dynamic_routing_gateways" : {  
+    "XYZ-DRG" : {
+      "id" : "ocid1.drg.oc1.iad.aaaaaaaa...xlq"
+    }
+  }  
+} 
+```          
+See [external-dependency example](./examples/external-dependency/) for a complete example.
 
+### <a name="howtoexample">Available Examples</a>
+
+- [Simple Three-Tier VCN - Vision](examples/vision/)
+- [External Dependency](examples/external-dependency/) 
 - [Simple Example](examples/simple-example/)
 - [Provision a load balancer on top of an existing VCN](examples/simple-no_vcn-oci-native-l7-lbaas-example)
 - [Provision a complete VCN and a load balancer](examples/standard-vcn-oci-native-l7-lbaas-example)
@@ -286,11 +322,11 @@ When using this module in stand-alone mode, but leave some options, customizatio
    - [Fast Connect Examples](examples/edge-connectivity/fast-connect-examples/)
       - [Generic OCI Fast Connect Partner](examples/edge-connectivity/fast-connect-examples/generic-oci-fastconnect-partner/)
    - [IPSec VPN Examples](examples/edge-connectivity/ipsec-examples/)
-      - [Generic OCI IPSec BGP VPN](examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/)
+      - [Generic OCI IPSec BGP VPN](examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/)     
 
-## Related Documentation
+## <a name="related">Related Documentation
 - [OCI Networking Overview](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/overview.htm)
 
-## Known Issues
+## <a name="issues">Known Issues
 
 - On some corner case situations, a ```cycle-graph``` exception might be raised when using route tables attached to GWs. This issue will be addressed in one of the next releases.

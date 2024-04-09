@@ -1,0 +1,33 @@
+{
+  "dynamic_routing_gateways": {},
+  "network_security_groups": {
+    "APP-NSG": {
+      "id": "ocid1.networksecuritygroup.oc1.phx.aaaaaaaa...oua"
+    },
+    "BASTION-NSG": {
+      "id": "ocid1.networksecuritygroup.oc1.phx.aaaaaaaa...4ha"
+    },
+    "DB-NSG": {
+      "id": "ocid1.networksecuritygroup.oc1.phx.aaaaaaaae...p3q"
+    },
+    "LBR-NSG": {
+      "id": "ocid1.networksecuritygroup.oc1.phx.aaaaaaaa...4qq"
+    }
+  },
+  "subnets": {
+    "APP-SUBNET": {
+      "id": "ocid1.subnet.oc1.phx.aaaaaaaa...jcq"
+    },
+    "DB-SUBNET": {
+      "id": "ocid1.subnet.oc1.phx.aaaaaaaa...mja"
+    },
+    "WEB-SUBNET": {
+      "id": "ocid1.subnet.oc1.phx.aaaaaaaa...iuq"
+    }
+  },
+  "vcns": {
+    "VISION-VCN": {
+      "id": "ocid1.vcn.oc1.phx.amaaaaaa...npq"
+    }
+  }
+}

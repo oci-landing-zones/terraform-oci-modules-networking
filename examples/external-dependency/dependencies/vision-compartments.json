@@ -1,0 +1,20 @@
+{
+  "APP-CMP": {
+    "id": "ocid1.compartment.oc1..aaaaaaaaa...w2q"
+    },
+  "DB-CMP": {
+    "id": "ocid1.compartment.oc1..aaaaaaaa...2nq"
+    },
+  "EXACS-CMP": {
+    "id": "ocid1.compartment.oc1..aaaaaaaa...2va"
+    },
+  "NETWORK-CMP": {
+    "id": "ocid1.compartment.oc1..aaaaaaaa...sga"
+    },
+  "SECURITY-CMP": {
+    "id": "ocid1.compartment.oc1..aaaaaaaa...qfa"
+    },
+  "TOP-CMP": {
+    "id": "ocid1.compartment.oc1..aaaaaaaas...zvq"
+    }
+}

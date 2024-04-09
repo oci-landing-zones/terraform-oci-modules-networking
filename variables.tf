@@ -1023,14 +1023,29 @@ variable "network_configuration" {
   })
 }
 
+variable module_name {
+  description = "The module name."
+  type = string
+  default = "networking"
+}
+
 variable "compartments_dependency" {
-  description = "A map of objects containing the externally managed compartments this module may depend on. All map objects must have the same type and must contain at least an 'id' attribute (representing the compartment OCID) of string type."
-  type        = map(any)
-  default     = null
+  description = "A map of objects containing the externally managed compartments this module may depend on. All map objects must have the same type and must contain an 'id' attribute of string type set with the compartment OCID. See External Dependencies section in README.md (https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking#ext-dep) for details."
+  type = map(object({
+    id = string
+  }))
+  default = null
 }
 
 variable "network_dependency" {
-  description = "A map of objects containing the externally managed network resources this module may depend on. All map objects must have the same type and must contain at least an 'id' attribute (representing the network resource OCID) of string type."
-  type        = map(any)
-  default     = null
+  description = "An object containing the externally managed network resources this module may depend on. It must define at least one of two maps of objects, with their keys equal to 'vcns' and 'dynamic_routing_gateways'. Each of these maps must have one object with the 'id' attribute of string type set with the VCN or DRG OCID. See External Dependencies section in README.md (https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking#ext-dep) for details."
+  type = object({
+    vcns = optional(map(object({
+      id = string # the VCN OCID
+    })))
+    dynamic_routing_gateways = optional(map(object({
+      id = string # the DRG OCID
+    })))
+  })
+  default = null
 }

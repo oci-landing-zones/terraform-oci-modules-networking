@@ -195,7 +195,7 @@ resource "oci_core_virtual_circuit" "these" {
   customer_asn              = each.value.customer_asn
   defined_tags              = each.value.defined_tags
   display_name              = each.value.display_name
-  freeform_tags             = each.value.freeform_tags
+  freeform_tags             = merge(local.cislz_module_tag, each.value.freeform_tags)
   ip_mtu                    = each.value.ip_mtu
   is_bfd_enabled            = each.value.is_bfd_enabled
   gateway_id                = each.value.gateway_id

@@ -1,0 +1,317 @@
+# Copyright (c) 2024 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+#--------------------------------------------------------------------------------------------------------------------------------------
+# 1. Rename this file to <project-name>.auto.tfvars, where <project-name> is a name of your choice.
+# 2. Provide values for "Tenancy Connectivity Variables".
+# 3. Replace <REPLACE-WITH-NETWORK-COMPARTMENT-OCID> placeholder with the network compartment OCID where the VCN is created.
+# 4. Replace <REPLACE-WITH-ALLOWED-CIDR-RANGE> placeholder with the CIDR range allowed to SSH into the Bastion Network Security Group. 
+#--------------------------------------------------------------------------------------------------------------------------------------
+
+#---------------------------------------
+# Tenancy Connectivity Variables
+#---------------------------------------
+
+# tenancy_ocid         = "<tenancy OCID>"            # Get this from OCI Console (after logging in, go to top-right-most menu item and click option "Tenancy: <your tenancy name>").
+# user_ocid            = "<user OCID>"               # Get this from OCI Console (after logging in, go to top-right-most menu item and click option "My profile").
+# fingerprint          = "<PEM key fingerprint>"     # The fingerprint can be gathered from your user account. In the "My profile page, click "API keys" on the menu in left hand side.
+# private_key_path     = "<path to the private key>" # This is the full path on your local system to the API signing private key.
+# private_key_password = ""                          # This is the password that protects the private key, if any.
+# region               = "<your tenancy region>"     # The region name.
+
+#---------------------------------------
+# Input variable
+#---------------------------------------
+
+network_configuration = {
+  default_enable_cis_checks = true
+  default_compartment_id    = "<REPLACE-WITH-NETWORK-COMPARTMENT-OCID>"
+  network_configuration_categories = {
+    production = {
+      vcns = {
+        VISION-VCN = {
+          display_name                     = "vision-vcn"
+          is_ipv6enabled                   = false
+          is_oracle_gua_allocation_enabled = false
+          cidr_blocks                      = ["10.0.0.0/25"],
+          dns_label                        = "visionvcn"
+          block_nat_traffic                = false
+
+          subnets = {
+            WEB-SUBNET = {
+              cidr_block                 = "10.0.0.0/27"
+              dhcp_options_key           = "default_dhcp_options"
+              display_name               = "vision-vcn-web-subnet"
+              dns_label                  = "web"
+              ipv6cidr_blocks            = []
+              prohibit_internet_ingress  = true
+              prohibit_public_ip_on_vnic = true
+              route_table_key            = "WEB-SUBNET-ROUTE-TABLE"
+            }
+            APP-SUBNET = {
+              cidr_block                 = "10.0.0.32/27"
+              dhcp_options_key           = "default_dhcp_options"
+              display_name               = "vision-vcn-app-subnet"
+              dns_label                  = "app"
+              ipv6cidr_blocks            = []
+              prohibit_internet_ingress  = true
+              prohibit_public_ip_on_vnic = true
+              route_table_key            = "APP-SUBNET-ROUTE-TABLE"
+            }
+            DB-SUBNET = {
+              cidr_block                 = "10.0.0.64/27"
+              dhcp_options_key           = "default_dhcp_options"
+              display_name               = "vision-vcn-db-subnet"
+              dns_label                  = "back"
+              ipv6cidr_blocks            = []
+              prohibit_internet_ingress  = true
+              prohibit_public_ip_on_vnic = true
+              route_table_key            = "DB-SUBNET-ROUTE-TABLE"
+            }
+          }
+
+          route_tables = {
+            WEB-SUBNET-ROUTE-TABLE = {
+              display_name = "web-subnet-rtable"
+              route_rules = {
+                RULE-1 = {
+                  network_entity_key = "INTERNET-GATEWAY"
+                  description        = "To Internet Gateway."
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
+                RULE-2 = {
+                  network_entity_key = "SERVICE-GATEWAY"
+                  description        = "To Service Gateway."
+                  destination        = "objectstorage"
+                  destination_type   = "SERVICE_CIDR_BLOCK"
+                }
+              }
+            }
+            APP-SUBNET-ROUTE-TABLE = {
+              display_name = "app-subnet-rtable"
+              route_rules = {
+                RULE-1 = {
+                  network_entity_key = "NAT-GATEWAY"
+                  description        = "To NAT Gateway."
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
+                RULE-2 = {
+                  network_entity_key = "SERVICE-GATEWAY"
+                  description        = "To Service Gateway."
+                  destination        = "all-services"
+                  destination_type   = "SERVICE_CIDR_BLOCK"
+                }
+              }
+            }
+            DB-SUBNET-ROUTE-TABLE = {
+              display_name = "db-subnet-rtable"
+              route_rules = {
+                RULE-1 = {
+                  network_entity_key = "NAT-GATEWAY"
+                  description        = "To NAT Gateway."
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
+                RULE-2 = {
+                  network_entity_key = "SERVICE-GATEWAY"
+                  description        = "To Service Gateway."
+                  destination        = "all-services"
+                  destination_type   = "SERVICE_CIDR_BLOCK"
+                }
+              }
+            }
+          }
+
+          network_security_groups = {
+            BASTION-NSG = {
+              display_name = "vision-vcn-bastion-nsg"
+              ingress_rules = {
+                FROM-ON-PREM-SSH = {
+                  description  = "Ingress from on-prem on SSH port 22."
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "<REPLACE-WITH-ALLOWED-CIDR-RANGE>"
+                  src_type     = "CIDR_BLOCK"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                }
+              },
+              egress_rules = {
+                TO-LBR-NSG = {
+                  description = "Egress to LBR NSG."
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "LBR-NSG"
+                  dst_type    = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                },
+                TO-APP-NSG = {
+                  description = "Egress to App NSG."
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "APP-NSG"
+                  dst_type    = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                },
+                TO-DB-NSG = {
+                  description = "Egress to DB NSG."
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "DB-NSG"
+                  dst_type    = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                },
+                TO-OSN = {
+                  description = "Egress to Oracle Services Network."
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "all-services"
+                  dst_type    = "SERVICE_CIDR_BLOCK"
+                  dst_port_min = 443
+                  dst_port_max = 443
+                }
+              }
+            },
+            LBR-NSG = {
+              display_name = "vision-vcn-lbr-nsg"
+              ingress_rules = {
+                FROM-ANYWHERE-HTTP = {
+                  description  = "Ingress from 0.0.0.0/0 on HTTP port 443."
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "0.0.0.0/0"
+                  src_type     = "CIDR_BLOCK"
+                  dst_port_min = 443
+                  dst_port_max = 443
+                }
+              },
+              egress_rules = {
+                TO-APP-NSG = {
+                  description = "Egress to App NSG."
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "APP-NSG"
+                  dst_type    = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 80
+                  dst_port_max = 80
+                },
+                TO-OSN = {
+                  description = "Egress to Oracle Services Network."
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "all-services"
+                  dst_type    = "SERVICE_CIDR_BLOCK"
+                  dst_port_min = 443
+                  dst_port_max = 443
+                }
+              }
+            },
+            APP-NSG = {
+              display_name = "vision-vcn-app-nsg"
+              ingress_rules = {
+                FROM-LBR-NSG = {
+                  description  = "Ingress from LBR NSG"
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "LBR-NSG"
+                  src_type     = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 80
+                  dst_port_max = 80
+                },
+                FROM-BASTION-NSG = {
+                  description  = "Ingress from Bastion NSG."
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "BASTION-NSG"
+                  src_type     = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                }
+              }  
+              egress_rules = {
+                TO-DB-NSG = {
+                  description = "Egress to DB NSG"
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "DB-NSG"
+                  dst_type    = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 1521
+                  dst_port_max = 1522
+                },
+                TO-OSN = {
+                  description = "Egress to Oracle Services Network."
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "all-services"
+                  dst_type    = "SERVICE_CIDR_BLOCK"
+                  dst_port_min = 443
+                  dst_port_max = 443
+                }
+              }
+            },
+            DB-NSG = {
+              display_name = "vision-vcn-app-nsg"
+              ingress_rules = {
+                FROM-MID-NSG = {
+                  description  = "Ingress from App NSG"
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "APP-NSG"
+                  src_type     = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 1521
+                  dst_port_max = 1522
+                },
+                FROM-BASTION-NSG = {
+                  description  = "Ingress from Bastion NSG."
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "BASTION-NSG"
+                  src_type     = "NETWORK_SECURITY_GROUP"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                }
+              },  
+              egress_rules = {
+                TO-OSN = {
+                  description = "Egress to Oracle Services Network."
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "all-services"
+                  dst_type    = "SERVICE_CIDR_BLOCK"
+                  dst_port_min = 443
+                  dst_port_max = 443
+                }
+              }
+            }
+          }
+
+          vcn_specific_gateways = {
+            internet_gateways = {
+              INTERNET-GATEWAY = {
+                enabled      = true
+                display_name = "vision-vcn-internet-gateway"
+              }
+            }
+            nat_gateways = {
+              NAT-GATEWAY = {
+                block_traffic = false
+                display_name  = "vision-vcn-nat-gateway"
+              }
+            }
+            service_gateways = {
+              SERVICE-GATEWAY = {
+                display_name = "vision-vcn-service-gateway"
+                services = "all-services"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
