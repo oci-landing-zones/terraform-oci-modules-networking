@@ -80,7 +80,7 @@ locals {
             #Optional
             attachment_type    = drgrdsts_value.match_criteria.attachment_type
             drg_attachment_key = drgrdsts_value.match_criteria.drg_attachment_key
-            drg_attachment_id  = drgrdsts_value.match_criteria.drg_attachment_id != null ? drgrdsts_value.match_criteria.drg_attachment_id : drgrdsts_value.match_criteria.drg_attachment_key != null ? local.drtd_attachments[drgrdsts_value.match_criteria.drg_attachment_key].id : null
+            drg_attachment_id  = drgrdsts_value.match_criteria.drg_attachment_id != null ? length(regexall("^ocid1.drgattachment.*$", drgrdsts_value.match_criteria.drg_attachment_id)) > 0 ? drgrdsts_value.match_criteria.drg_attachment_id : drgrdsts_value.match_criteria.drg_attachment_key != null ? contains(keys(local.drtd_attachments),drgrdsts_value.match_criteria.drg_attachment_key) ? local.drtd_attachments[drgrdsts_value.match_criteria.drg_attachment_key].id : contains(keys(var.network_dependency["drg_attachments"]),drgrdsts_value.match_criteria.drg_attachment_key) ? var.network_dependency["drg_attachments"][drgrdsts_value.match_criteria.drg_attachment_key].id : null : null : null
 
           } : null
           drgrdsts_key = drgrdsts_key
@@ -100,8 +100,7 @@ locals {
       match_criteria = {
         attachment_type     = drgrdsts_value.match_criteria[0].attachment_type
         drg_attachment_id   = drgrdsts_value.match_criteria[0].drg_attachment_id
-        #drg_attachment_key  = contains(keys(local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria), "drg_attachment_key") ? local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION"
-        drg_attachment_key  = contains(keys(local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria), "drg_attachment_key") ? local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key : contains(keys(var.network_dependency["drg_attachments"]),drgrdsts_key) ? var.network_dependency["drg_attachments"][drgrdsts_key].id : "INVALID drt_attachment_key: ${drgrdsts_key}"
+        drg_attachment_key  = contains(keys(local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria), "drg_attachment_key") ? local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION"
         drg_attachment_name = contains(keys(local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria), "drg_attachment_key") ? local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key != null ? local.drtd_attachments[local.one_dimension_processed_drg_route_distributions_statements[drgrdsts_key].match_criteria.drg_attachment_key].display_name : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION" : "NOT DETERMINED AS DRG_ATTACHMENT NOT CREATED BY THIS AUTOMATION"
       }
       priority                       = drgrdsts_value.priority
