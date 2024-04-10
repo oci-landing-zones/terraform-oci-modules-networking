@@ -131,7 +131,8 @@ locals {
     local.provisioned_service_gateways,
     local.provisioned_dynamic_gateways,
     local.provisioned_local_peering_gateways,
-    var.private_ips_dependency
+    coalesce(var.private_ips_dependency,{}),
+    coalesce(try(var.network_dependency["dynamic_routing_gateways"],null),{})
   )
 
   // Process the input for the route tables defined as part of the newly defined VCNs. 
