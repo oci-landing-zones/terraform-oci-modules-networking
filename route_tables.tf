@@ -247,7 +247,7 @@ locals {
   // defining all posible route rules targets for IGW specific route tables
   // MARKING an external dependency on subnets and IP addresses for searching for private IP OCID for Private IP targets
   #route_rules_targets_for_IGW_NATGW_specific_RTs = {}
-  route_rules_targets_for_IGW_NATGW_specific_RTs = var.private_ips_dependency
+  route_rules_targets_for_IGW_NATGW_specific_RTs = merge(coalesce(var.private_ips_dependency,{}),coalesce(try(var.network_dependency["dynamic_routing_gateways"],null),{}))
 
   // Search for all the route tables that have route rules that satisfy ANY of the criterias for being attached to a IGW/NAT-GW considering their route rules target   
   igw_natgw_attachable_specific_route_tables = local.merged_one_dimension_processed_route_tables != null ? length(local.merged_one_dimension_processed_route_tables) > 0 ? {
