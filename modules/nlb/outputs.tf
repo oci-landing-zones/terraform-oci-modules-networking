@@ -20,3 +20,8 @@ output "nlb_backends" {
   description = "The NLB backends."
   value       = var.enable_output ? oci_network_load_balancer_backend.these : null
 }
+
+output "nlbs_private_ips" {
+  description = "The NLBs private IP addresses."
+  value = data.oci_core_private_ips.these
+}
