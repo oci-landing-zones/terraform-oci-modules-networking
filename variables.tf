@@ -1049,3 +1049,11 @@ variable "network_dependency" {
   })
   default = null
 }
+
+variable "private_ips_dependency" {
+  description = "An object containing the externally managed Private IP resources this module may depend on. All map objects must have the same type and must contain an 'id' attribute of string type set with the Private IP OCID. See External Dependencies section in README.md (https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking#ext-dep) for details."
+  type = map(object({
+    id = string
+  }))
+  default = null
+}

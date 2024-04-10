@@ -130,7 +130,8 @@ locals {
     local.provisioned_nat_gateways,
     local.provisioned_service_gateways,
     local.provisioned_dynamic_gateways,
-    local.provisioned_local_peering_gateways
+    local.provisioned_local_peering_gateways,
+    var.private_ips_dependency
   )
 
   // Process the input for the route tables defined as part of the newly defined VCNs. 
@@ -244,7 +245,8 @@ locals {
 
   // defining all posible route rules targets for IGW specific route tables
   // MARKING an external dependency on subnets and IP addresses for searching for private IP OCID for Private IP targets
-  route_rules_targets_for_IGW_NATGW_specific_RTs = {}
+  #route_rules_targets_for_IGW_NATGW_specific_RTs = {}
+  route_rules_targets_for_IGW_NATGW_specific_RTs = var.private_ips_dependency
 
   // Search for all the route tables that have route rules that satisfy ANY of the criterias for being attached to a IGW/NAT-GW considering their route rules target   
   igw_natgw_attachable_specific_route_tables = local.merged_one_dimension_processed_route_tables != null ? length(local.merged_one_dimension_processed_route_tables) > 0 ? {
@@ -287,7 +289,8 @@ locals {
   ]
 
   // defining all posible route rules targets for SGW specific route tables
-  route_rules_targets_for_SGW_specific_RTs = local.provisioned_dynamic_gateways
+  #route_rules_targets_for_SGW_specific_RTs = merge(local.provisioned_dynamic_gateways)
+  route_rules_targets_for_SGW_specific_RTs = merge(local.provisioned_dynamic_gateways,var.private_ips_dependency)
 
   // Search for all the sgw specific route tables that have route rules that satisfy:
   //      1. CONDITION 1
@@ -341,7 +344,8 @@ locals {
   //------------------------------- LPG Attachment ALGORITHM LOCALS ELEMENTS -----------------------------------------
 
   // defining all posible route rules targets for LPG specific route tables
-  route_rules_targets_for_LPG_specific_RTs = local.provisioned_service_gateways
+  #route_rules_targets_for_LPG_specific_RTs = local.provisioned_service_gateways
+  route_rules_targets_for_LPG_specific_RTs = merge(local.provisioned_service_gateways, var.private_ips_dependency)
 
 
   // Define what are the route rules possible targets, inside a route table, that will allow for the row table to be attached to a LPG - the configuration that covers ALL the possible options for LPG - route rules to all the possible targets
@@ -409,9 +413,14 @@ locals {
   //------------------------------- DRG Attachment ALGORITHM LOCALS ELEMENTS -----------------------------------------
 
   // defining all posible route rules targets for DRGA specific route tables
-  route_rules_targets_for_DRGA_specific_RTs = merge(
+  # route_rules_targets_for_DRGA_specific_RTs = merge(
+  #   local.provisioned_local_peering_gateways,
+  #   local.provisioned_service_gateways
+  # )
+   route_rules_targets_for_DRGA_specific_RTs = merge(
     local.provisioned_local_peering_gateways,
-    local.provisioned_service_gateways
+    local.provisioned_service_gateways,
+    var.private_ips_dependency
   )
 
   // Define what are the route rules possible targets, inside a route table, that will allow for the row table to be attached to a DRG Attachment - the configuration that covers ALL the possible options for DRG Attachment - route rules to all the possible targets
