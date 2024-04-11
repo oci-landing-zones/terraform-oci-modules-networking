@@ -1046,6 +1046,9 @@ variable "network_dependency" {
     dynamic_routing_gateways = optional(map(object({
       id = string # the DRG OCID
     })))
+    drg_attachments = optional(map(object({
+      id = string # the DRG attachment OCID
+    })))
   })
   default = null
 }
