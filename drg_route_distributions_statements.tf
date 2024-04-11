@@ -80,7 +80,7 @@ locals {
             #Optional
             attachment_type    = drgrdsts_value.match_criteria.attachment_type
             drg_attachment_key = drgrdsts_value.match_criteria.drg_attachment_key
-            drg_attachment_id  = drgrdsts_value.match_criteria.drg_attachment_id != null ? length(regexall("^ocid1.drgattachment.*$", drgrdsts_value.match_criteria.drg_attachment_id)) > 0 ? drgrdsts_value.match_criteria.drg_attachment_id : drgrdsts_value.match_criteria.drg_attachment_key != null ? contains(keys(local.drtd_attachments),drgrdsts_value.match_criteria.drg_attachment_key) ? local.drtd_attachments[drgrdsts_value.match_criteria.drg_attachment_key].id : contains(keys(var.network_dependency["drg_attachments"]),drgrdsts_value.match_criteria.drg_attachment_key) ? var.network_dependency["drg_attachments"][drgrdsts_value.match_criteria.drg_attachment_key].id : null : null : null
+            drg_attachment_id  = drgrdsts_value.match_criteria.drg_attachment_id != null ? length(regexall("^ocid1.drgattachment.*$", drgrdsts_value.match_criteria.drg_attachment_id)) > 0 ? drgrdsts_value.match_criteria.drg_attachment_id : drgrdsts_value.match_criteria.drg_attachment_key != null ? contains(keys(local.drtd_attachments),drgrdsts_value.match_criteria.drg_attachment_key) ? local.drtd_attachments[drgrdsts_value.match_criteria.drg_attachment_key].id : contains(keys(var.network_dependency["drg_attachments"]),drgrdsts_value.match_criteria.drg_attachment_key) ? var.network_dependency["drg_attachments"][drgrdsts_value.match_criteria.drg_attachment_key].id : "AAA" : "BBB" : "CCC"
 
           } : null
           drgrdsts_key = drgrdsts_key
