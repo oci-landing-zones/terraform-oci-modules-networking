@@ -288,9 +288,9 @@ A map of objects containing the externally managed compartments this module may 
 Example:
 ```
 {
-	"NETWORK-CMP": {
-		"id": "ocid1.compartment.oc1..aaaaaaaa...7xq"
-	}
+  "NETWORK-CMP": {
+    id": "ocid1.compartment.oc1..aaaaaaaa...7xq"
+  }
 }
 ```
 
@@ -338,9 +338,9 @@ A map of map of objects containing the externally managed private IP resources t
 Example:
 ```
 {
-	"INDOOR-NLB": {
-		"id": "ocid1.privateip.oc1.phx.abyhql...nrq"
-	}
+  "INDOOR-NLB": {
+    "id": "ocid1.privateip.oc1.phx.abyhql...nrq"
+  }
 }
 ```
 
