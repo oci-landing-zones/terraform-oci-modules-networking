@@ -282,7 +282,8 @@ The ```network_configuration``` is a multidimensional complex object:
 ### <a name="ext-dep">External Dependencies</a>
 An optional feature, external dependencies are resources managed elsewhere that resources managed by this module depends on. The following dependencies are supported:
 
-#### **compartments_dependency** &ndash; (Optional) A map of objects containing the externally managed compartments this module may depend on. All map objects must have the same type and must contain at least an *id* attribute with the compartment OCID. This mechanism allows for the usage of referring keys (instead of OCIDs) in *default_compartment_id* and *compartment_id* attributes. The module replaces the keys by the OCIDs provided within *compartments_dependency* map. Contents of *compartments_dependency* is typically the output of a [Compartments module](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/compartments) client.
+#### compartments_dependency (Optional) 
+A map of objects containing the externally managed compartments this module may depend on. All map objects must have the same type and must contain at least an *id* attribute with the compartment OCID. This mechanism allows for the usage of referring keys (instead of OCIDs) in *default_compartment_id* and *compartment_id* attributes. The module replaces the keys by the OCIDs provided within *compartments_dependency* map. Contents of *compartments_dependency* is typically the output of a [Compartments module](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/compartments) client.
 
 Example:
 ```
@@ -297,7 +298,8 @@ Attributes that support a compartment referring key:
   - *default_compartment_id*
   - *compartment_id*
 
-- **network_dependency** &ndash; (Optional) A map of map of objects containing the externally managed network resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a client of this module. Within *network_dependency*, VCNs must be indexed with the **"vcns"** key, DRGs indexed with the **"dynamic_routing_gateways"** key, and DRG attachments indexed with **"drg_attachments"** key. Each VCN, DRG and DRG attachment must contain the **"id"** attribute (to which the actual OCID is assigned), as in the example below:
+#### network_dependency (Optional) 
+A map of map of objects containing the externally managed network resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a client of this module. Within *network_dependency*, VCNs must be indexed with the **"vcns"** key, DRGs indexed with the **"dynamic_routing_gateways"** key, and DRG attachments indexed with **"drg_attachments"** key. Each VCN, DRG and DRG attachment must contain the **"id"** attribute (to which the actual OCID is assigned), as in the example below:
 
 Example:
 ```
@@ -330,7 +332,8 @@ Attributes that support a DRG (Dynamic Routing Gateway) referring key:
 Attributes that support a DRG (Dynamic Routing Gateway) Attachment referring key:
   - *drg_attachment_key*
 
-- **private_ips_dependency** &ndash; (Optional) A map of map of objects containing the externally managed private IP resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *private_ips_dependency* map. Each private IP must contain the **"id"** attribute (to which the actual OCID is assigned), as in the example below:
+#### private_ips_dependency (Optional) 
+A map of map of objects containing the externally managed private IP resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *private_ips_dependency* map. Each private IP must contain the **"id"** attribute (to which the actual OCID is assigned), as in the example below:
 
 Example:
 ```
