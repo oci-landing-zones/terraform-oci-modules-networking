@@ -299,9 +299,9 @@ Attributes that support a compartment referring key:
   - *compartment_id*
 
 #### network_dependency (Optional) 
-A map of map of objects containing the externally managed network resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a client of this module. Within *network_dependency*, VCNs must be indexed with the **"vcns"** key, DRGs indexed with the **"dynamic_routing_gateways"** key, and DRG attachments indexed with **"drg_attachments"** key. Each VCN, DRG and DRG attachment must contain the **"id"** attribute (to which the actual OCID is assigned), as in the example below:
+A map of map of objects containing the externally managed network resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a client of this module. Within *network_dependency*, VCNs must be indexed with the **vcns** key, DRGs indexed with the **dynamic_routing_gateways** key, DRG attachments indexed with **drg_attachments** key, Local Peering Gateways (LPG) indexed with **local_peering_gateways**, Remote Peering Connections (RPC) indexed with **remote_peering_connections** key. Each VCN, DRG, DRG attachment, LPG and RPC must contain the *id* attribute (to which the actual OCID is assigned). RPCs must also pass the peer region name in the *region_name* attribute.
 
-Example:
+*network_dependency* example:
 ```
 {
   "vcns" : {
@@ -316,21 +316,31 @@ Example:
   },
   "drg_attachments" : {  
     "XYZ-DRG-ATTACH" : {
-      "id" : "ocid1.drgattachment.oc1.phx.aaaaaaa...xla"
+      "id" : "ocid1.drgattachment.oc1.iad.aaaaaaa...xla"
+    }
+  },
+  "local_peering_gateways" : {  
+    "XYZ-LPG" : {
+      "id" : "ocid1.localpeeringgateway.oc1.us-ashburn-1.aaaaaaaa...3oa"
+    }
+  },
+  "remote_peering_connections" : {  
+    "XYZ-RPC" : {
+      "id" : "ocid1.remotepeeringconnection.oc1.us-ashburn-1.aaaaaaaa...4rt",
+      "region_name" : "us-ashburn-1"
     }
   }  
 } 
 ```
+**Note**: **vcns**, **dynamic_routing_gateways**, **drg_attachments**, **local_peering_gateways**, and **remote_peering_connections** attributes are all optional. They only become mandatory if the *network_configuration* refers to one of these resources through a referring key. Below are the attributes where a referring key is supported:
 
-Attributes that support a VCN referring key:
-  - *vcn_id* in *inject_into_existing_vcns*
-
-Attributes that support a DRG (Dynamic Routing Gateway) referring key:
-  - *drg_id* in *inject_into_existing_drgs*
-  - *network_entity_key* in *route_tables'* *route_rules*
-
-Attributes that support a DRG (Dynamic Routing Gateway) Attachment referring key:
-  - *drg_attachment_key*
+*network_dependency* attribute | Attribute names in *network_configuration* where the referring key can be utilized
+--------------|-------------
+**vcns** | *vcn_id* in *inject_into_existing_vcns*
+**dynamic_routing_gateways** | *drg_id* in *inject_into_existing_drgs*, *network_entity_key* in *route_tables'* *route_rules*
+**drg_attachments** | *drg_attachment_key*
+**local_peering_gateways** | *peer_key* in *local_peering_gateways*
+**remote_peering_connections** | *peer_key* in *remote_peering_connections*
 
 #### private_ips_dependency (Optional) 
 A map of map of objects containing the externally managed private IP resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *private_ips_dependency* map. Each private IP must contain the **"id"** attribute (to which the actual OCID is assigned), as in the example below:
@@ -339,7 +349,7 @@ Example:
 ```
 {
   "INDOOR-NLB": {
-    "id": "ocid1.privateip.oc1.phx.abyhql...nrq"
+    "id": "ocid1.privateip.oc1.iad.abyhql...nrq"
   }
 }
 ```
@@ -347,7 +357,30 @@ Example:
 Attributes that support a private IP referring key:
   - *network_entity_key* in *route_tables'* *route_rules*
 
-See [external-dependency example](./examples/external-dependency/) for an example.
+
+#### Wrapping Example
+Note how the *network_configuration* snippet example below refers to keys in *compartments_dependency* (*NETWORK-CMP*) and *network_dependency* (*XYZ-VCN*):
+```
+network_configuration = {
+  default_compartment_id = "NETWORK-CMP" # This key is defined in compartments_dependency
+  network_configuration_categories = {
+    production = {
+      inject_into_existing_vcns = {
+        VISION-VCN-INJECTED = {
+          vcn_id = "XYZ-VCN" # This key is defined in network_dependency, under the vcns attribute.
+          subnets = {
+            SUPPLEMENT-SUBNET = {
+              display_name = "supplement-subnet"
+              cidr_block = "10.0.0.96/27"
+            }
+          }
+        }  
+      }
+    }
+  }
+}
+```
+See [external-dependency example](./examples/external-dependency/) for a functional example.
 
 ### <a name="howtoexample">Available Examples</a>
 
