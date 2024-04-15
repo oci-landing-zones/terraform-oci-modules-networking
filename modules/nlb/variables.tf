@@ -70,18 +70,29 @@ variable "module_name" {
 
 variable compartments_dependency {
   description = "A map of objects containing the externally managed compartments this module may depend on. All map objects must have the same type and must contain at least an 'id' attribute (representing the compartment OCID) of string type." 
-  type = map(any)
+  type = map(object({
+    id = string # the compartment OCID
+  }))
   default = null
 }
 
 variable network_dependency {
-  description = "A map of objects containing the externally managed network resources this module may depend on. All map objects must have the same type and must contain at least an 'id' attribute (representing the network resource OCID) of string type." 
-  type = map(any)
+  description = "An object containing the externally managed network resources this module may depend on. Supported resources are 'subnets' and 'network_security_groups', represented as map of objects. Each object, when defined, must have an 'id' attribute of string type set with the subnet OCID or network security group OCID."
+  type = object({
+    subnets = optional(map(object({
+      id = string # the subnet OCID
+    })))
+    network_security_groups = optional(map(object({
+      id = string # the network security group OCID
+    })))
+  })
   default = null
 }
 
 variable instances_dependency {
   description = "A map of objects containing the externally managed Compute instances this module may depend on. All map objects must have the same type and must contain at least an 'id' attribute (representing the instance OCID) of string type." 
-  type = map(any)
+  type = map(object({
+    id = string # the instance OCID
+  }))
   default = null
 }
