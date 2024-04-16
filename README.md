@@ -393,7 +393,9 @@ See [external-dependency example](./examples/external-dependency/) for a functio
    - [Fast Connect Examples](examples/edge-connectivity/fast-connect-examples/)
       - [Generic OCI Fast Connect Partner](examples/edge-connectivity/fast-connect-examples/generic-oci-fastconnect-partner/)
    - [IPSec VPN Examples](examples/edge-connectivity/ipsec-examples/)
-      - [Generic OCI IPSec BGP VPN](examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/)     
+      - [Generic OCI IPSec BGP VPN](examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/)    
+- [Local Peering Gateways](examples/local-peering-gateways/)     
+- [Remote Peering Connections](examples/remote-peering-connections/)  
 
 ## <a name="related">Related Documentation
 - [OCI Networking Overview](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/overview.htm)
