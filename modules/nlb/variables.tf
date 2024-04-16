@@ -93,6 +93,7 @@ variable instances_dependency {
   description = "A map of objects containing the externally managed Compute instances this module may depend on. All map objects must have the same type and must contain at least an 'id' attribute (representing the instance OCID) of string type." 
   type = map(object({
     id = string # the instance OCID
+    private_ip = optional(string) # the instance or VNIC private IP address
   }))
   default = null
 }
