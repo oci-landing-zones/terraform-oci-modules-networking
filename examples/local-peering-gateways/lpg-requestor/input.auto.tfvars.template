@@ -1,0 +1,31 @@
+# Copyright (c) 2024 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+tenancy_ocid         = "<TENANCY_OCID>"
+user_ocid            = "<USER_OCID>"
+fingerprint          = "<PEM_KEY_FINGERPRINT>"
+private_key_path     = "<PATH_TO_PRIVATE_KEY>"
+private_key_password = "<PRIVATE_KEY_PASSWORD>"
+region               = "<TENANCY_REGION>"
+
+network_configuration = {
+  default_compartment_id = "<NETWORK_COMPARTMENT_OCID>"
+  network_configuration_categories = {
+    production = {
+      vcns = {
+        VISION-LPG-REQUESTOR-VCN = {
+          display_name = "vision-lpg-requestor-vcn"
+          cidr_blocks  = ["10.0.0.0/27"]
+          vcn_specific_gateways = {
+            local_peering_gateways = {
+              REQUESTOR-LPG = {
+                display_name = "requestor-lpg"
+                peer_key = "ACCEPTOR-LPG"
+              }
+            }
+          }
+        }  
+      }
+    }
+  }
+}
