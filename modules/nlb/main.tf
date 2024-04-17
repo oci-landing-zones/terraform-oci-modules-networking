@@ -137,3 +137,8 @@ resource "oci_network_load_balancer_backend" "these" {
   target_id        = each.value.target_id != null ? (length(regexall("^ocid1.*$", each.value.target_id)) > 0 ? each.value.target_id : var.instances_dependency[each.value.target_id].id) : null
 }
 
+data "oci_core_private_ips" "these" {
+  for_each = oci_network_load_balancer_network_load_balancer.these
+    ip_address = each.value.is_private == true ? [for a in each.value.ip_addresses: a.ip_address if a.is_public == false][0] : "0.0.0.0/0"
+    subnet_id = each.value.subnet_id
+}
