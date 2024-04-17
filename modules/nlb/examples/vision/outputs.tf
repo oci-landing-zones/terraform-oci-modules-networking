@@ -6,3 +6,8 @@ output "nlbs" {
   description = "The NLBs"
   value       = module.vision_nlbs.nlbs
 }
+
+output "nlbs_private_ips" {
+  description = "The NLBs private IP addresses."
+  value = module.vision_nlbs.nlbs_private_ips
+}

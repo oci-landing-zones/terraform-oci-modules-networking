@@ -78,8 +78,8 @@ locals {
       peer_advertised_cidr         = lpg_value.peer_advertised_cidr
       peer_advertised_cidr_details = lpg_value.peer_advertised_cidr_details
       peer_id                      = lpg_value.peer_id
-      peer_key                     = can([for lpg_key2, lpg_value2 in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : lpg_key2 if lpg_value2.id == lpg_value.peer_id][0]) ? [for lpg_key2, lpg_value2 in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : lpg_key2 if lpg_value2.id == lpg_value.peer_id][0] : "NOT PEERED OR PARTNER LPG CREATED OUTSIDE THIS AUTOMATION"
-      peer_name                    = can([for lpg_key2, lpg_value2 in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : lpg_value2.display_name if lpg_value2.id == lpg_value.peer_id][0]) ? [for lpg_key2, lpg_value2 in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : lpg_value2.display_name if lpg_value2.id == lpg_value.peer_id][0] : "NOT PEERED OR PARTNER LPG CREATED OUTSIDE THIS AUTOMATION"
+      #peer_key                     = can([for lpg_key2, lpg_value2 in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : lpg_key2 if lpg_value2.id == lpg_value.peer_id][0]) ? [for lpg_key2, lpg_value2 in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : lpg_key2 if lpg_value2.id == lpg_value.peer_id][0] : "NOT PEERED OR PARTNER LPG CREATED OUTSIDE THIS AUTOMATION"
+      #peer_name                    = can([for lpg_key2, lpg_value2 in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : lpg_value2.display_name if lpg_value2.id == lpg_value.peer_id][0]) ? [for lpg_key2, lpg_value2 in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : lpg_value2.display_name if lpg_value2.id == lpg_value.peer_id][0] : "NOT PEERED OR PARTNER LPG CREATED OUTSIDE THIS AUTOMATION"
       peering_status               = lpg_value.peering_status
       peering_status_details       = lpg_value.peering_status_details
       route_table_id               = lpg_value.route_table_id
@@ -148,6 +148,9 @@ resource "oci_core_local_peering_gateway" "oci_requestor_local_peering_gateways"
   defined_tags  = each.value.defined_tags
   display_name  = each.value.display_name
   freeform_tags = merge(local.cislz_module_tag, each.value.freeform_tags)
+
+  peer_id = each.value.peer_id != null ? each.value.peer_id : (each.value.peer_key != null ? merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, try(var.network_dependency["local_peering_gateways"],{}))[each.value.peer_key].id : null)
+
   route_table_id = each.value.route_table_id != null ? each.value.route_table_id : each.value.route_table_key != null ? merge(
     {
       for rt_key, rt_value in merge(
