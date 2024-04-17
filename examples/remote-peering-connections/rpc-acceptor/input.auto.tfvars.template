@@ -1,0 +1,29 @@
+# Copyright (c) 2024 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+tenancy_ocid         = "<TENANCY_OCID>"
+user_ocid            = "<USER_OCID>"
+fingerprint          = "<PEM_KEY_FINGERPRINT>"
+private_key_path     = "<PATH_TO_PRIVATE_KEY>"
+private_key_password = "<PRIVATE_KEY_PASSWORD>"
+region               = "<TENANCY_REGION>"
+
+network_configuration = {
+  default_compartment_id = "<NETWORK_COMPARTMENT_OCID>"
+  network_configuration_categories = {
+    production = {
+      non_vcn_specific_gateways = {
+        dynamic_routing_gateways = {
+          VISION-DRG = {
+            display_name = "vision-drg"
+            remote_peering_connections = {
+              ACCEPTOR-RPC = {
+                display_name = "acceptor-rpc"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
