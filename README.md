@@ -282,19 +282,26 @@ The ```network_configuration``` is a multidimensional complex object:
 ### <a name="ext-dep">External Dependencies</a>
 An optional feature, external dependencies are resources managed elsewhere that resources managed by this module depends on. The following dependencies are supported:
 
-- **compartments_dependency** &ndash; A map of objects containing the externally managed compartments this module depends on. All map objects must have the same type and must contain at least an *id* attribute with the compartment OCID. This mechanism allows for the usage of referring keys (instead of OCIDs) in *default_compartment_id* and *compartment_id* attributes. The module replaces the keys by the OCIDs provided within *compartments_dependency* map. Contents of *compartments_dependency* is typically the output of a [Compartments module](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/compartments) client.
+#### compartments_dependency (Optional) 
+A map of objects containing the externally managed compartments this module may depend on. All map objects must have the same type and must contain at least an *id* attribute with the compartment OCID. This mechanism allows for the usage of referring keys (instead of OCIDs) in *default_compartment_id* and *compartment_id* attributes. The module replaces the keys by the OCIDs provided within *compartments_dependency* map. Contents of *compartments_dependency* is typically the output of a [Compartments module](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/compartments) client.
 
 Example:
 ```
 {
-	"NETWORK-CMP": {
-		"id": "ocid1.compartment.oc1..aaaaaaaa...7xq"
-	}
+  "NETWORK-CMP": {
+    id": "ocid1.compartment.oc1..aaaaaaaa...7xq"
+  }
 }
 ```
-- **network_dependency** &ndash; A map of map of objects containing the externally managed network resources this module depends on. This mechanism allows for the usage of referring keys (instead of OCIDs) in *vcn_id* and *drg_id* attributes of *inject_into_existing_vcns* and *inject_into_existing_drgs*, respectively. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a client of this module. Within *network_dependency*, VCNs must be indexed with the **"vcns"** key and DRGs indexed with the **"dynamic_routing_gateways"** key. Each VCN and DRG must contain the **"id"** attribute (to which the actual OCID is assigned), as in the example below:
 
-Example:
+Attributes that support a compartment referring key:
+  - *default_compartment_id*
+  - *compartment_id*
+
+#### network_dependency (Optional) 
+A map of map of objects containing the externally managed network resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a client of this module. Within *network_dependency*, VCNs must be indexed with the **vcns** key, DRGs indexed with the **dynamic_routing_gateways** key, DRG attachments indexed with **drg_attachments** key, Local Peering Gateways (LPG) indexed with **local_peering_gateways**, Remote Peering Connections (RPC) indexed with **remote_peering_connections** key. Each VCN, DRG, DRG attachment, LPG and RPC must contain the *id* attribute (to which the actual OCID is assigned). RPCs must also pass the peer region name in the *region_name* attribute.
+
+*network_dependency* example:
 ```
 {
   "vcns" : {
@@ -306,10 +313,74 @@ Example:
     "XYZ-DRG" : {
       "id" : "ocid1.drg.oc1.iad.aaaaaaaa...xlq"
     }
+  },
+  "drg_attachments" : {  
+    "XYZ-DRG-ATTACH" : {
+      "id" : "ocid1.drgattachment.oc1.iad.aaaaaaa...xla"
+    }
+  },
+  "local_peering_gateways" : {  
+    "XYZ-LPG" : {
+      "id" : "ocid1.localpeeringgateway.oc1.us-ashburn-1.aaaaaaaa...3oa"
+    }
+  },
+  "remote_peering_connections" : {  
+    "XYZ-RPC" : {
+      "id" : "ocid1.remotepeeringconnection.oc1.us-ashburn-1.aaaaaaaa...4rt",
+      "region_name" : "us-ashburn-1"
+    }
   }  
 } 
-```          
-See [external-dependency example](./examples/external-dependency/) for a complete example.
+```
+**Note**: **vcns**, **dynamic_routing_gateways**, **drg_attachments**, **local_peering_gateways**, and **remote_peering_connections** attributes are all optional. They only become mandatory if the *network_configuration* refers to one of these resources through a referring key. Below are the attributes where a referring key is supported:
+
+*network_dependency* attribute | Attribute names in *network_configuration* where the referring key can be utilized
+--------------|-------------
+**vcns** | *vcn_id* in *inject_into_existing_vcns*
+**dynamic_routing_gateways** | *drg_id* in *inject_into_existing_drgs*, *network_entity_key* in *route_tables'* *route_rules*
+**drg_attachments** | *drg_attachment_key*
+**local_peering_gateways** | *peer_key* in *local_peering_gateways*
+**remote_peering_connections** | *peer_key* in *remote_peering_connections*
+
+#### private_ips_dependency (Optional) 
+A map of map of objects containing the externally managed private IP resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *private_ips_dependency* map. Each private IP must contain the **"id"** attribute (to which the actual OCID is assigned), as in the example below:
+
+Example:
+```
+{
+  "INDOOR-NLB": {
+    "id": "ocid1.privateip.oc1.iad.abyhql...nrq"
+  }
+}
+```
+
+Attributes that support a private IP referring key:
+  - *network_entity_key* in *route_tables'* *route_rules*
+
+
+#### Wrapping Example
+Note how the *network_configuration* snippet example below refers to keys in *compartments_dependency* (*NETWORK-CMP*) and *network_dependency* (*XYZ-VCN*):
+```
+network_configuration = {
+  default_compartment_id = "NETWORK-CMP" # This key is defined in compartments_dependency
+  network_configuration_categories = {
+    production = {
+      inject_into_existing_vcns = {
+        VISION-VCN-INJECTED = {
+          vcn_id = "XYZ-VCN" # This key is defined in network_dependency, under the vcns attribute.
+          subnets = {
+            SUPPLEMENT-SUBNET = {
+              display_name = "supplement-subnet"
+              cidr_block = "10.0.0.96/27"
+            }
+          }
+        }  
+      }
+    }
+  }
+}
+```
+See [external-dependency example](./examples/external-dependency/) for a functional example.
 
 ### <a name="howtoexample">Available Examples</a>
 
@@ -322,7 +393,9 @@ See [external-dependency example](./examples/external-dependency/) for a complet
    - [Fast Connect Examples](examples/edge-connectivity/fast-connect-examples/)
       - [Generic OCI Fast Connect Partner](examples/edge-connectivity/fast-connect-examples/generic-oci-fastconnect-partner/)
    - [IPSec VPN Examples](examples/edge-connectivity/ipsec-examples/)
-      - [Generic OCI IPSec BGP VPN](examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/)     
+      - [Generic OCI IPSec BGP VPN](examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/)    
+- [Local Peering Gateways](examples/local-peering-gateways/)     
+- [Remote Peering Connections](examples/remote-peering-connections/)  
 
 ## <a name="related">Related Documentation
 - [OCI Networking Overview](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/overview.htm)
