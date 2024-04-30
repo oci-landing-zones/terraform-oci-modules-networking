@@ -38,7 +38,7 @@ locals {
         default_freeform_tags          = vcn_value.default_freeform_tags
         category_freeform_tags         = vcn_value.category_freeform_tags
       } if vcn_value.vcn_specific_gateways != null
-    ] : "${vcn_specific_gw.network_configuration_category}_${vcn_specific_gw.vcn_name}_gateways" => vcn_specific_gw
+    ] : "${vcn_specific_gw.network_configuration_category}_${vcn_specific_gw.vcn_key}_gateways" => vcn_specific_gw
   } : {} : {} : {}
 
   one_dimension_processed_inject_vcn_specific_gateways = var.network_configuration != null ? var.network_configuration.network_configuration_categories != null ? length(var.network_configuration.network_configuration_categories) > 0 ? {
@@ -59,7 +59,7 @@ locals {
         default_freeform_tags          = vcn_value.default_freeform_tags
         category_freeform_tags         = vcn_value.category_freeform_tags
       } if vcn_value.vcn_specific_gateways != null
-    ] : "${vcn_specific_gw.network_configuration_category}_${vcn_specific_gw.vcn_name}_gateways" => vcn_specific_gw
+    ] : "${vcn_specific_gw.network_configuration_category}_${vcn_specific_gw.vcn_key}_gateways" => vcn_specific_gw
   } : {} : {} : {}
 
 
