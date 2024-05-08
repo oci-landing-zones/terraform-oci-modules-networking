@@ -473,7 +473,7 @@ resource "oci_core_default_route_table" "non_gw_specific_remaining_default_route
   manage_default_resource_id = merge(local.provisioned_vcns, local.one_dimension_processed_existing_vcns)[each.value.vcn_key].default_route_table_id
   compartment_id             = each.value.compartment_id
   defined_tags               = each.value.defined_tags
-  freeform_tags              = each.value.freeform_tags
+  freeform_tags              = merge(local.cislz_module_tag,each.value.freeform_tags)
   dynamic "route_rules" {
     iterator = rule
     for_each = each.value.route_rules != null ? [

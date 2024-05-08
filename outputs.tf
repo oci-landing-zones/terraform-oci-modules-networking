@@ -3,7 +3,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
 # Author: Cosmin Tudor                                                                                    #
 # Author email: cosmin.tudor@oracle.com                                                                   #
-# Last Modified: Tue Dec 12 2023                                                                          #
+# Last Modified: Thu Jan 04 2024                                                                          #
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
@@ -36,6 +36,7 @@ output "provisioned_networking_resources" {
     network_security_groups_egress_rules           = local.provisioned_network_security_groups_egress_rules
     oci_network_firewall_network_firewalls         = local.provisioned_oci_network_firewall_network_firewalls
     oci_network_firewall_network_firewall_policies = local.provisioned_oci_network_firewall_network_firewall_policies
+<<<<<<< outputs.tf
     
     dns_views                                      = local.one_dimension_dns_views
     dns_zones                                      = local.one_dimension_dns_zones
@@ -62,6 +63,26 @@ output "provisioned_networking_resources" {
     customer_premises_equipments       = local.provisioned_customer_premises_equipments
     ip_sec_vpns                        = local.provisioned_ipsecs
     ipsec_tunnels_management           = local.provisioned_ipsec_connection_tunnels_management
+=======
+    nat_gateways                                   = local.provisioned_nat_gateways
+    local_peering_gateways                         = local.provisioned_local_peering_gateways
+    internet_gateways                              = local.provisioned_internet_gateways
+    dynamic_routing_gateways                       = local.provisioned_dynamic_gateways
+    drg_route_tables                               = local.provisioned_drg_route_tables
+    drg_route_table_route_rules                    = local.provisioned_drg_route_tables_route_rules
+    drg_route_distributions                        = local.provisioned_drg_route_distributions
+    drg_route_distributions_statements             = local.provisioned_drg_route_distributions_statements
+    drg_attachments                                = local.provisioned_drg_attachments
+    drg_attachments_non_vcn                        = local.provisioned_non_vcn_drg_attachments
+    default_dhcp_options                           = local.provisioned_default_dhcp_options
+    dhcp_options                                   = local.provisioned_dhcp_options
+    l7_load_balancers                              = module.l7_load_balancers.provisioned_l7_load_balancers
+    public_ips_pools                               = local.provisioned_oci_core_public_ip_pools
+    public_ips                                     = local.provisioned_oci_core_public_ips
+    customer_premises_equipments                   = local.provisioned_customer_premises_equipments
+    ip_sec_vpns                                    = local.provisioned_ipsecs
+    ipsec_tunnels_management                       = local.provisioned_ipsec_connection_tunnels_management
+>>>>>>> outputs.tf
     fast_connect_virtual_circuits = {
       fast_connect_virtual_circuits = local.provisioned_fast_connect_virtual_circuits
       available_fast_connect_provider_services = local.one_dimmension_fast_connect_provider_services != null ? length(local.one_dimmension_fast_connect_provider_services) > 0 ? {

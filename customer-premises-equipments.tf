@@ -3,11 +3,12 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
 # Author: Cosmin Tudor                                                                                    #
 # Author email: cosmin.tudor@oracle.com                                                                   #
-# Last Modified: Wed Nov 15 2023                                                                          #
+# Last Modified: Tue Dec 19 2023                                                                          #
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
 data "oci_core_cpe_device_shapes" "cpe_device_shapes" {
+  count = var.network_configuration != null ? 1 : 0
 }
 
 locals {
@@ -29,7 +30,7 @@ locals {
           ip_address                     = cpe_value.ip_address
           network_configuration_category = vcn_non_specific_gw_value.network_configuration_category
           cpe_device_shape_vendor_name   = cpe_value.cpe_device_shape_vendor_name
-          cpe_device_shape_id            = cpe_value.cpe_device_shape_id != null ? cpe_value.cpe_device_shape_id : cpe_value.cpe_device_shape_vendor_name != null ? [for cpe_shape in data.oci_core_cpe_device_shapes.cpe_device_shapes.cpe_device_shapes : cpe_shape.cpe_device_shape_id if cpe_shape.cpe_device_info[0].vendor == cpe_value.cpe_device_shape_vendor_name][0] : [for cpe_shape in data.oci_core_cpe_device_shapes.cpe_device_shapes.cpe_device_shapes : cpe_shape.cpe_device_shape_id if cpe_shape.cpe_device_info[0].vendor == "Other"][0]
+          cpe_device_shape_id            = cpe_value.cpe_device_shape_id != null ? cpe_value.cpe_device_shape_id : cpe_value.cpe_device_shape_vendor_name != null ? [for cpe_shape in length(data.oci_core_cpe_device_shapes.cpe_device_shapes) > 0 ? data.oci_core_cpe_device_shapes.cpe_device_shapes[0].cpe_device_shapes : [] : cpe_shape.cpe_device_shape_id if cpe_shape.cpe_device_info[0].vendor == cpe_value.cpe_device_shape_vendor_name][0] : [for cpe_shape in length(data.oci_core_cpe_device_shapes.cpe_device_shapes) > 0 ? data.oci_core_cpe_device_shapes.cpe_device_shapes[0].cpe_device_shapes : [] : cpe_shape.cpe_device_shape_id if cpe_shape.cpe_device_info[0].vendor == "Other"][0]
           cpe_key                        = cpe_key
         }
       ] : [] : []
@@ -48,7 +49,7 @@ locals {
       timeouts                       = cpe_value.timeouts
       network_configuration_category = local.one_dimension_customer_premises_equipments[cpe_key].network_configuration_category
       cpe_device_shape_id            = cpe_value.cpe_device_shape_id
-      cpe_device_shape_details       = [for cpe_shape in data.oci_core_cpe_device_shapes.cpe_device_shapes.cpe_device_shapes : cpe_shape if cpe_shape.cpe_device_shape_id == cpe_value.cpe_device_shape_id][0],
+      cpe_device_shape_details       = [for cpe_shape in length(data.oci_core_cpe_device_shapes.cpe_device_shapes) > 0 ? data.oci_core_cpe_device_shapes.cpe_device_shapes[0].cpe_device_shapes : [] : cpe_shape if cpe_shape.cpe_device_shape_id == cpe_value.cpe_device_shape_id][0],
       cpe_key                        = cpe_key
     }
   }
@@ -65,5 +66,5 @@ resource "oci_core_cpe" "these" {
   cpe_device_shape_id = each.value.cpe_device_shape_id
   defined_tags        = each.value.defined_tags
   display_name        = each.value.display_name
-  freeform_tags       = each.value.freeform_tags
+  freeform_tags       = merge(local.cislz_module_tag, each.value.freeform_tags)
 }

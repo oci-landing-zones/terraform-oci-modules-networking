@@ -23,7 +23,7 @@ variable "l7_load_balancers_configuration" {
         dns_label                      = string,
         freeform_tags                  = map(string),
         id                             = string,
-        ipv6cidr_block                 = bool,
+        ipv6cidr_block                 = string,
         ipv6cidr_blocks                = list(string),
         ipv6virtual_router_ip          = string,
         prohibit_internet_ingress      = string,
@@ -242,8 +242,16 @@ variable "l7_load_balancers_configuration" {
   })
 }
 
+variable module_name {
+  description = "The module name."
+  type = string
+  default = "networking-l7-load-balancers"
+}
+
 variable compartments_dependency {
   description = "A map of objects containing the externally managed compartments this module may depend on. All map objects must have the same type and must contain at least an 'id' attribute (representing the compartment OCID) of string type." 
-  type = map(any)
+  type = map(object({
+    id = string # the compartment OCID
+  }))
   default = null
 }

@@ -3,7 +3,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
 # Author: Cosmin Tudor                                                                                    #
 # Author email: cosmin.tudor@oracle.com                                                                   #
-# Last Modified: Mon Dec 11 2023                                                                          #
+# Last Modified: Thu Jan 04 2024                                                                          #
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
@@ -30,7 +30,7 @@ network_configuration = {
           is_create_igw                    = false
           is_attach_drg                    = false
           block_nat_traffic                = false
-          default-security-list = {
+          default_security_list = {
             display_name = "sl-lb"
 
             egress_rules = [
@@ -230,7 +230,7 @@ network_configuration = {
               prohibit_public_ip_on_vnic = true
               route_table_id             = null
               route_table_key            = "RT-02-KEY"
-              security_list_keys         = ["SECLIST-DB-KEY"]
+              security_list_keys         = ["default_security_list"]
             }
           }
 
