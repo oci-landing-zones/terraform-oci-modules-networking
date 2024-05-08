@@ -1,3 +1,8 @@
+# May 08, 2024 Release Notes - 0.6.7
+
+## Updates
+1. Supported added for private DNS with the introduction of *dns_resolver* attribute for VCNs.
+
 # April 16, 2024 Release Notes - 0.6.6
 
 ## Updates
