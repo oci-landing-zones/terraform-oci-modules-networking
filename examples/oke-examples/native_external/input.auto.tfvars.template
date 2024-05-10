@@ -101,11 +101,11 @@ network_configuration = {
                 }
               ]
             }
-            SECLIST-OPERATOR-KEY = {
-              display_name = "sl-operator"
+            SECLIST-BASTION-KEY = {
+              display_name = "sl-bastion"
               egress_rules = [
                 {
-                  description  = "Egress for bastion service to api endpoint"
+                  description  = "Egress for Bastion service to API endpoint"
                   stateless    = false
                   protocol     = "TCP"
                   dst          = "10.0.0.0/30"
@@ -114,7 +114,7 @@ network_configuration = {
                   dst_port_max = 6443
                 },
                 {
-                  description  = "Egress for bastion service to worker nodes"
+                  description  = "Egress for Bastion service to worker nodes"
                   stateless    = false
                   protocol     = "TCP"
                   dst          = "10.0.1.0/24"
@@ -199,8 +199,8 @@ network_configuration = {
                 }
               }
             }
-            RT-OPERATOR-KEY = {
-              display_name = "rt-operator"
+            RT-BASTION-KEY = {
+              display_name = "rt-bastion"
               route_rules = {
                 sgw-route = {
                   network_entity_key = "SGW-KEY"
@@ -263,16 +263,15 @@ network_configuration = {
               route_table_key            = "RT-SERVICES-KEY"
               security_list_keys         = ["SECLIST-SERVICES-KEY"]
             }
-            OPERATOR-SUBNET-KEY = {
+            BASTION-SUBNET-KEY = {
               cidr_block                 = "10.0.3.0/28"
               dhcp_options_key           = "default_dhcp_options"
-              display_name               = "sub-operator"
-              dns_label                  = "operatorsub"
+              display_name               = "sub-bastion
               ipv6cidr_blocks            = []
               prohibit_internet_ingress  = true
               prohibit_public_ip_on_vnic = true
-              route_table_key            = "RT-OPERATOR-KEY"
-              security_list_keys         = ["SECLIST-OPERATOR-KEY"]
+              route_table_key            = "RT-BASTION-KEY"
+              security_list_keys         = ["SECLIST-BASTION-KEY"]
             }
           }
           network_security_groups = {
