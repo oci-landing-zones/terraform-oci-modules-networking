@@ -86,16 +86,16 @@ network_configuration = {
               route_table_key            = "RT-SERVICES"
               security_list_keys         = ["SECLIST-SERVICES"]
             }
-            ACCESS-SUBNET = {
+            MGMT-SUBNET = {
               cidr_block                 = "10.0.3.0/28"
               dhcp_options_key           = "default_dhcp_options"
-              display_name               = "access-subnet"
-              dns_label                  = "accesssubnet"
+              display_name               = "mgmt-subnet"
+              dns_label                  = "mgmtsubnet"
               ipv6cidr_blocks            = []
               prohibit_internet_ingress  = true
               prohibit_public_ip_on_vnic = true
-              route_table_key            = "RT-ACCESS"
-              security_list_keys         = ["SECLIST-ACCESS"]
+              route_table_key            = "RT-MGMT"
+              security_list_keys         = ["SECLIST-MGMT"]
             }
           }
           security_lists = {
@@ -159,11 +159,11 @@ network_configuration = {
                 }
               ]
             }
-            SECLIST-ACCESS = {
-              display_name = "access-seclist"
+            SECLIST-MGMT = {
+              display_name = "mgmt-seclist"
               egress_rules = [
                 {
-                  description  = "Allows outbound SSH traffic from access subnet to hosts in the access subnet, for Bastion service."
+                  description  = "Allows outbound SSH traffic from mgmt subnet to hosts in the mgmt subnet, for Bastion service."
                   stateless    = false
                   protocol     = "TCP"
                   dst          = "10.0.3.0/28"
@@ -201,7 +201,7 @@ network_configuration = {
                   icmp_code   = 4
                 },
                 {
-                  description  = "Allows inbound SSH traffic from hosts in the access subnet to the access subnet, for Bastion service."
+                  description  = "Allows inbound SSH traffic from hosts in the mgmt subnet to the mgmt subnet, for Bastion service."
                   stateless    = false
                   protocol     = "TCP"
                   src          = "10.0.3.0/28"
@@ -276,8 +276,8 @@ network_configuration = {
                 }
               }
             }
-            RT-ACCESS = {
-              display_name = "access-routetable"
+            RT-MGMT = {
+              display_name = "mgmt-routetable"
               route_rules = {
                 sgw-route = {
                   network_entity_key = "SGW"
@@ -364,7 +364,7 @@ network_configuration = {
                   description  = "Operator access to Kubernetes API endpoint"
                   stateless    = false
                   protocol     = "TCP"
-                  src          = "NSG-ACCESS"
+                  src          = "NSG-MGMT"
                   src_type     = "NETWORK_SECURITY_GROUP"
                   dst_port_min = 6443
                   dst_port_max = 6443
@@ -551,7 +551,7 @@ network_configuration = {
                   description  = "Operator ssh access to workers"
                   stateless    = false
                   protocol     = "TCP"
-                  src          = "NSG-ACCESS"
+                  src          = "NSG-MGMT"
                   src_type     = "NETWORK_SECURITY_GROUP"
                   dst_port_min = 22
                   dst_port_max = 22
@@ -687,18 +687,18 @@ network_configuration = {
                 }
               }
             }
-            NSG-ACCESS = {
-              display_name = "access-nsg"
+            NSG-MGMT = {
+              display_name = "mgmt-nsg"
               egress_rules = {
                 sgw-tcp = {
-                  description = "Allows TCP outbound traffic from access subnet to OCI Services Network (OSN)."
+                  description = "Allows TCP outbound traffic from mgmt subnet to OCI Services Network (OSN)."
                   stateless   = false
                   protocol    = "TCP"
                   dst         = "all-services"
                   dst_type    = "SERVICE_CIDR_BLOCK"
                 }
                 api-tcp = {
-                  description  = "Allows TCP outbound traffic from access subnet to Kubernetes API server, for OKE management."
+                  description  = "Allows TCP outbound traffic from mgmt subnet to Kubernetes API server, for OKE management."
                   stateless    = false
                   protocol     = "TCP"
                   dst          = "NSG-API"
@@ -716,7 +716,7 @@ network_configuration = {
                   dst_port_max = 22
                 }
                 anywhere-tcp = {
-                  description = "Allows TCP egress from access subnet to everywhere else."
+                  description = "Allows TCP egress from mgmt subnet to everywhere else."
                   stateless   = false
                   protocol    = "TCP"
                   dst         = "0.0.0.0/0"

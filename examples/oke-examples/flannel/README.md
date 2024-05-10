@@ -1,5 +1,5 @@
 <!-- BEGIN_TF_DOCS -->
-# Flannel-based OKE Private Networking
+# Flannel-based OKE Networking
 
 ## Introduction
 
