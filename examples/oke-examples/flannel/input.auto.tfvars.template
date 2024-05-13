@@ -142,10 +142,19 @@ network_configuration = {
                   dst_port_max = 6443
                 },
                 {
-                  description  = "Allows outbound SSH to mgmt subnet. Required for OCI Bastion service endpoints in the mgmt subnet to reach hosts in the mgmt subnet."
+                  description  = "Allows outbound SSH to mgmt subnet. Required for OCI Bastion service endpoints in the mgmt subnet to reach Operator host in the mgmt subnet."
                   stateless    = false
                   protocol     = "TCP"
                   dst          = "10.0.3.0/28"
+                  dst_type     = "CIDR_BLOCK"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                },
+                {
+                  description  = "Allows outbound SSH to workers subnet. Required for OCI Bastion service endpoints in the mgmt subnet to reach worker nodes in the workers subnet."
+                  stateless    = false
+                  protocol     = "TCP"
+                  dst          = "10.0.1.0/24"
                   dst_type     = "CIDR_BLOCK"
                   dst_port_min = 22
                   dst_port_max = 22
@@ -160,6 +169,15 @@ network_configuration = {
                   src_type    = "CIDR_BLOCK"
                   icmp_type   = 3
                   icmp_code   = 4
+                },
+                {
+                  description  = "Allows inbound SSH access from hosts in the mgmt subnet. Required for OCI Bastion service endpoints in the mgmt subnet to reach Operator host in the mgmt subnet."
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "10.0.3.0/28"
+                  src_type     = "CIDR_BLOCK"
+                  dst_port_min = 22
+                  dst_port_max = 22
                 }
               ]
             }
@@ -205,17 +223,17 @@ network_configuration = {
               }
             }
             RT-MGMT = {
-              display_name = "access-routetable"
+              display_name = "mgmt-routetable"
               route_rules = {
                 sgw-route = {
                   network_entity_key = "SGW"
                   description        = "Route for sgw"
                   destination        = "all-services"
                   destination_type   = "SERVICE_CIDR_BLOCK"
-                },
+                }
                 natgw-route = {
                   network_entity_key = "NATGW"
-                  description        = "Route for internet access via NAT GW"
+                  description        = "Route for NAT Gateway"
                   destination        = "0.0.0.0/0"
                   destination_type   = "CIDR_BLOCK"
                 }
@@ -371,7 +389,7 @@ network_configuration = {
                   src_type    = "NETWORK_SECURITY_GROUP"
                 }
                 api-all = {
-                  description = "Allows all inbound traffic to from OKE control plane for webhooks served by workers."
+                  description = "Allows all inbound traffic from OKE control plane for webhooks served by workers."
                   stateless   = false
                   protocol    = "ALL"
                   src         = "NSG-API"
@@ -396,7 +414,7 @@ network_configuration = {
                   dst_port_max = 32767
                 }
                 mgmt-ssh-22 = {
-                  description  = "Allows inbound SSH access."
+                  description  = "Allows inbound SSH access from mgmt subnet."
                   stateless    = false
                   protocol     = "TCP"
                   src          = "10.0.3.0/28"
@@ -459,24 +477,24 @@ network_configuration = {
                   dst         = "all-services"
                   dst_type    = "SERVICE_CIDR_BLOCK"
                 }
-                api-tcp-6443 = {
-                  description  = "Allows outbound TCP to OKE API endpoint, for OKE management."
-                  stateless    = false
-                  protocol     = "TCP"
-                  dst          = "NSG-API"
-                  dst_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 6443
-                  dst_port_max = 6443
-                }
-                workers-ssh-22 = {
-                  description  = "Allows outbound SSH to worker nodes."
-                  stateless    = false
-                  protocol     = "TCP"
-                  dst          = "NSG-WORKERS"
-                  dst_type     = "NETWORK_SECURITY_GROUP"
-                  dst_port_min = 22
-                  dst_port_max = 22
-                }
+                # api-tcp-6443 = {
+                #   description  = "Allows outbound TCP to OKE API endpoint, for OKE management."
+                #   stateless    = false
+                #   protocol     = "TCP"
+                #   dst          = "NSG-API"
+                #   dst_type     = "NETWORK_SECURITY_GROUP"
+                #   dst_port_min = 6443
+                #   dst_port_max = 6443
+                # }
+                # workers-ssh-22 = {
+                #   description  = "Allows outbound SSH to worker nodes."
+                #   stateless    = false
+                #   protocol     = "TCP"
+                #   dst          = "NSG-WORKERS"
+                #   dst_type     = "NETWORK_SECURITY_GROUP"
+                #   dst_port_min = 22
+                #   dst_port_max = 22
+                # }
                 anywhere-tcp = {
                   description  = "Allows outbound connections to anywhere."
                   stateless    = false
@@ -486,15 +504,15 @@ network_configuration = {
                 }
               }
               ingress_rules = {
-                mgmt_ssh-22 = {
-                  description  = "Allows inbound SSH access."
-                  stateless    = false
-                  protocol     = "TCP"
-                  src          = "10.0.3.0/28"
-                  src_type     = "CIDR_BLOCK"
-                  dst_port_min = 22
-                  dst_port_max = 22
-                }
+                #mgmt_ssh-22 = {
+                #  description  = "Allows inbound SSH access for hosts in the mgmt subnet. This allows connections from Bastion session endpoints deployed in the mgmt subnet to hosts in the mgmt subnet."
+                #  stateless    = false
+                #  protocol     = "TCP"
+                #  src          = "10.0.3.0/28"
+                #  src_type     = "CIDR_BLOCK"
+                #  dst_port_min = 22
+                #  dst_port_max = 22
+                #}
               }
             }
           }

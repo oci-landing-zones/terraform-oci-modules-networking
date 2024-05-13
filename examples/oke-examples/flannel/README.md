@@ -5,13 +5,15 @@
 
 This is an example of a network topology to host an OKE cluster that utilizes Flannel CNI, private API endpoint, private worker nodes and public load balancers. It is deployed via the [terraform-oci-cis-landing-zone-networking module](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking). 
 
-The network configuration assumes cluster access occurs from an OKE client that is either external to the tenancy (as a user laptop) or a Compute instance in the VCN *mgmt* subnet. In both cases, access to OKE API endpoint and worker nodes is expected to occur via the OCI Bastion service. Providing an access path via a jump host in a public subnet is also an option, however such topology is not in the scope of this example. 
+The network configuration assumes cluster access occurs from an OKE client that is either external to the tenancy (as a user laptop) or a Compute instance in the VCN *mgmt-subnet*. In both cases, access to OKE API endpoint and worker nodes is expected to occur via the OCI Bastion service. Providing an access path via a jump host in a public subnet is also an option, however such topology is not in the scope of this example. 
 
 ![Flannel_Network_Topology](diagrams/oke-flannel-network.drawio.png)
 
 [Click here](./diagrams/oke-flannel-network.drawio.svg) to download the SVG version.
 
-The diagram shows the network topology that is created. The subnets in orange color are required by a Flannel-based deployment. The one in red (*mgmt-subnet*) is an add-on, used as an access path into the OKE cluster for management purposes. The communication patterns are enabled by route tables, security lists and NSGs (Network Security Groups). The design favors NSGs for a more fine grained control. Security lists are used for generic ICMP ingress rules and for OCI Bastion service support, as Bastion service endpoints do not support NSGs. Everything else is expressed in NSG rules.
+The diagram shows the network topology that is created. The subnets in orange color are required by a Flannel-based deployment. The one in red (*mgmt-subnet*) is an add-on, used as an access path into the OKE cluster for management purposes. The communication patterns are enabled by route tables, security lists and NSGs (Network Security Groups). 
+
+The design favors NSGs for a more fine grained control, however, **SECURITY LISTS ARE USED FOR GENERIC ICMP INGRESS RULES AND FOR BASTION SERVICE SUPPORT, AS BASTION SERVICE DOES NOT SUPPORT NSGs**. Everything else is expressed in NSG rules.
 
 (\*) For a cleaner drawing, the diagram shows two NAT gateways. Only one NAT gateway is actually deployed.
 
@@ -19,8 +21,8 @@ This topology is also discussed in the [OCI documentation](https://docs.oracle.c
 
 Examples of OKE configurations that deploy in this network topology:
 - [Flannel Basic No Access Automation](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/flannel/basic): a Flannel-based OKE cluster with no cluster access automation.
-- [Flannel Basic with Access Automation via OCI Bastion Service - Access from localhost](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/flannel/basic-access-via-bastion-from-localhost/): a Flannel-based OKE cluster with full access automation via the OCI Bastion service. The OKE client is external to the tenancy (as a user laptop).
-- [Flannel Basic with Access Automation via OCI Bastion Service - Access from operator host](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/flannel/basic-access-via-bastion-from-operator-host): a Flannel-based OKE cluster with full access automation via the OCI Bastion service. The OKE client is a Compute instance in the VCN *mgmt* subnet.
+- [Flannel Basic with Access from localhost](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/flannel/basic-access-from-localhost/): a Flannel-based OKE cluster with access automation via the OCI Bastion service. The OKE client is external to the tenancy (as a user laptop).
+- [Flannel Basic with Access from Operator host](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/flannel/basic-access-from-operator-host): a Flannel-based OKE cluster with access automation via the OCI Bastion service. The OKE client is a Compute instance in the VCN *mgmt-subnet*.
 
 ### Resources Deployed by this Example
 
@@ -40,11 +42,16 @@ The following resources are deployed by this example:
             - a route to Service Gateway.   
         - **mgmt-routetable**: defines a route to Service Gateway.   
     - Four security lists:
-        - **api-seclist**: for the API endpoint subnet, allowing ingress for ICMP (Path Discovery).
-        - **workers-seclist**: for the workers subnet, allowing ingress for ICMP (Path Discovery).
-        - **services-seclist**: for the services subnet, allowing ingress for ICMP (Path Discovery).
-        - **mgmt-seclist**: for the access subnet, allowing egress to API subnet, egress to access subnet itself (For Bastion service endpoint to operator host communication), egress to workers subnet and ingress for ICMP (Path Discovery).
-    - Four Network Security Groups (NSGs): **api-nsg**, **workers-nsg**, **services-nsg** and **mgmt-nsg**, containing security rules that enable a more fine-grained control over resources communication.    
+        - **api-seclist**: for the *api-subnet*, allowing ingress for ICMP (Path Discovery).
+        - **workers-seclist**: for the *workers-subnet*, allowing ingress for ICMP (Path Discovery).
+        - **services-seclist**: for the *services-subnet*, allowing ingress for ICMP (Path Discovery).
+        - **mgmt-seclist**: for the *mgmt-subnet*, with the following rules:
+            - *ingress* rule for ICMP (Path Discovery);
+            - *ingress* rule from *mgmt-subnet* itself (for Bastion service endpoint to Operator host communication);
+            - *egress* rule to *api-subnet* (for Bastion service endpoint to *api-subnet*) 
+            - *egress* rule to *mgmt-subnet* itself (For Bastion service endpoint to Operator host communication);
+            - *egress* rule to *workers-subnet* (for Bastion service endpoint to *workers-subnet*);
+    - Four Network Security Groups (NSGs): **api-nsg**, **workers-nsg**, **services-nsg** and **mgmt-nsg**, containing security rules that enable a more fine-grained control for resources communication.    
     - Three gateways:
         - One Internet Gateway.
         - One NAT Gateway. (\*) For a cleaner drawing, the diagram shows two NAT gateways. Only one NAT gateway is actually deployed.

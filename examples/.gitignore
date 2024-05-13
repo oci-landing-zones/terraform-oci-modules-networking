@@ -1,3 +1,5 @@
 **/*.rem
 **/*.nopub
 **/*.tfvars
+**/flannel_external/*
+**/flannel_operator/*
