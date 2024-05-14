@@ -1,7 +1,8 @@
-# May 10, 2024 Release Notes - 0.6.7
+# May 15, 2024 Release Notes - 0.6.7
 
-## Updates
+## New
 1. Support added for private DNS with the introduction of *dns_resolver* attribute for VCNs.
+2. New modules for [WAF (Web Application Firewall)](./modules/waf/) and [WAA (Web Application Acceleration)](./modules/waa/).
 2. Examples of network topologies for OKE deployments added. See [oke-examples](./examples/oke-examples/).
 
 # April 16, 2024 Release Notes - 0.6.6
