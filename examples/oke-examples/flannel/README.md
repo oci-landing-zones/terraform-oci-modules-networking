@@ -5,7 +5,7 @@
 
 This is an example of a network topology to host an OKE cluster that utilizes Flannel CNI, private API endpoint, private worker nodes and public load balancers. It is deployed via the [terraform-oci-cis-landing-zone-networking module](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking). 
 
-The network configuration assumes cluster access occurs from an OKE client that is either external to the tenancy (as a user laptop) or a Compute instance in the VCN *mgmt-subnet*. In both cases, access to OKE API endpoint and worker nodes is expected to occur via the OCI Bastion service. Providing an access path via a jump host in a public subnet is also an option, however such topology is not in the scope of this example. 
+The network configuration assumes cluster access occurs from an OKE client that is either external to the tenancy (as a user laptop) or a Compute instance in the VCN *mgmt-subnet*. In both cases, access to OKE API endpoint and worker nodes is enabled by the OCI Bastion service. Providing an access path via a jump host in a public subnet is also an option, however such topology is not in the scope of this example. 
 
 ![Flannel_Network_Topology](diagrams/oke-flannel-network.drawio.png)
 
@@ -17,7 +17,7 @@ The design favors NSGs for a more fine grained control, however, **SECURITY LIST
 
 (\*) For a cleaner drawing, the diagram shows two NAT gateways. Only one NAT gateway is actually deployed.
 
-This topology is also discussed in the [OCI documentation](https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengnetworkconfigexample.htm#example-flannel-cni-privatek8sapi_privateworkers_publiclb).
+This topology is discussed in the [OCI documentation](https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengnetworkconfigexample.htm#example-flannel-cni-privatek8sapi_privateworkers_publiclb).
 
 Examples of OKE configurations that deploy in this network topology:
 - [Flannel Basic No Access Automation](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/flannel/basic): a Flannel-based OKE cluster with no cluster access automation.

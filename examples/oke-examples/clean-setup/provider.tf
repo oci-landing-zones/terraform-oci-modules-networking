@@ -8,7 +8,9 @@ provider "oci" {
   fingerprint          = var.fingerprint
   private_key_path     = var.private_key_path
   private_key_password = var.private_key_password
+  ignore_defined_tags = ["Oracle-Tags.CreatedBy", "Oracle-Tags.CreatedOn"]
 }
+
 terraform {
   required_version = ">= 1.2.0, < 1.3.0"
   required_providers {
@@ -19,4 +21,4 @@ terraform {
     }
   }
   experiments = [module_variable_optional_attrs]
-} 
+}

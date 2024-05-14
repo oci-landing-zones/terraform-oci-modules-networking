@@ -5,12 +5,14 @@
 
 This is an example of a network topology to host an OKE cluster that utilizes Native CNI, private API endpoint, private worker nodes and public load balancers. It is deployed via the [terraform-oci-cis-landing-zone-networking module](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking). 
 
+This topology is discussed in the [OCI documentation](https://docs.oracle.com/en-us/iaas/Content/ContEng/Concepts/contengnetworkconfigexample.htm#example-oci-cni-privatek8sapi_privateworkers_publiclb).
+
 The network configuration assumes cluster access occurs from an OKE client that is either external to the tenancy (as a user laptop) or a Compute instance in the VCN *mgmt-subnet*. In both cases, access to OKE API endpoint and worker nodes is enabled by the OCI Bastion service. 
 
 Examples of OKE configurations that deploy in this network configuration:
 - [NPN Basic OKE Cluster](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/native/basic): a NPN OKE cluster with no cluster access automation.
-- [NPN Basic OKE Cluster with Access from localhost](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/native/basic-access-via-bastion-from-localhost): a NPN OKE cluster with access automation via the OCI Bastion service. The OKE client is external to the tenancy (as a user laptop).
-- [NPN Basic OKE Cluster with Access from Operator host](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/native/basic-access-via-bastion-from-operator-host): a NPN OKE cluster with access automation via the OCI Bastion service. The OKE client is a Compute instance deployed in the VCN *mgmt-subnet*.
+- [NPN Basic OKE Cluster with Access from localhost](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/native/basic-access-from-localhost): a NPN OKE cluster with access automation via the OCI Bastion service. The OKE client is external to the tenancy (as a user laptop).
+- [NPN Basic OKE Cluster with Access from Operator host](https://github.com/oracle-quickstart/terraform-oci-secure-workloads/tree/main/cis-oke/examples/native/basic-access-from-operator-host): a NPN OKE cluster with access automation via the OCI Bastion service. The OKE client is a Compute instance deployed in the VCN *mgmt-subnet*.
 
 ### Resources Deployed by this Example
 
@@ -38,11 +40,16 @@ The following resources are deployed by this example:
             - a route to NAT Gateway.
             - a route to Service Gateway.  
     - Five security lists:
-        - **api-seclist**: for the API endpoint subnet, allowing ingress for ICMP (Path Discovery).
-        - **workers-seclist**: for the workers subnet, allowing ingress for ICMP (Path Discovery).
-        - **pods-seclist**: for the pods subnet, allowing ingress for ICMP (Path Discovery).
-        - **services-seclist**: for the services subnet, allowing ingress for ICMP (Path Discovery).
-        - **mgmt-seclist**: for the access subnet, allowing egress to API subnet, egress to access subnet itself (For Bastion service endpoint to operator host communication), egress to workers subnet, ingress for ICMP (Path Discovery) and ingress to access subnet itself (For Bastion service endpoint to operator host communication).
+        - **api-seclist**: for the *api-subnet*, allowing ingress for ICMP (Path Discovery).
+        - **workers-seclist**: for the *workers-subnet*, allowing ingress for ICMP (Path Discovery).
+        - **pods-seclist**: for the *pods-subnet*, allowing ingress for ICMP (Path Discovery).
+        - **services-seclist**: for the *services-subnet*, allowing ingress for ICMP (Path Discovery).
+        - **mgmt-seclist**: for the *mgmt-subnet*, with the following rules:
+            - *ingress* rule for ICMP (Path Discovery);
+            - *ingress* rule from *mgmt-subnet* itself (for Bastion service endpoint to Operator host communication);
+            - *egress* rule to *api-subnet* (for Bastion service endpoint to *api-subnet*) 
+            - *egress* rule to *mgmt-subnet* itself (For Bastion service endpoint to Operator host communication);
+            - *egress* rule to *workers-subnet* (for Bastion service endpoint to *workers-subnet*);
     - Five Network Security Groups (NSGs): **api-nsg**, **workers-nsg**, **pods-nsg**, **services-nsg** and **mgmt-nsg**, containing security rules to allow a NPN OKE cluster to run correctly.    
     - Three gateways:
         - One Internet Gateway.
