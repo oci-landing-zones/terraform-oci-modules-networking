@@ -25,7 +25,7 @@ locals {
           default_defined_tags             = var.network_configuration.default_defined_tags
           category_defined_tags            = network_configuration_category_value.category_defined_tags
           display_name                     = vcn_value.display_name
-          dns_label                        = vcn_value.dns_label != null ? trimspace(vcn_value.dns_label) : substr(replace(vcn_value.display_name, "/[^\\w]/", ""), 0, 14)
+          dns_label                        = vcn_value.dns_label
           freeform_tags                    = merge(vcn_value.freeform_tags, network_configuration_category_value.category_freeform_tags, var.network_configuration.default_freeform_tags)
           default_freeform_tags            = var.network_configuration.default_freeform_tags
           category_freeform_tags           = network_configuration_category_value.category_freeform_tags
@@ -39,7 +39,6 @@ locals {
           subnets                          = vcn_value.subnets
           vcn_specific_gateways            = vcn_value.vcn_specific_gateways
           network_security_groups          = vcn_value.network_security_groups
-          security                         = vcn_value.security
           dns_resolver                     = vcn_value.dns_resolver
           route_tables                     = vcn_value.route_tables
           default_dhcp_options             = vcn_value.default_dhcp_options
@@ -53,6 +52,7 @@ locals {
       ] : [] : []
     ]) : flat_vcn.vcn_key => flat_vcn
   } : {} : {} : {}
+
 
   provisioned_vcns = {
     for vcn_key, vcn_value in oci_core_vcn.these : vcn_key => {
@@ -74,52 +74,12 @@ locals {
       is_ipv6enabled                   = vcn_value.is_ipv6enabled
       is_oracle_gua_allocation_enabled = vcn_value.is_oracle_gua_allocation_enabled
       state                            = vcn_value.state
-      security                         = vcn_value.security_attributes
       time_created                     = vcn_value.time_created
       timeouts                         = vcn_value.timeouts
       vcn_domain_name                  = vcn_value.vcn_domain_name
       vcn_key                          = vcn_key
       network_configuration_category   = local.one_dimension_processed_vcns[vcn_key].network_configuration_category
     }
-  }
-
-  #------------------------------
-  # ZPR Security Attributes
-  #------------------------------
-  vcn_security_attrs = local.one_dimension_processed_vcns != null ? {
-    for flat_security in flatten([
-      for vcn_key, vcn_value in local.one_dimension_processed_vcns : [
-        {
-          zpr_attributes = vcn_value.security != null ? vcn_value.security.zpr_attributes != null ? [
-            for zattr in vcn_value.security.zpr_attributes : {
-              namespace  = zattr.namespace
-              attr_name  = zattr.attr_name
-              attr_value = zattr.attr_value
-              mode       = zattr.mode
-          }] : [] : []
-          security_attr_key = vcn_key
-        }
-      ]
-    ]) : flat_security.security_attr_key => flat_security
-  } : null
-}
-
-#------------------------------
-# ZPR namespaces data source
-#------------------------------
-data "oci_security_attribute_security_attribute_namespaces" "these" {
-  count = length([for v in local.one_dimension_processed_vcns : v if try(v.security.zpr_attributes[0].attr_name, null) != null]) > 0 ? 1 : 0
-  lifecycle {
-    precondition {
-      condition     = var.tenancy_ocid != null
-      error_message = "VALIDATION FAILURE: variable \"tenancy_ocid\" is required when applying security attribute to VCN."
-    }
-  }
-  compartment_id = var.tenancy_ocid
-  compartment_id_in_subtree = true
-  filter {
-    name   = "state"
-    values = ["ACTIVE"]
   }
 }
 
@@ -148,18 +108,4 @@ resource "oci_core_vcn" "these" {
   is_ipv6enabled          = each.value.is_ipv6enabled
   # is_oracle_gua_allocation_enabled = each.value.is_oracle_gua_allocation_enabled
   # 400-InvalidParameter, The parameter isOracleGuaAllocationEnabled can only be used with IPv6 enabled Vcn.
-  security_attributes = merge([
-    for z, v in local.vcn_security_attrs[each.value.vcn_key].zpr_attributes : {
-      "${v.namespace}.${v.attr_name}.value" : v.attr_value
-      "${v.namespace}.${v.attr_name}.mode" : v.mode
-    }
-  ]...)
-
-  lifecycle {
-    ## VALIDATION ZPR attributes - check for duplicates
-    precondition {
-      condition     = try(each.value.security.zpr_attributes, null) != null ? length(toset([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}"])) == length([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}"]) : true
-      error_message = try(each.value.security.zpr_attributes, null) != null ? "VALIDATION FAILURE in VCN \"${each.key}\": ZPR security attribute assigned more than once. \"security.zpr_attributes.namespace/security.zpr_attributes.attr_name\" pairs must be unique." : "__void__"
-    }
-  }
 }

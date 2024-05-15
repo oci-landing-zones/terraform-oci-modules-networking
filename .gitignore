@@ -7,6 +7,7 @@
 *.zip*
 terraform.tfvars
 *.tfvars.json
+*.auto.tfvars
 
 # log files
 *.log
