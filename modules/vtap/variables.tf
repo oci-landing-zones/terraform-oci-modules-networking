@@ -72,15 +72,15 @@ variable "vtaps_configuration" {
 }
 
 variable "compartments_dependency" {
-  description = "A map of objects containing the externally managed compartments this module may depend on. All map objects must have the same type and must contain an 'id' attribute of string type set with the compartment OCID. See External Dependencies section in README.md (https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking#ext-dep) for details."
+  description = "A map of objects containing the externally managed compartments this module may depend on. All map objects must have the same type and must contain an 'id' attribute of string type set with the compartment OCID."
   type = map(object({
-    id = string
+    id = string # the compartment OCID
   }))
   default = null
 }
 
 variable network_dependency {
-  description = "An object containing the externally managed network resources this module may depend on. Supported resources are 'subnets' and 'network_security_groups', represented as map of objects. Each object, when defined, must have an 'id' attribute of string type set with the subnet OCID or network security group OCID."
+  description = "An object containing the externally managed network resources this module may depend on. Supported resource is 'subnets' , represented as map of objects. Each object, when defined, must have an 'id' attribute of string type set with the subnet OCID."
   type = object({
     subnets = optional(map(object({
       id = string # the subnet OCID
