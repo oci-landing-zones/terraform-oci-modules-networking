@@ -8,4 +8,4 @@ module "vision_network" {
   compartments_dependency = jsondecode(file("./dependencies/vision-compartments.json"))
   network_dependency      = jsondecode(file("./dependencies/vision-network.json"))
   private_ips_dependency  = jsondecode(file("./dependencies/vision-nlbs.json"))
-}  
+}

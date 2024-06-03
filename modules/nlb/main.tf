@@ -142,4 +142,3 @@ data "oci_core_private_ips" "these" {
     ip_address = each.value.is_private == true ? [for a in each.value.ip_addresses: a.ip_address if a.is_public == false][0] : "0.0.0.0/0"
     subnet_id = each.value.subnet_id
 }
-
