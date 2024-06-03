@@ -1,0 +1,28 @@
+#---------------------------------------
+# Tenancy Connectivity Variables
+#---------------------------------------
+
+# tenancy_ocid         = "<tenancy OCID>"            # Get this from OCI Console (after logging in, go to top-right-most menu item and click option "Tenancy: <your tenancy name>").
+# user_ocid            = "<user OCID>"               # Get this from OCI Console (after logging in, go to top-right-most menu item and click option "My profile").
+# fingerprint          = "<PEM key fingerprint>"     # The fingerprint can be gathered from your user account. In the "My profile page, click "API keys" on the menu in left hand side.
+# private_key_path     = "<path to the private key>" # This is the full path on your local system to the API signing private key.
+# private_key_password = ""                          # This is the password that protects the private key, if any.
+# region               = "<your tenancy region>"     # The region name.
+
+#---------------------------------------
+# Input variable
+#---------------------------------------
+
+waa_configuration = {
+  default_compartment_id = "<COMPARTMENT-OCID>"
+  web_app_accelerations = {
+    TEST-WAA = {
+      compartment_id                           = null
+      display_name                             = "TEST-WAA"
+      backend_type                             = "LOAD_BALANCER"
+      load_balancer_id                         = "<LOAD-BALANCER-OCID>"
+      is_response_header_based_caching_enabled = true
+      gzip_compression_is_enabled              = true
+    }
+  }
+}
