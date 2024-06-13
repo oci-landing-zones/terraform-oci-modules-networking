@@ -1,0 +1,69 @@
+#---------------------------------------
+# Tenancy Connectivity Variables
+#---------------------------------------
+
+# tenancy_ocid         = "<tenancy OCID>"            # Get this from OCI Console (after logging in, go to top-right-most menu item and click option "Tenancy: <your tenancy name>").
+# user_ocid            = "<user OCID>"               # Get this from OCI Console (after logging in, go to top-right-most menu item and click option "My profile").
+# fingerprint          = "<PEM key fingerprint>"     # The fingerprint can be gathered from your user account. In the "My profile page, click "API keys" on the menu in left hand side.
+# private_key_path     = "<path to the private key>" # This is the full path on your local system to the API signing private key.
+# private_key_password = ""                          # This is the password that protects the private key, if any.
+# region               = "<your tenancy region>"     # The region name.
+
+#---------------------------------------
+# Input variable
+#---------------------------------------
+  vtaps_configuration = {
+    default_compartment_id = "<COMPARTMENT-OCID>"
+
+    capture_filters = {
+      DEFAULT-CAPTURE-FILTER = {
+        filter_type  = "VTAP"
+        display_name = "<EXAMPLE-CAPTURE-FILTER>"
+        vtap_capture_filter_rules = {
+          "allow-all" = {
+            traffic_direction = "INGRESS"
+            rule_action       = "INCLUDE"
+          }
+        }
+      }
+    }
+
+    network_load_balancers = {
+      DEFAULT-NLB = {
+        display_name = "<EXAMPLE-VTAP-NLB-DISPLAY-NAME>"
+        subnet_id    = "<SUBNET-OCID>"
+      }
+    }
+
+    vtaps = {
+      DEFAULT-VTAP = {
+        source_type       = "LOAD_BALANCER"
+        source_id         = "<LOAD-BALANCER-OCID>"
+        vcn_id            = "<VCN-OCID>"
+        display_name      = "EXAMPLE-VTAP-DISPLAY-NAME"
+        is_vtap_enabled   = false
+        target_type       = "NETWORK_LOAD_BALANCER"
+        target_id         = "DEFAULT-NLB" # key of network load balancer
+        capture_filter_id = "DEFAULT-CAPTURE-FILTER" # key of capture filter
+      }
+    }
+
+    network_load_balancer_backend_sets = {
+      DEFAULT-LB-BACKEND-SET = {
+        name                     = "EXAMPLE-NLB-BACKEND-SET-DISPLAY-NAME"
+        network_load_balancer_id = "DEFAULT-NLB" # key of network load balancer
+        policy                   = "FIVE_TUPLE"
+        protocol                 = "TCP"
+      }
+    }
+
+    network_load_balancer_listeners = {
+      DEFAULT-NLB-LISTENER = {
+        default_backend_set_name = "DEFAULT-LB-BACKEND-SET" # key of network load balancer backend set
+        listener_name            = "EXAMPLE-NLB-LISTENER-NAME"
+        network_load_balancer_id = "DEFAULT-NLB" # key of network load balancer
+        port                     = "4789"
+        protocol                 = "UDP"
+      }
+    }
+  }
