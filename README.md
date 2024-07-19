@@ -400,6 +400,27 @@ See [external-dependency example](./examples/external-dependency/) for a functio
 ## <a name="related">Related Documentation
 - [OCI Networking Overview](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/overview.htm)
 
+## Help
+
+Open an issue in this repository.
+
+## Contributing
+
+This project welcomes contributions from the community. Before submitting a pull request, please [review our contribution guide](./CONTRIBUTING.md).
+
+## Security
+
+Please consult the [security guide](./SECURITY.md) for our responsible security vulnerability disclosure process.
+
+## License
+
+Copyright (c) 2023,2024 Oracle and/or its affiliates.
+
+*Replace this statement if your project is not licensed under the UPL*
+
+Released under the Universal Permissive License v1.0 as shown at
+<https://oss.oracle.com/licenses/upl/>.
+
 ## <a name="issues">Known Issues
 
 - On some corner case situations, a ```cycle-graph``` exception might be raised when using route tables attached to GWs. This issue will be addressed in one of the next releases.
