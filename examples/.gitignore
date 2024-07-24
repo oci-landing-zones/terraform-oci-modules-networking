@@ -1,0 +1,8 @@
+**/*.rem
+**/*.nopub
+**/*.tfvars
+**/flannel_external/*
+**/flannel_operator/*
+**/native_external/*
+**/native_operator/*
+**/clean-setup/*

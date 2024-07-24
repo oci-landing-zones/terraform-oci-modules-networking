@@ -39,6 +39,7 @@ locals {
           subnets                          = vcn_value.subnets
           vcn_specific_gateways            = vcn_value.vcn_specific_gateways
           network_security_groups          = vcn_value.network_security_groups
+          dns_resolver                     = vcn_value.dns_resolver
           route_tables                     = vcn_value.route_tables
           default_dhcp_options             = vcn_value.default_dhcp_options
           default_route_table              = vcn_value.default_route_table
