@@ -49,6 +49,7 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+.idea/*
 
 # Test 
 sdf-oci-terraform-test/

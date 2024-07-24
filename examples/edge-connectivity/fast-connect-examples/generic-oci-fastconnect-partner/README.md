@@ -3,11 +3,11 @@
 
 ## Description
 
-This is an example of a standard OCI BGP Fast Connect Partner configuration and provisioning using the ```terraform-oci-cis-landing-zone-networking``` networking core module.
+This is an example of a standard OCI BGP Fast Connect Partner configuration and provisioning using the ```terraform-oci-landing-zones-networking``` networking core module.
 
 This example is automating the provisioning of the OCI BGP Fast Connect Partner topology described by the [OCI Documentation blog entry](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/fastconnectprovider.htm).
 
-For a detailed description of the ```terraform-oci-cis-landing-zone-networking``` networking core module please refer to the core module specific [README.md](../../../../README.md) and [SPEC.md](../../../../SPEC.md).
+For a detailed description of the ```terraform-oci-landing-zones-networking``` networking core module please refer to the core module specific [README.md](../../../../README.md) and [SPEC.md](../../../../SPEC.md).
 
 This example leverages the fully dynamic characteristics of the complex networking module input to describe the following networking topology:
 

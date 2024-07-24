@@ -5,7 +5,7 @@
 
 This is an example for a simple/basic provisioning of a OCI Native L7 Load Balancer on an existing VCN/subnet.
 
-For detailed description of the ```terraform-oci-cis-landing-zone-networking``` networking core module please refer to the core module specific [README.md](../../README.md) and [SPEC.md](../../SPEC.md).
+For detailed description of the ```terraform-oci-landing-zones-networking``` networking core module please refer to the core module specific [README.md](../../README.md) and [SPEC.md](../../SPEC.md).
 
 This example is leveraging the fully dynamic characteristics of the complex networking module input to describe the following networking topology:
 

@@ -2,7 +2,7 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.  
 
 
-title: "OCI CIS Networking Module OCI ORM Stack"
+title: "OCI Networking Module OCI ORM Stack"
 stackDescription: "Creates or changes any networking resource in any configuration in OCI."
 description: "Creates or changes any networking resource in any configuration in OCI."
 schemaVersion: 1.1.0
@@ -63,6 +63,6 @@ outputGroups:
       - ${release}
       - ${region}
 
-  - title: Neworking Resources
+  - title: Networking Resources
     outputs:
       - ${provisioned_networking_resources}    
