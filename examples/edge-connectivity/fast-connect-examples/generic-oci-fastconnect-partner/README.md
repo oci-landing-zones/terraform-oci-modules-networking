@@ -58,7 +58,7 @@ For clarity and proper separation and isolation, we've separated the input param
 ### Using the Module with ORM**
 [ff](../generic-oci-fastconnect-partn)
 For an ad-hoc use where you can select your resources, follow these guidelines:
-1. [![Deploy_To_OCI](../../../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-oci-landing-zones/terraform-oci-landing-zones-networking/archive/refs/heads/main.zip&zipUrlVariables={"input_config_file_url":"https://raw.githubusercontent.com/oracle-oci-landing-zones/terraform-oci-landing-zones-networking/main/examples/edge-connectivity/fast-connect-examples/generic-oci-fastconnect-partner/input-configs-standards-options/oci_network_configuration.json"})
+1. [![Deploy_To_OCI](../../../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking/archive/refs/heads/main.zip&zipUrlVariables={"input_config_file_url":"https://raw.githubusercontent.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking/main/examples/edge-connectivity/fast-connect-examples/generic-oci-fastconnect-partner/input-configs-standards-options/oci_network_configuration.json"})
 2. Accept terms,  wait for the configuration to load. 
 3. Set the working directory to “orm-facade”. 
 4. Set the stack name you prefer.
