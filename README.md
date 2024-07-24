@@ -1,10 +1,10 @@
 <!-- BEGIN_TF_DOCS -->
-# CIS OCI Landing Zone Networking Module
+# OCI Landing Zones Networking Module
 
 ![Landing Zone logo](./images/landing_zone_300.png)
 
 
-The ```terraform-oci-cis-landing-zone-networking``` module is a Terraform networking core module that facilitates, in an optional fashion, the provisioning of a CIS compliant network topology for the entire topology or for specific areas of the topology.
+The **OCI Landing Zones Networking** module is a Terraform networking core module that facilitates, in an optional fashion, the provisioning of a CIS compliant network topology for the entire topology or for specific areas of the topology.
 
 It aims to facilitate the provisioning of any OCI networking topology, covering the internal OCI networking, entirely, and the edge networking, partially.
 
@@ -92,7 +92,7 @@ Terraform modules can be invoked locally or remotely.
 
 For invoking the module locally, just set the module *source* attribute to the module file path (relative path works). The following example assumes the module is two folders up in the file system.
 ```
-module "terraform-oci-cis-landing-zone-networking" {
+module "terraform-oci-landing-zones-networking" {
   source = "../.."
   network_configuration = var.network_configuration
 }
@@ -123,7 +123,7 @@ For an ad-hoc use where you can select your resources, follow these guidelines:
 
 ## <a name="functioning">Module Functioning
 
-The input parameters for the module can be divided into two categories, for which we recomend to create two different ```*.tfvars.*``` files:
+The input parameters for the module can be divided into two categories, for which we recommend to create two different ```*.tfvars.*``` files:
  1. OCI REST API authentication information (secrets) - ```terraform.tfvars``` (HCL) or ```terraform.tfvars.json``` (JSON):
     - ```tenancy_ocid```
     - ```user_ocid```
@@ -399,6 +399,27 @@ See [external-dependency example](./examples/external-dependency/) for a functio
 
 ## <a name="related">Related Documentation
 - [OCI Networking Overview](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/overview.htm)
+
+## Help
+
+Open an issue in this repository.
+
+## Contributing
+
+This project welcomes contributions from the community. Before submitting a pull request, please [review our contribution guide](./CONTRIBUTING.md).
+
+## Security
+
+Please consult the [security guide](./SECURITY.md) for our responsible security vulnerability disclosure process.
+
+## License
+
+Copyright (c) 2023,2024 Oracle and/or its affiliates.
+
+*Replace this statement if your project is not licensed under the UPL*
+
+Released under the Universal Permissive License v1.0 as shown at
+<https://oss.oracle.com/licenses/upl/>.
 
 ## <a name="issues">Known Issues
 

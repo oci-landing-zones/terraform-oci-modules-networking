@@ -3,9 +3,9 @@
 
 ## Description
 
-This is an example for a simple/basic instantiation of the ```terraform-oci-cis-landing-zone-networking``` networking core module.
+This is an example for a simple/basic instantiation of the ```terraform-oci-landing-zones-networking``` networking core module.
 
-For detailed description of the ```terraform-oci-cis-landing-zone-networking``` networking core module please refer to the core module specific [README.md](../../README.md) and [SPEC.md](../../SPEC.md).
+For detailed description of the ```terraform-oci-landing-zones-networking``` networking core module please refer to the core module specific [README.md](../../README.md) and [SPEC.md](../../SPEC.md).
 
 This example is leveraging the fully dynamic characteristics of the complex networking module input to describe the following networking topology:
 
