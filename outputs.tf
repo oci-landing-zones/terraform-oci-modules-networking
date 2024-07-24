@@ -36,7 +36,6 @@ output "provisioned_networking_resources" {
     network_security_groups_egress_rules           = local.provisioned_network_security_groups_egress_rules
     oci_network_firewall_network_firewalls         = local.provisioned_oci_network_firewall_network_firewalls
     oci_network_firewall_network_firewall_policies = local.provisioned_oci_network_firewall_network_firewall_policies
-    
     dns_views                                      = local.one_dimension_dns_views
     dns_zones                                      = local.one_dimension_dns_zones
     dns_rrsets                                     = local.one_dimension_dns_rrset
@@ -117,9 +116,3 @@ output "flat_map_of_provisioned_networking_resources" {
     local.provisioned_customer_premises_equipments != null ? { for key, value in local.provisioned_customer_premises_equipments : key => { id = value.id } } : null,
   )
 }
-
-
-
-
-
-
