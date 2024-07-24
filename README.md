@@ -4,7 +4,7 @@
 ![Landing Zone logo](./images/landing_zone_300.png)
 
 
-The ```terraform-oci-landing-zones-networking``` module is a Terraform networking core module that facilitates, in an optional fashion, the provisioning of a CIS compliant network topology for the entire topology or for specific areas of the topology.
+The **OCI Landing Zones Networking** module is a Terraform networking core module that facilitates, in an optional fashion, the provisioning of a CIS compliant network topology for the entire topology or for specific areas of the topology.
 
 It aims to facilitate the provisioning of any OCI networking topology, covering the internal OCI networking, entirely, and the edge networking, partially.
 
@@ -113,7 +113,7 @@ For referring to a specific module version, append *ref=\<version\>* to the *sou
 ### <a name="with-orm">Using the Module with Resource Manager
 
 For an ad-hoc use where you can select your resources, follow these guidelines:
-1. [![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-oci-landing-zones/terraform-oci-landing-zones-networking/archive/refs/heads/main.zip)
+1. [![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking/archive/refs/heads/main.zip)
 2. Accept terms,  wait for the configuration to load. 
 3. Set the working directory to “orm-facade”. 
 4. Set the stack name you prefer.

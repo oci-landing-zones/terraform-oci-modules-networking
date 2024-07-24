@@ -30,7 +30,7 @@ This repository is part of a broader collection of repositories containing modul
 <br />
 
 - [Identity & Access Management ](https://github.com/oracle-oci-landing-zones/terraform-oci-landing-zones-iam)
-- [Networking](https://github.com/oracle-oci-landing-zones/terraform-oci-landing-zones-networking) - current repository
+- [Networking](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking) - current repository
 - [Governance](https://github.com/oracle-oci-landing-zones/terraform-oci-landing-zones-governance)
 - Security (coming soon)
 - [Observability & Monitoring](https://github.com/oracle-oci-landing-zones/terraform-oci-landing-zones-observability)
@@ -98,7 +98,7 @@ module "l7_load_balancers" {
 For invoking the module remotely, set the module *source* attribute to the networking module repository, as shown:
 ```
 module "l7_load_balancers" {
-  source = "git@github.com:oracle-oci-landing-zones/terraform-oci-landing-zones-networking.git/modules/l7_load_balancers"
+  source = "git@github.com:oracle-quickstart/terraform-oci-cis-landing-zone-networking.git/modules/l7_load_balancers"
   l7_load_balancers_configuration = {
     dependencies = {
       public_ips              = local.provisioned_oci_core_public_ips
@@ -111,7 +111,7 @@ module "l7_load_balancers" {
 ```
 For referring to a specific module version, append *ref=\<version\>* to the *source* attribute value, as in:
 ```
-  source = "git@github.com:oracle-oci-landing-zones/terraform-oci-landing-zones-networking.git?ref=v0.1.0/modules/l7_load_balancers"
+  source = "git@github.com:oracle-quickstart/terraform-oci-cis-landing-zone-networking.git?ref=v0.1.0/modules/l7_load_balancers"
 ```
 
 ## How to use the module
