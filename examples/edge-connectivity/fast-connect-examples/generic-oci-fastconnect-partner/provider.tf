@@ -17,7 +17,7 @@ provider "oci" {
 }
 
 terraform {
-  required_version = ">= 1.2.0, < 1.3.0"
+  required_version ">= 1.3.0"
 
   required_providers {
     oci = {
@@ -26,6 +26,4 @@ terraform {
       configuration_aliases = [oci]
     }
   }
-
-  experiments = [module_variable_optional_attrs]
 } 
