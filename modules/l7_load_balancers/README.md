@@ -44,36 +44,17 @@ Using these modules does not require a user extensive knowledge of Terraform or 
 
 ## Requirements
 
+### Terraform Version > 1.3.x
+
+This module requires Terraform binary version 1.3.0 or greater, as it relies on Optional Object Type Attributes feature. The feature shortens the amount of input values in complex of having Terraform automatically inserting a default value for any missing optional attributes.
+
+
 ### IAM Permissions
 
 This module requires the following OCI IAM permissions:
 ```
 Allow group <group-name> to manage load-balancers in compartment <compartment-name>
 
-```
-
-### Terraform Version < 1.3.x and Optional Object Type Attributes
-
-This module relies on [Terraform Optional Object Type Attributes feature](https://developer.hashicorp.com/terraform/language/expressions/type-constraints#optional-object-type-attributes), which is experimental from Terraform 0.14.x to 1.2.x. It shortens the amount of input values in complex object types, by having Terraform automatically inserting a default value for any missing optional attributes. The feature has been promoted and it is no longer experimental in Terraform 1.3.x.
-
-Upon running *terraform plan* with Terraform versions prior to 1.3.x, Terraform displays the following warning:
-```
-Warning: Experimental feature "module_variable_optional_attrs" is active
-```
-
-Note the warning is harmless. The code has been tested with Terraform 1.3.x and the implementation is fully compatible.
-
-If you really want to use Terraform 1.3.x, in [providers.tf](./providers.tf):
-1. Change the terraform version requirement to:
-
-```
-required_version = ">= 1.3.0"
-```
-
-2. Remove the line:
-
-```
-experiments = [module_variable_optional_attrs]
 ```
 
 ## How to Invoke the Module

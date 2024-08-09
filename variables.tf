@@ -474,7 +474,6 @@ variable "network_configuration" {
             network_entity_id  = optional(string),
             network_entity_key = optional(string),
             description        = optional(string),
-            description        = optional(string),
             // Supported values:
             //    - "a cidr block"
             //    - "objectstorage" or "all-services" - only for "SERVICE_CIDR_BLOCK"
