@@ -207,10 +207,6 @@ resource "oci_network_firewall_network_firewall_policy_decryption_rule" "these" 
       destination_address = each.value.destination_ip_address_list != null ? [oci_network_firewall_network_firewall_policy_address_list.these["${each.value.policy_key}.${each.value.destination_ip_address_list}"].name] : null
       source_address      = each.value.source_ip_address_list != null ? [oci_network_firewall_network_firewall_policy_address_list.these["${each.value.policy_key}.${each.value.source_ip_address_list}"].name] : null
     }
-
-    position {
-      after_rule = 1
-    }
 }
 
 /* resource "oci_network_firewall_network_firewall_policy" "these" {
