@@ -138,12 +138,7 @@ resource "oci_network_load_balancer_backend" "these" {
 }
 
 data "oci_core_private_ips" "these" {
-  for_each = {for k, v in oci_network_load_balancer_network_load_balancer.these : k => v if v.is_private == true}
+  for_each = oci_network_load_balancer_network_load_balancer.these
     ip_address = [for a in each.value.ip_addresses: a.ip_address][0]
     subnet_id = each.value.subnet_id
 }
-
-data "oci_core_public_ip" "these" {
-  for_each = {for k, v in oci_network_load_balancer_network_load_balancer.these : k => v if v.is_private == false}
-    ip_address = [for a in each.value.ip_addresses: a.ip_address][0]
-}    

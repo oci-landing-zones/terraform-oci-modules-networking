@@ -11,8 +11,3 @@ output "nlbs_primary_private_ips" {
   description = "The NLBs primary private IP addresses."
   value = module.vision_nlbs.nlbs_primary_private_ips
 }
-
-output "nlbs_public_ips" {
-  description = "The NLBs public IP addresses."
-  value = module.vision_nlbs.nlbs_public_ips
-}
