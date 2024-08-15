@@ -1055,28 +1055,28 @@ variable "network_configuration" {
               source_ip_address_list      = optional(string)
             })))
             mapped_secrets = optional(map(object({
-              key             = optional(string),
-              type            = string,
+              name            = string,
+              type            = string, # Valid values: SSL_FORWARD_PROXY, SSL_INBOUND_INSPECTION
+              source          = string, # Valid value: OCI_VAULT
               vault_secret_id = string,
               version_number  = string,
             })))
             security_rules = optional(map(object({
-              action     = string,
-              inspection = optional(string),
-              name       = string
-              conditions = map(object({
-                applications = optional(list(string)),
-                destinations = optional(list(string)),
-                sources      = optional(list(string)),
-                urls         = optional(list(string))
-              }))
+              action              = string, # Valid values: ALLOW,DROP,REJECT,INSPECT
+              name                = string,
+              application         = optional(list(string)),
+              destination_address = optional(list(string)),
+              service             = optional(list(string)),
+              source_address      = optional(list(string)),
+              url                 = optional(list(string)),
+              inspection          = optional(string), # This is only applicable if action is INSPECT
+              after_rule          = optional(string),
+              before_rule         = optional(string)
             })))
             url_lists = optional(map(object({
-              url_list_name = string,
-              url_list_values = map(object({
-                type    = string,
-                pattern = string
-              }))
+              name    = string,
+              pattern = string,
+              type    = string # Valid value: SIMPLE
             })))
           })))
         }))
