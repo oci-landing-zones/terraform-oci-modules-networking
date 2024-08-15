@@ -93,6 +93,51 @@ locals {
     ]
   ])
 
+  nfw_policy_mapped_secrets = flatten([
+    for policy_key, policy_value in coalesce(local.one_dimension_processed_nfw_policies,{}) : [
+      for secret_key, secret_value in (coalesce(policy_value.mapped_secrets,{})) : {
+        key = "${polic_key}.${secret_value}"
+        policy_key = policy_key
+        name = secret_value.name
+        source = secret_value.source
+        type = secret_value.type
+        vault_secret_id = secret_value.vault_secret_id
+        version_number = secret_value.version_number
+      }
+    ]
+  ])
+
+  nfw_policy_url_lists = flatten([
+    for policy_key, policy_value in coalesce(local.one_dimension_processed_nfw_policies,{}) : [
+      for url_key, url_value in (coalesce(policy_value.url_lists,{})) : {
+        key = "${policy_key}.${url_value}"
+        policy_key = policy_key
+        name = url_value.name
+        pattern = url_value.pattern
+        type = url_value.type
+      }
+    ]
+  ])
+
+  nfw_policy_security_rules = flatten([
+    for policy_key, policy_value in coalesce(local.one_dimension_processed_nfw_policies,{}) : [
+      for security_key, security_value in (coalesce(policy_value.security_rules,{})) : {
+        key                 = "${policy_key}.${rule_value}"
+        policy_key          = policy_key
+        action              = security_value.action
+        name                = security_value.name
+        application         = security_value.application
+        destination_address = security_value.destination_address
+        service             = security_value.service
+        source_address      = security_value.source_address
+        url                 = security_value.url
+        inspection          = security_value.inspection
+        after_rule          = security_value.after_rule
+        before_rule         = security_value.before_rule
+      }
+    ]
+  ])
+
   provisioned_oci_network_firewall_network_firewall_policies = {
     for nfw_pol_key, nfw_pol_value in oci_network_firewall_network_firewall_policy.these : nfw_pol_key => {
       #application_lists              = nfw_pol_value.application_lists
@@ -207,6 +252,78 @@ resource "oci_network_firewall_network_firewall_policy_decryption_rule" "these" 
       destination_address = each.value.destination_ip_address_list != null ? [oci_network_firewall_network_firewall_policy_address_list.these["${each.value.policy_key}.${each.value.destination_ip_address_list}"].name] : null
       source_address      = each.value.source_ip_address_list != null ? [oci_network_firewall_network_firewall_policy_address_list.these["${each.value.policy_key}.${each.value.source_ip_address_list}"].name] : null
     }
+}
+
+resource "oci_network_firewall_network_firewall_policy_mapped_secret" "these" {
+  for_each = { for v in local.nfw_policy_mapped_secrets : v.key => {
+                                                                      policy_key = v.policy_key
+                                                                      name       = v.name
+                                                                      source     = v.source
+                                                                      type       = v.type
+                                                                      vault_secret_id = v.vault_secret_id
+                                                                      version_number = v.version_number
+                                                                    } }
+  name = each.value.name
+  network_firewall_policy_id = oci_network_firewall_network_firewall_policy.these[each.value.policy_key].id
+  source = each.value.source
+  type = each.value.type
+  vault_secret_id = each.value.vault_secret_id
+  version_number = each.value.version_number
+}
+
+resource "oci_network_firewall_network_firewall_policy_url_list" "these" {
+  for_each = { for v in local.nfw_policy_url_lists : v.key => {
+                                                                policy_key = v.policy_key
+                                                                name = v.name
+                                                                pattern = v.pattern
+                                                                type = v.type
+                                                              }}
+  name = each.value.name
+  network_firewall_policy_id = oci_network_firewall_network_firewall_policy.these[each.value.policy_key].id
+  urls {
+    pattern = each.value.pattern
+    type = each.value.tyep
+  }
+}
+
+resource "oci_network_firewall_network_firewall_policy_security_rule" "these" {
+  for_each = {
+    for v in local.nfw_policy_security_rules : v.key => {
+                                                          policy_key          = v.policy_key
+                                                          action              = v.action
+                                                          name                = v.name
+                                                          application         = v.application
+                                                          destination_address = v.destination_address
+                                                          service             = v.service
+                                                          source_address      = v.source_address
+                                                          url                 = v.url
+                                                          inspection          = v.inspection
+                                                          after_rule          = v.after_rule
+                                                          before_rule         = v.before_rule
+                                                        }}
+  lifecycle {
+    ignore_changes = [position]
+  }
+  #Required
+  action = each.value.action
+  name = each.value.name
+  condition {
+    application = each.value.application
+    destination_address = each.value.destination_address
+    service = var.each.value.service
+    source_address = each.value.source_address
+    url = each.value.url
+  }
+  network_firewall_policy_id = oci_network_firewall_network_firewall_policy.these[each.value.policy_key].id
+
+  #Optional
+  inspection = each.value.inspection
+  position {
+
+    #Optional
+    after_rule = each.value.after_rule
+    before_rule = each.value.before_rule
+  }
 }
 
 /* resource "oci_network_firewall_network_firewall_policy" "these" {
