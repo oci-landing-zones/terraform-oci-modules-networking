@@ -96,7 +96,7 @@ locals {
   nfw_policy_mapped_secrets = flatten([
     for policy_key, policy_value in coalesce(local.one_dimension_processed_nfw_policies,{}) : [
       for secret_key, secret_value in (coalesce(policy_value.mapped_secrets,{})) : {
-        key = "${polic_key}.${secret_value}"
+        key = "${policy_key}.${secret_value}"
         policy_key = policy_key
         name = secret_value.name
         source = secret_value.source
@@ -122,7 +122,7 @@ locals {
   nfw_policy_security_rules = flatten([
     for policy_key, policy_value in coalesce(local.one_dimension_processed_nfw_policies,{}) : [
       for security_key, security_value in (coalesce(policy_value.security_rules,{})) : {
-        key                 = "${policy_key}.${rule_value}"
+        key                 = "${policy_key}.${security_value}"
         policy_key          = policy_key
         action              = security_value.action
         name                = security_value.name
@@ -310,7 +310,7 @@ resource "oci_network_firewall_network_firewall_policy_security_rule" "these" {
   condition {
     application = each.value.application
     destination_address = each.value.destination_address
-    service = var.each.value.service
+    service = each.value.service
     source_address = each.value.source_address
     url = each.value.url
   }
