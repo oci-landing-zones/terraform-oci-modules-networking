@@ -116,6 +116,3 @@ output "flat_map_of_provisioned_networking_resources" {
     local.provisioned_customer_premises_equipments != null ? { for key, value in local.provisioned_customer_premises_equipments : key => { id = value.id } } : null,
   )
 }
-
-
-
