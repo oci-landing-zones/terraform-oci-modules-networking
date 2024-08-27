@@ -51,7 +51,7 @@ resource "oci_core_cross_connect" "these" {
   port_speed_shape_name = each.value.port_speed_shape_name
 
   #Optional
-  cross_connect_group_id                       = oci_core_cross_connect_group.these[each.key].id
+  cross_connect_group_id                       = oci_core_cross_connect_group.these[each.value.ccg_key].id
   customer_reference_name                      = each.value.customer_reference_name
   defined_tags                                 = each.value.defined_tags
   display_name                                 = each.value.display_name
