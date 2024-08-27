@@ -291,7 +291,7 @@ locals {
 
   // defining all posible route rules targets for SGW specific route tables
   #route_rules_targets_for_SGW_specific_RTs = merge(local.provisioned_dynamic_gateways)
-  route_rules_targets_for_SGW_specific_RTs = merge(local.provisioned_dynamic_gateways,var.private_ips_dependency)
+  route_rules_targets_for_SGW_specific_RTs = merge(local.provisioned_dynamic_gateways,coalesce(var.private_ips_dependency,{}),coalesce(try(var.network_dependency["dynamic_routing_gateways"],null),{}))
 
   // Search for all the sgw specific route tables that have route rules that satisfy:
   //      1. CONDITION 1
