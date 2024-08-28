@@ -44,7 +44,7 @@ Using these modules does not require a user extensive knowledge of Terraform or 
 
 ## Requirements
 
-### Terraform Version > 1.3.x
+### Terraform Version >= 1.3.0
 
 This module requires Terraform binary version 1.3.0 or greater, as it relies on Optional Object Type Attributes feature. The feature shortens the amount of input values in complex of having Terraform automatically inserting a default value for any missing optional attributes.
 
