@@ -474,7 +474,6 @@ variable "network_configuration" {
             network_entity_id  = optional(string),
             network_entity_key = optional(string),
             description        = optional(string),
-            description        = optional(string),
             // Supported values:
             //    - "a cidr block"
             //    - "objectstorage" or "all-services" - only for "SERVICE_CIDR_BLOCK"
@@ -1013,66 +1012,71 @@ variable "network_configuration" {
             defined_tags   = optional(map(string)),
             display_name   = optional(string),
             freeform_tags  = optional(map(string)),
-            application_lists = optional(map(object({
-              application_list_name = string,
-              application_values = map(object({
-                type         = string,
-                icmp_type    = optional(string),
-                icmp_code    = optional(string),
-                minimum_port = optional(number),
-                maximum_port = optional(number)
-              }))
+            # application_lists = optional(map(object({
+            #   application_list_name = string,
+            #   application_values = map(object({
+            #     type         = string,
+            #     icmp_type    = optional(string),
+            #     icmp_code    = optional(string),
+            #     minimum_port = optional(number),
+            #     maximum_port = optional(number)
+            #   }))
+            # })))
+            applications = optional(map(object({
+              name      = string,
+              type      = string,
+              icmp_type = optional(string),
+              icmp_code = optional(string),
             })))
             decryption_profiles = optional(map(object({
-              is_out_of_capacity_blocked            = bool,
-              is_unsupported_cipher_blocked         = bool,
-              is_unsupported_version_blocked        = bool,
-              type                                  = string,
-              key                                   = string,
-              are_certificate_extensions_restricted = optional(bool),
-              is_auto_include_alt_name              = optional(bool),
-              is_expired_certificate_blocked        = optional(bool),
-              is_revocation_status_timeout_blocked  = optional(bool),
-              is_unknown_revocation_status_blocked  = optional(bool),
-              is_untrusted_issuer_blocked           = optional(bool)
-            })))
-            decryption_rules = optional(map(object({
-              action             = string,
-              name               = string,
-              decryption_profile = optional(string),
-              secret             = optional(string),
-              conditions = map(object({
-                destinations = optional(list(string)),
-                sources      = optional(list(string))
-              }))
+              type                                  = string, # Valid values: "SSL_FORWARD_PROXY", "SSL_INBOUND_INSPECTION"
+              name                                  = string,
+              is_out_of_capacity_blocked            = optional(bool),
+              is_unsupported_cipher_blocked         = optional(bool),
+              is_unsupported_version_blocked        = optional(bool),
+              are_certificate_extensions_restricted = optional(bool), # Applicable only when type = "SSL_FORWARD_PROXY"
+              is_auto_include_alt_name              = optional(bool), # Applicable only when type = "SSL_FORWARD_PROXY"
+              is_expired_certificate_blocked        = optional(bool), # Applicable only when type = "SSL_FORWARD_PROXY"
+              is_revocation_status_timeout_blocked  = optional(bool), # Applicable only when type = "SSL_FORWARD_PROXY"
+              is_unknown_revocation_status_blocked  = optional(bool), # Applicable only when type = "SSL_FORWARD_PROXY"
+              is_untrusted_issuer_blocked           = optional(bool)  # Applicable only when type = "SSL_FORWARD_PROXY"
             })))
             ip_address_lists = optional(map(object({
-              ip_address_list_name  = string,
-              ip_address_list_value = list(string)
+              name = string,
+              type = string, # Valid values: "FQND", "IP"
+              addresses = list(string)
+            })))
+            decryption_rules = optional(map(object({
+              name                  = string,
+              action                = string,
+              decryption_profile_id = optional(string),
+              secret                = optional(string),
+              destination_ip_address_list = optional(string),
+              source_ip_address_list      = optional(string)
             })))
             mapped_secrets = optional(map(object({
-              key             = optional(string),
-              type            = string,
+              name            = string,
+              type            = string, # Valid values: SSL_FORWARD_PROXY, SSL_INBOUND_INSPECTION
+              source          = string, # Valid value: OCI_VAULT
               vault_secret_id = string,
               version_number  = string,
             })))
             security_rules = optional(map(object({
-              action     = string,
-              inspection = optional(string),
-              name       = string
-              conditions = map(object({
-                applications = optional(list(string)),
-                destinations = optional(list(string)),
-                sources      = optional(list(string)),
-                urls         = optional(list(string))
-              }))
+              action              = string, # Valid values: ALLOW,DROP,REJECT,INSPECT
+              name                = string,
+              application         = optional(list(string)),
+              destination_address = optional(list(string)),
+              service             = optional(list(string)),
+              source_address      = optional(list(string)),
+              url                 = optional(list(string)),
+              inspection          = optional(string), # This is only applicable if action is INSPECT
+              after_rule          = optional(string),
+              before_rule         = optional(string)
             })))
             url_lists = optional(map(object({
-              url_list_name = string,
-              url_list_values = map(object({
-                type    = string,
-                pattern = string
-              }))
+              name    = string,
+              pattern = string,
+              type    = string # Valid value: SIMPLE
             })))
           })))
         }))
