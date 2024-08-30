@@ -1,8 +1,10 @@
-<!-- BEGIN_TF_DOCS -->
 # OCI Landing Zones Networking Module
 
 ![Landing Zone logo](./images/landing_zone_300.png)
 
+Welcome to the [OCI Landing Zones (OLZ) Community](https://github.com/oci-landing-zones)! 
+
+OCI Landing Zones simplify onboarding and running on OCI by providing design guidance, best practices, and pre-configured Terraform deployment templates for various architectures and use cases. These enable customers to easily provision a secure tenancy foundation in the cloud along with all required services, and reliably scale as workloads expand.
 
 The **OCI Landing Zones Networking** module is a Terraform networking core module that facilitates, in an optional fashion, the provisioning of a CIS compliant network topology for the entire topology or for specific areas of the topology.
 
@@ -104,6 +106,7 @@ For an ad-hoc use where you can select your resources, follow these guidelines:
 
 ## <a name="functioning">Module Functioning
 
+The input parameters for the module can be divided into two categories, for which we recommend to create two different ```*.tfvars.*``` files:
 The input parameters for the module can be divided into two categories, for which we recommend to create two different ```*.tfvars.*``` files:
  1. OCI REST API authentication information (secrets) - ```terraform.tfvars``` (HCL) or ```terraform.tfvars.json``` (JSON):
     - ```tenancy_ocid```
@@ -374,6 +377,9 @@ See [external-dependency example](./examples/external-dependency/) for a functio
    - [Fast Connect Examples](examples/edge-connectivity/fast-connect-examples/)
       - [Generic OCI Fast Connect Partner](examples/edge-connectivity/fast-connect-examples/generic-oci-fastconnect-partner/)
    - [IPSec VPN Examples](examples/edge-connectivity/ipsec-examples/)
+      - [Generic OCI IPSec BGP VPN](examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/)    
+- [Local Peering Gateways](examples/local-peering-gateways/)     
+- [Remote Peering Connections](examples/remote-peering-connections/)  
       - [Generic OCI IPSec BGP VPN](examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/)    
 - [Local Peering Gateways](examples/local-peering-gateways/)     
 - [Remote Peering Connections](examples/remote-peering-connections/)  
