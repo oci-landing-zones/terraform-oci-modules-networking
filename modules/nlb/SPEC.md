@@ -2,7 +2,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | < 1.3.0 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3.0 |
 
 ## Providers
 
@@ -23,6 +23,7 @@ No modules.
 | [oci_network_load_balancer_listener.these](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/network_load_balancer_listener) | resource |
 | [oci_network_load_balancer_network_load_balancer.these](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/network_load_balancer_network_load_balancer) | resource |
 | [oci_core_private_ips.these](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_private_ips) | data source |
+| [oci_core_public_ip.these](https://registry.terraform.io/providers/oracle/oci/latest/docs/data-sources/core_public_ip) | data source |
 
 ## Inputs
 
@@ -43,4 +44,5 @@ No modules.
 | <a name="output_nlb_backends"></a> [nlb\_backends](#output\_nlb\_backends) | The NLB backends. |
 | <a name="output_nlb_listeners"></a> [nlb\_listeners](#output\_nlb\_listeners) | The NLB listeners. |
 | <a name="output_nlbs"></a> [nlbs](#output\_nlbs) | The Network Load Balancers (NLBs). |
-| <a name="output_nlbs_private_ips"></a> [nlbs\_private\_ips](#output\_nlbs\_private\_ips) | The NLBs private IP addresses. |
+| <a name="output_nlbs_primary_private_ips"></a> [nlbs\_primary\_private\_ips](#output\_nlbs\_primary\_private\_ips) | The NLBs primary private IP addresses. |
+| <a name="output_nlbs_public_ips"></a> [nlbs\_public\_ips](#output\_nlbs\_public\_ips) | The NLBs public IP addresses. |

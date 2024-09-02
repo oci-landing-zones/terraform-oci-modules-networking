@@ -1,9 +1,10 @@
-<!-- BEGIN_TF_DOCS -->
 # OCI Landing Zones Networking Module
 
 ![Landing Zone logo](./images/landing_zone_300.png)
 
-Welcome to the [OCI Landing Zones (OLZ) Community](https://github.com/oci-landing-zones)! OCI Landing Zones simplify onboarding and running on OCI by providing design guidance, best practices, and pre-configured Terraform deployment templates for various architectures and use cases. These enable customers to easily provision a secure tenancy foundation in the cloud along with all required services, and reliably scale as workloads expand.
+Welcome to the [OCI Landing Zones (OLZ) Community](https://github.com/oci-landing-zones)! 
+
+OCI Landing Zones simplify onboarding and running on OCI by providing design guidance, best practices, and pre-configured Terraform deployment templates for various architectures and use cases. These enable customers to easily provision a secure tenancy foundation in the cloud along with all required services, and reliably scale as workloads expand.
 
 The **OCI Landing Zones Networking** module is a Terraform networking core module that facilitates, in an optional fashion, the provisioning of a CIS compliant network topology for the entire topology or for specific areas of the topology.
 
@@ -54,6 +55,11 @@ Using these modules does not require a user extensive knowledge of Terraform or 
 
 ## <a name="requirements">Requirements
 
+### Terraform Version >= 1.3.0
+
+This module requires Terraform binary version 1.3.0 or greater, as it relies on Optional Object Type Attributes feature. The feature shortens the amount of input values in complex of having Terraform automatically inserting a default value for any missing optional attributes.
+
+
 ### IAM Permissions
 
 This module requires the following OCI IAM permissions:
@@ -61,30 +67,6 @@ This module requires the following OCI IAM permissions:
 Allow group <group-name> to manage virtual-network-family in compartment <compartment-name>
 
 Allow group <group-name> to manage drgs in compartment <compartment-name>
-```
-
-### Terraform Version < 1.3.x and Optional Object Type Attributes
-
-This module relies on [Terraform Optional Object Type Attributes feature](https://developer.hashicorp.com/terraform/language/expressions/type-constraints#optional-object-type-attributes), which is experimental from Terraform 0.14.x to 1.2.x. It shortens the amount of input values in complex object types, by having Terraform automatically inserting a default value for any missing optional attributes. The feature has been promoted and it is no longer experimental in Terraform 1.3.x.
-
-Upon running *terraform plan* with Terraform versions prior to 1.3.x, Terraform displays the following warning:
-```
-Warning: Experimental feature "module_variable_optional_attrs" is active
-```
-
-Note the warning is harmless. The code has been tested with Terraform 1.3.x and the implementation is fully compatible.
-
-If you really want to use Terraform 1.3.x, in [providers.tf](./providers.tf):
-1. Change the terraform version requirement to:
-
-```
-required_version = ">= 1.3.0"
-```
-
-2. Remove the line:
-
-```
-experiments = [module_variable_optional_attrs]
 ```
 
 ## <a name="invoke">How to Invoke the Module
@@ -124,6 +106,7 @@ For an ad-hoc use where you can select your resources, follow these guidelines:
 
 ## <a name="functioning">Module Functioning
 
+The input parameters for the module can be divided into two categories, for which we recommend to create two different ```*.tfvars.*``` files:
 The input parameters for the module can be divided into two categories, for which we recommend to create two different ```*.tfvars.*``` files:
  1. OCI REST API authentication information (secrets) - ```terraform.tfvars``` (HCL) or ```terraform.tfvars.json``` (JSON):
     - ```tenancy_ocid```
@@ -283,7 +266,7 @@ The ```network_configuration``` is a multidimensional complex object:
 ### <a name="ext-dep">External Dependencies</a>
 An optional feature, external dependencies are resources managed elsewhere that resources managed by this module depends on. The following dependencies are supported:
 
-#### compartments_dependency (Optional) 
+#### compartments_dependency (Optional)
 A map of objects containing the externally managed compartments this module may depend on. All map objects must have the same type and must contain at least an *id* attribute with the compartment OCID. This mechanism allows for the usage of referring keys (instead of OCIDs) in *default_compartment_id* and *compartment_id* attributes. The module replaces the keys by the OCIDs provided within *compartments_dependency* map. Contents of *compartments_dependency* is typically the output of a [Compartments module](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam/tree/main/compartments) client.
 
 Example:
@@ -299,7 +282,7 @@ Attributes that support a compartment referring key:
   - *default_compartment_id*
   - *compartment_id*
 
-#### network_dependency (Optional) 
+#### network_dependency (Optional)
 A map of map of objects containing the externally managed network resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a client of this module. Within *network_dependency*, VCNs must be indexed with the **vcns** key, DRGs indexed with the **dynamic_routing_gateways** key, DRG attachments indexed with **drg_attachments** key, Local Peering Gateways (LPG) indexed with **local_peering_gateways**, Remote Peering Connections (RPC) indexed with **remote_peering_connections** key. Each VCN, DRG, DRG attachment, LPG and RPC must contain the *id* attribute (to which the actual OCID is assigned). RPCs must also pass the peer region name in the *region_name* attribute.
 
 *network_dependency* example:
@@ -343,7 +326,7 @@ A map of map of objects containing the externally managed network resources this
 **local_peering_gateways** | *peer_key* in *local_peering_gateways*
 **remote_peering_connections** | *peer_key* in *remote_peering_connections*
 
-#### private_ips_dependency (Optional) 
+#### private_ips_dependency (Optional)
 A map of map of objects containing the externally managed private IP resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *private_ips_dependency* map. Each private IP must contain the **"id"** attribute (to which the actual OCID is assigned), as in the example below:
 
 Example:
@@ -394,6 +377,9 @@ See [external-dependency example](./examples/external-dependency/) for a functio
    - [Fast Connect Examples](examples/edge-connectivity/fast-connect-examples/)
       - [Generic OCI Fast Connect Partner](examples/edge-connectivity/fast-connect-examples/generic-oci-fastconnect-partner/)
    - [IPSec VPN Examples](examples/edge-connectivity/ipsec-examples/)
+      - [Generic OCI IPSec BGP VPN](examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/)    
+- [Local Peering Gateways](examples/local-peering-gateways/)     
+- [Remote Peering Connections](examples/remote-peering-connections/)  
       - [Generic OCI IPSec BGP VPN](examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/)    
 - [Local Peering Gateways](examples/local-peering-gateways/)     
 - [Remote Peering Connections](examples/remote-peering-connections/)  

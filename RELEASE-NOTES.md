@@ -1,3 +1,10 @@
+# August 28, 2024 Release Notes - 0.6.9
+
+## Updates
+1. All modules now require Terraform binary equal or greater than 1.3.0.
+2. *cislz-terraform-module* tag renamed to *ocilz-terraform-module*.
+
+
 # July 24, 2024 Release Notes - 0.6.8
 
 ## New
