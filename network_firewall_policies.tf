@@ -96,7 +96,7 @@ locals {
   nfw_policy_mapped_secrets = flatten([
     for policy_key, policy_value in coalesce(local.one_dimension_processed_nfw_policies,{}) : [
       for secret_key, secret_value in (coalesce(policy_value.mapped_secrets,{})) : {
-        key = "${policy_key}.${secret_value}"
+        key = "${policy_key}.${secret_key}"
         policy_key = policy_key
         name = secret_value.name
         source = secret_value.source
@@ -110,7 +110,7 @@ locals {
   nfw_policy_url_lists = flatten([
     for policy_key, policy_value in coalesce(local.one_dimension_processed_nfw_policies,{}) : [
       for url_key, url_value in (coalesce(policy_value.url_lists,{})) : {
-        key = "${policy_key}.${url_value}"
+        key = "${policy_key}.${url_key}"
         policy_key = policy_key
         name = url_value.name
         pattern = url_value.pattern
@@ -122,7 +122,7 @@ locals {
   nfw_policy_security_rules = flatten([
     for policy_key, policy_value in coalesce(local.one_dimension_processed_nfw_policies,{}) : [
       for security_key, security_value in (coalesce(policy_value.security_rules,{})) : {
-        key                 = "${policy_key}.${security_value}"
+        key                 = "${policy_key}.${security_key}"
         policy_key          = policy_key
         action              = security_value.action
         name                = security_value.name
