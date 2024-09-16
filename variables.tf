@@ -1025,7 +1025,7 @@ variable "network_configuration" {
             applications = optional(map(object({
               name      = string,
               type      = string,
-              icmp_type = optional(string),
+              icmp_type = string,
               icmp_code = optional(string),
             })))
             decryption_profiles = optional(map(object({

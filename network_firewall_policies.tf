@@ -282,7 +282,7 @@ resource "oci_network_firewall_network_firewall_policy_url_list" "these" {
   network_firewall_policy_id = oci_network_firewall_network_firewall_policy.these[each.value.policy_key].id
   urls {
     pattern = each.value.pattern
-    type = each.value.tyep
+    type = each.value.type
   }
 }
 
@@ -308,11 +308,11 @@ resource "oci_network_firewall_network_firewall_policy_security_rule" "these" {
   action = each.value.action
   name = each.value.name
   condition {
-    application = each.value.application
-    destination_address = each.value.destination_address
-    service = each.value.service
-    source_address = each.value.source_address
-    url = each.value.url
+    application         = each.value.application != null ? [for app in each.value.application: oci_network_firewall_network_firewall_policy_application.these["${each.value.policy_key}.${app}"].id ] : null
+    destination_address = each.value.destination_address != null ? [for dest in each.value.destination_address: oci_network_firewall_network_firewall_policy_address_list.these["${each.value.policy_key}.${dest}"].name ] : null
+    source_address      = each.value.source_address != null ? [for source in each.value.source_address: oci_network_firewall_network_firewall_policy_address_list.these["${each.value.policy_key}.${source}"].name ] : null
+    url                 = each.value.url != null ? [for url in each.value.url: oci_network_firewall_network_firewall_policy_url_list.these["${each.value.policy_key}.${url}"].id ] : null
+    service             = each.value.service
   }
   network_firewall_policy_id = oci_network_firewall_network_firewall_policy.these[each.value.policy_key].id
 
