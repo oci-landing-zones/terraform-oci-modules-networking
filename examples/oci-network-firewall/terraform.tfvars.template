@@ -1,0 +1,132 @@
+# Copyright (c) 2022, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+tenancy_ocid         = "<TENANCY-OCID>"
+user_ocid            = "<USER-OCID>"
+fingerprint          = "<USER-FINGERPRINT>"
+private_key_path     = "<PATH-TO-USER-PRIVATE-KEY-FILE>"
+private_key_password = ""
+region               = "<REGION-NAME>"
+
+network_configuration = {
+  default_compartment_id = "<COMPARTMENT-OCID>"
+  network_configuration_categories = {
+    FIREWALL = {
+      
+      vcns = {
+        FIREWALL-VCN = {
+          display_name                     = "firewall-vcn"
+          is_ipv6enabled                   = false
+          is_oracle_gua_allocation_enabled = false
+          cidr_blocks                      = ["10.0.0.0/24"],
+          dns_label                        = "firewallvcn"
+          is_create_igw                    = false
+          is_attach_drg                    = false
+          block_nat_traffic                = false
+          
+          subnets = {
+            FIREWALL-SUBNET = {
+              cidr_block                 = "10.0.0.0/24"
+              display_name               = "firewall-subnet"
+              dns_label                  = "firewallsubnet"
+              ipv6cidr_blocks            = []
+              prohibit_internet_ingress  = true
+            }
+          }
+        }
+      }
+      non_vcn_specific_gateways = {
+        network_firewalls_configuration = {
+          network_firewalls = {
+            NFW = {
+              display_name                = "nfw"
+              subnet_key                  = "FIREWALL-SUBNET"
+              ipv4address                 = "10.0.0.10"
+              network_firewall_policy_key = "NFW-POLICY"
+            }
+          }
+          network_firewall_policies = {
+            NFW-POLICY = {
+              display_name = "nfw-policy"
+              applications = {
+                APP-1 = {
+                  name = "nfw-app-1"
+                  type = "ICMP"
+                  icmp_type = 3
+                  icmp_code = 1
+                },
+                APP-2 = {
+                  name = "nfw-app-2"
+                  type = "ICMP"
+                  icmp_type = 3
+                  icmp_code = 1
+                }
+              }
+              decryption_profiles = {
+                DECRYPTION-PROFILE-1 = {
+                  name = "decryption-profile-1"
+                  type = "SSL_FORWARD_PROXY"
+                }
+              }
+              ip_address_lists = {
+                ADDRESS-LIST-1 = {
+                  name = "address-list-1"
+                  type ="IP"
+                  addresses = ["8.8.8.8"]
+                },
+                ADDRESS-LIST-2 = {
+                  name = "address-list-2"
+                  type ="IP"
+                  addresses = ["10.10.10.10"]
+                }
+              }
+              url_lists = {
+                URL-LIST-1 = {
+                  name    = "url-list-1",
+                  type    = "SIMPLE"
+                  pattern = "www.oracle.com"
+                }
+                URL-LIST-2 = {
+                  name    = "url-list-2",
+                  type    = "SIMPLE"
+                  pattern = "www.google.com"
+                }
+              }
+              security_rules = {
+                SECURITY-RULE-A = {
+                  action              = "ALLOW"
+                  name                = "security-rule-a"
+                  application         = ["APP-1"]
+                  destination_address = ["ADDRESS-LIST-1"]
+                  source_address      = []
+                  url                 = ["URL-LIST-1"]
+                }
+                SECURITY-RULE-B = {
+                  action              = "INSPECT"
+                  inspection          = "INTRUSION_DETECTION"
+                  name                = "security-rule-b"
+                  application         = ["APP-2"]
+                  destination_address = []
+                  source_address      = ["ADDRESS-LIST-2"]
+                  url                 = ["URL-LIST-2"]
+                }
+              }
+              decryption_rules = {
+                DECRYPTION-RULE-1 = {
+                  name = "decryption-rule-1"
+                  action = "NO_DECRYPT"
+                  destination_ip_address_list = "ADDRESS-LIST-1"
+                },
+                DECRYPTION-RULE-2 = {
+                  name = "decryption-rule-2"
+                  action = "NO_DECRYPT"
+                  source_ip_address_list = "ADDRESS-LIST-2"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
