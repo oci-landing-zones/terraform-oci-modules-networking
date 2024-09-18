@@ -1022,11 +1022,21 @@ variable "network_configuration" {
             #     maximum_port = optional(number)
             #   }))
             # })))
+            services = optional(map(object({
+              name = string
+              type = optional(string) # Valid values: "TCP_SERVICE" or "UDP_SERVICE"
+              minimum_port = number
+              maximum_port = optional(number)
+            })))
+            service_lists = optional(map(object({
+              name     = string
+              services = list(string)
+            })))
             applications = optional(map(object({
               name      = string,
               type      = string,
-              icmp_type = string,
-              icmp_code = optional(string),
+              icmp_type = number,
+              icmp_code = optional(number),
             })))
             decryption_profiles = optional(map(object({
               type                                  = string, # Valid values: "SSL_FORWARD_PROXY", "SSL_INBOUND_INSPECTION"
@@ -1064,11 +1074,11 @@ variable "network_configuration" {
             security_rules = optional(map(object({
               action              = string, # Valid values: ALLOW,DROP,REJECT,INSPECT
               name                = string,
-              application         = optional(list(string)),
-              destination_address = optional(list(string)),
-              service             = optional(list(string)),
-              source_address      = optional(list(string)),
-              url                 = optional(list(string)),
+              applications         = optional(list(string)),
+              destination_addresses = optional(list(string)),
+              services             = optional(list(string)),
+              source_addresses      = optional(list(string)),
+              urls                 = optional(list(string)),
               inspection          = optional(string), # This is only applicable if action is INSPECT
               after_rule          = optional(string),
               before_rule         = optional(string)
