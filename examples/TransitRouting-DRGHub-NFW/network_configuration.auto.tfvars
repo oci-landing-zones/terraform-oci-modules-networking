@@ -8,7 +8,7 @@
 # ####################################################################################################### #
 
 network_configuration = {
-  default_compartment_id = "ocid1.compartment.oc1....."
+  default_compartment_id    = "ocid1.compartment.oc1....."
   default_freeform_tags = {
     "vision-environment" = "vision"
   }
@@ -300,81 +300,61 @@ network_configuration = {
               display_name                = "hub_nfw"
               subnet_key                  = "SUBNET-H-KEY"
               ipv4address                 = "10.0.0.10"
-              network_firewall_policy_key = "HUB-NFW-POLICY-KEY"
+              network_firewall_policy_key = "HUB-NFW-POLICY"
             }
           }
           network_firewall_policies = {
-            HUB-NFW-POLICY-KEY = {
-              display_name = "hub_nfw_policy"
+            HUB-NFW-POLICY = {
+              display_name = "hubnfw-policy"
+              applications = {
+                HUBNFW-APP-1 = {
+                  name      = "hubnfw-app-1"
+                  type      = "ICMP"
+                  icmp_type = "128"
+                }
+              }
               application_lists = {
-                hubnfw_app_list_1 = {
-                  application_list_name = "hubnfw_app_list_1"
-                  application_values = {
-                    hubnfw_app_list_1_1 = {
-                      type         = "TCP"
-                      minimum_port = 80
-                      maximum_port = 8080
-                    }
-                  }
+                HUBNFW-APP-LIST = {
+                  name = "hubnfw-app-list"
+                  apps = ["HUBNFW-APP-1"]
                 }
               }
-
-              ip_address_lists = {
-                hubnfw_ip_list = {
-                  ip_address_list_name  = "hubnfw_ip_list"
-                  ip_address_list_value = ["10.0.0.1"]
-                }
-              }
-              security_rules = {
-                SecurityRuleA = {
-                  action = "ALLOW"
-                  name   = "SecurityRuleA"
-                  conditions = {
-                    prd_cond1_A = {
-                      applications = []
-                      destinations = ["hubnfw_ip_list"]
-                      sources      = []
-                      urls         = ["hubnfw_policy_url_1"]
-                    }
-                  }
-                }
-
-                SecurityRuleB = {
-                  action     = "INSPECT"
-                  inspection = "INTRUSION_DETECTION"
-                  name       = "SecurityRuleB"
-                  conditions = {
-                    prd_cond1_B = {
-                      applications = ["hubnfw_app_list_1"]
-                      destinations = []
-                      sources      = ["hubnfw_ip_list"]
-                      urls         = ["hubnfw_policy_url_1"]
-                    }
-                  }
+              address_lists = {
+                HUBNFW-IP-LIST = {
+                  name      = "hubnfw-ip-list"
+                  addresses = ["10.0.0.1"]
+                  type      = "IP"
                 }
               }
               url_lists = {
-                hubnfw_policy_url_1 = {
-                  url_list_name = "hubnfw_policy_url_1",
-                  url_list_values = {
-                    hubnfw_policy_url_1_1 = {
-                      type    = "SIMPLE"
-                      pattern = "www.oracle.com"
-                    }
-                    hubnfw_policy_url_1_2 = {
-                      type    = "SIMPLE"
-                      pattern = "www.google.com"
-                    }
-                  }
+                HUBNFW-URL-1 = {
+                  name    = "hubnfw-url-1",
+                  type    = "SIMPLE"
+                  pattern = "www.oracle.com"
                 }
-                hubnfw_policy_url_2 = {
-                  url_list_name = "hubnfw_policy_url_2",
-                  url_list_values = {
-                    hubnfw_policy_url_2_1 = {
-                      type    = "SIMPLE"
-                      pattern = "www.facebook.com"
-                    }
-                  }
+                HUBNFW-URL-2 = {
+                  name    = "hubnfw-url-2",
+                  type    = "SIMPLE"
+                  pattern = "www.google.com"
+                }
+              }
+              security_rules = {
+                SECURITY-RULE-A = {
+                  action              = "ALLOW"
+                  name                = "security-rule-a"
+                  application_lists         = []
+                  destination_address_lists = ["HUBNFW-APP-LIST"]
+                  source_address_lists      = []
+                  url_lists                 = ["HUBNFW-URL-1"]
+                }
+                SECURITY-RULE-B = {
+                  action              = "INSPECT"
+                  inspection          = "INTRUSION_DETECTION"
+                  name                = "security-rule-b"
+                  application         = ["HUBNFW-APP-LIST"]
+                  destination_address = []
+                  source_address      = ["HUBNFW-IP-LIST"]
+                  url                 = ["HUBNFW-URL-2"]
                 }
               }
             }
