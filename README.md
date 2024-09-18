@@ -38,12 +38,12 @@ The separation of code and configuration supports DevOps key concepts for operat
 This repository is part of a broader collection of repositories containing modules that help customers align their OCI implementations with the CIS OCI Foundations Benchmark recommendations:
 <br />
 
-- [Identity & Access Management ](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam)
-- [Networking](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking) - current repository
-- [Governance](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-governance)
-- [Security](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-security)
-- [Observability & Monitoring](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability)
-- [Secure Workloads](https://github.com/oracle-quickstart/terraform-oci-secure-workloads)
+- [Identity & Access Management ](https://github.com/oci-landing-zones/terraform-oci-modules-iam)
+- [Networking](https://github.com/oci-landing-zones/terraform-oci-modules-networking) - current repository
+- [Governance](https://github.com/oci-landing-zones/terraform-oci-modules-governance)
+- [Security](https://github.com/github.com/oci-landing-zones/terraform-oci-modules-security)
+- [Observability & Monitoring](https://github.com/oci-landing-zones/terraform-oci-modules-observability)
+- [Secure Workloads](https://github.com/oci-landing-zones/terraform-oci-modules-workloads)
 
 The modules in this collection are designed for flexibility, are straightforward to use, and enforce CIS OCI Foundations Benchmark recommendations when possible.
 <br />
@@ -81,26 +81,25 @@ module "terraform-oci-landing-zones-networking" {
 
 For invoking the module remotely, set the module *source* attribute to the networking module repository, as shown:
 ```
-module "terraform-oci-cis-landing-zone-networking" {
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking"
+module "terraform-oci-landing-zone-networking" {
+  source = "github.com/oci-landing-zones/terraform-oci-modules-networking"
   network_configuration = var.network_configuration
 }
 ```
 For referring to a specific module version, append *ref=\<version\>* to the *source* attribute value, as in:
 ```
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking?ref=v0.1.0"
+  source = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.1.0"
 ```
 
 ### <a name="with-orm">Using the Module with Resource Manager
 
 For an ad-hoc use where you can select your resources, follow these guidelines:
-1. [![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking/archive/refs/heads/main.zip)
+1. [![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-modules-networking/archive/refs/heads/main.zip)
 2. Accept terms,  wait for the configuration to load. 
 3. Set the working directory to “orm-facade”. 
 4. Set the stack name you prefer.
-5. Set the terraform version to 1.2.x. Click Next. 
-6. Add your json/yaml configuration files. Click Next.
-8. Un-check run apply. Click Create.
+5. Add your JSON/YAML configuration files. Click Next.
+6. Un-check run apply. Click Create.
 
 ## <a name="functioning">Module Functioning
 
