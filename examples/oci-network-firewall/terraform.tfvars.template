@@ -62,13 +62,19 @@ network_configuration = {
                   icmp_code = 1
                 }
               }
+              application_lists = {
+                APP-LIST-1 = {
+                  name = "nfw-app-list-1"
+                  applications = ["APP-1","APP-2"]
+                }  
+              }
               decryption_profiles = {
                 DECRYPTION-PROFILE-1 = {
                   name = "decryption-profile-1"
                   type = "SSL_FORWARD_PROXY"
                 }
               }
-              ip_address_lists = {
+              address_lists = {
                 ADDRESS-LIST-1 = {
                   name = "address-list-1"
                   type ="IP"
@@ -96,19 +102,19 @@ network_configuration = {
                 SECURITY-RULE-A = {
                   action              = "ALLOW"
                   name                = "security-rule-a"
-                  application         = ["APP-1"]
-                  destination_address = ["ADDRESS-LIST-1"]
-                  source_address      = []
-                  url                 = ["URL-LIST-1"]
+                  application_lists         = ["APP-LIST-1"]
+                  destination_address_lists = ["ADDRESS-LIST-1"]
+                  source_address_lists      = []
+                  url_lists                 = ["URL-LIST-1"]
                 }
                 SECURITY-RULE-B = {
                   action              = "INSPECT"
                   inspection          = "INTRUSION_DETECTION"
                   name                = "security-rule-b"
-                  application         = ["APP-2"]
-                  destination_address = []
-                  source_address      = ["ADDRESS-LIST-2"]
-                  url                 = ["URL-LIST-2"]
+                  application_lists         = ["APP-LIST-1"]
+                  destination_address_lists = []
+                  source_address_lists      = ["ADDRESS-LIST-2"]
+                  url_lists                 = ["URL-LIST-2"]
                 }
               }
               decryption_rules = {
