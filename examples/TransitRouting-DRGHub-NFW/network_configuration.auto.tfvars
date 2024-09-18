@@ -316,7 +316,7 @@ network_configuration = {
               application_lists = {
                 HUBNFW-APP-LIST = {
                   name = "hubnfw-app-list"
-                  apps = ["HUBNFW-APP-1"]
+                  applications = ["HUBNFW-APP-1"]
                 }
               }
               address_lists = {
@@ -343,7 +343,7 @@ network_configuration = {
                   action              = "ALLOW"
                   name                = "security-rule-a"
                   application_lists         = []
-                  destination_address_lists = ["HUBNFW-APP-LIST"]
+                  destination_address_lists = ["HUBNFW-IP-LIST"]
                   source_address_lists      = []
                   url_lists                 = ["HUBNFW-URL-1"]
                 }
@@ -354,7 +354,7 @@ network_configuration = {
                   application         = ["HUBNFW-APP-LIST"]
                   destination_address = []
                   source_address      = ["HUBNFW-IP-LIST"]
-                  url                 = ["HUBNFW-URL-2"]
+                  url_lists           = ["HUBNFW-URL-2"]
                 }
               }
             }
