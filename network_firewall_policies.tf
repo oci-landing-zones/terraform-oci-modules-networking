@@ -27,11 +27,37 @@ locals {
           mapped_secrets                 = nfwp_value.mapped_secrets
           security_rules                 = nfwp_value.security_rules
           url_lists                      = nfwp_value.url_lists
+          services                       = nfwp_value.services
+          service_lists                  = nfwp_value.service_lists
           nfwp_key                       = nfwp_key
         }
       ] : [] : [] : []
     ]) : flat_nfwp.nfwp_key => flat_nfwp
   } : null
+
+  nfw_policy_services = flatten([
+    for policy_key, policy_value in coalesce(local.one_dimension_processed_nfw_policies,{}) : [
+      for service_key, service_value in (coalesce(policy_value.services,{})) : {
+        key        = "${policy_key}.${service_key}"
+        policy_key = policy_key
+        name       = service_value.name
+        type       = service_value.type
+        minimum_port  = service_value.minimum_port
+        maximum_port  = service_value.maximum_port
+      }
+    ]
+  ])
+
+  nfw_policy_service_lists = flatten([
+    for policy_key, policy_value in coalesce(local.one_dimension_processed_nfw_policies,{}) : [
+      for serv_key, serv_value in (coalesce(policy_value.service_lists,{})) : {
+        key        = "${policy_key}.${serv_key}"
+        policy_key = policy_key
+        name       = serv_value.name
+        services   = serv_value.services
+      }
+    ]
+  ])
 
   nfw_policy_applications = flatten([
     for policy_key, policy_value in coalesce(local.one_dimension_processed_nfw_policies,{}) : [
@@ -126,11 +152,11 @@ locals {
         policy_key          = policy_key
         action              = security_value.action
         name                = security_value.name
-        application         = security_value.application
-        destination_address = security_value.destination_address
-        service             = security_value.service
-        source_address      = security_value.source_address
-        url                 = security_value.url
+        applications         = security_value.applications
+        destination_addresses = security_value.destination_addresses
+        services             = security_value.services
+        source_addresses      = security_value.source_addresses
+        urls                 = security_value.urls
         inspection          = security_value.inspection
         after_rule          = security_value.after_rule
         before_rule         = security_value.before_rule
@@ -172,6 +198,34 @@ resource "oci_network_firewall_network_firewall_policy" "these" {
     defined_tags   = each.value.defined_tags
     display_name   = each.value.display_name
     freeform_tags  = merge(local.cislz_module_tag, each.value.freeform_tags)
+}
+
+resource "oci_network_firewall_network_firewall_policy_service" "these" {
+  for_each = { for v in local.nfw_policy_services : v.key => {
+    policy_key = v.policy_key
+    name       = v.name
+    type       = v.type
+    minimum_port  = v.minimum_port
+    maximum_port  = v.maximum_port
+  } }
+  network_firewall_policy_id = oci_network_firewall_network_firewall_policy.these[each.value.policy_key].id
+  name      = each.value.name
+  type      = each.value.type
+  port_ranges {
+    minimum_port = each.value.minimum_port
+    maximum_port = each.value.maximum_port
+  }
+}
+
+resource "oci_network_firewall_network_firewall_policy_service_list" "these" {
+  for_each = { for v in local.nfw_policy_service_lists : v.key => {
+    policy_key = v.policy_key
+    name       = v.name
+    services   = v.services
+  } }
+  network_firewall_policy_id = oci_network_firewall_network_firewall_policy.these[each.value.policy_key].id
+  name      = each.value.name
+  services  = each.value.services
 }
 
 resource "oci_network_firewall_network_firewall_policy_application" "these" {
@@ -292,11 +346,11 @@ resource "oci_network_firewall_network_firewall_policy_security_rule" "these" {
                                                           policy_key          = v.policy_key
                                                           action              = v.action
                                                           name                = v.name
-                                                          application         = v.application
-                                                          destination_address = v.destination_address
-                                                          service             = v.service
-                                                          source_address      = v.source_address
-                                                          url                 = v.url
+                                                          applications         = v.applications
+                                                          destination_addresses = v.destination_addresses
+                                                          services             = v.services
+                                                          source_addresses      = v.source_addresses
+                                                          urls                 = v.urls
                                                           inspection          = v.inspection
                                                           after_rule          = v.after_rule
                                                           before_rule         = v.before_rule
@@ -308,11 +362,11 @@ resource "oci_network_firewall_network_firewall_policy_security_rule" "these" {
   action = each.value.action
   name = each.value.name
   condition {
-    application         = each.value.application != null ? [for app in each.value.application: oci_network_firewall_network_firewall_policy_application.these["${each.value.policy_key}.${app}"].id ] : null
-    destination_address = each.value.destination_address != null ? [for dest in each.value.destination_address: oci_network_firewall_network_firewall_policy_address_list.these["${each.value.policy_key}.${dest}"].name ] : null
-    source_address      = each.value.source_address != null ? [for source in each.value.source_address: oci_network_firewall_network_firewall_policy_address_list.these["${each.value.policy_key}.${source}"].name ] : null
-    url                 = each.value.url != null ? [for url in each.value.url: oci_network_firewall_network_firewall_policy_url_list.these["${each.value.policy_key}.${url}"].id ] : null
-    service             = each.value.service
+    application         = each.value.applications != null ? [for app in each.value.applications: oci_network_firewall_network_firewall_policy_application.these["${each.value.policy_key}.${app}"].id ] : null
+    destination_address = each.value.destination_addresses != null ? [for dest in each.value.destination_addresses: oci_network_firewall_network_firewall_policy_address_list.these["${each.value.policy_key}.${dest}"].name ] : null
+    source_address      = each.value.source_addresses != null ? [for source in each.value.source_addresses: oci_network_firewall_network_firewall_policy_address_list.these["${each.value.policy_key}.${source}"].name ] : null
+    url                 = each.value.urls != null ? [for url in each.value.urls: oci_network_firewall_network_firewall_policy_url_list.these["${each.value.policy_key}.${url}"].name ] : null
+    service             = each.value.services
   }
   network_firewall_policy_id = oci_network_firewall_network_firewall_policy.these[each.value.policy_key].id
 
