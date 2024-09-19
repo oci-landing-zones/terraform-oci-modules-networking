@@ -12,7 +12,6 @@ network_configuration = {
   default_compartment_id = "<COMPARTMENT-OCID>"
   network_configuration_categories = {
     FIREWALL = {
-      
       vcns = {
         FIREWALL-VCN = {
           display_name                     = "firewall-vcn"
@@ -49,84 +48,67 @@ network_configuration = {
             NFW-POLICY = {
               display_name = "nfw-policy"
               applications = {
-                APP-1 = {
-                  name = "nfw-app-1"
-                  type = "ICMP"
+                ICMPV6 = {
+                  name = "ICMPv6"
+                  type = "ICMP_V6"
                   icmp_type = 3
                   icmp_code = 1
                 },
-                APP-2 = {
-                  name = "nfw-app-2"
+                ICMP = {
+                  name = "ICMP"
                   type = "ICMP"
-                  icmp_type = 3
-                  icmp_code = 1
+                  icmp_type = 8
+                  icmp_code = 0
                 }
               }
               application_lists = {
-                APP-LIST-1 = {
-                  name = "nfw-app-list-1"
-                  applications = ["APP-1","APP-2"]
-                }  
-              }
-              decryption_profiles = {
-                DECRYPTION-PROFILE-1 = {
-                  name = "decryption-profile-1"
-                  type = "SSL_FORWARD_PROXY"
+                ICMPV6-LIST = {
+                  name = "SSH-Application-List"
+                  applications = ["ICMPV6"]
+                },
+                ICMP-LIST = {
+                  name = "ICMP-Application-List"
+                  applications = ["ICMP"]
                 }
               }
               address_lists = {
-                ADDRESS-LIST-1 = {
-                  name = "address-list-1"
+                ADDRESS-LIST-PERMIT = {
+                  name = "IP-Address-List-Permit"
                   type ="IP"
-                  addresses = ["8.8.8.8"]
+                  addresses = ["150.136.212.20/32"]
                 },
-                ADDRESS-LIST-2 = {
-                  name = "address-list-2"
+                ADDRESS-LIST-DENY = {
+                  name = "IP-Address-List-Deny"
                   type ="IP"
-                  addresses = ["10.10.10.10"]
-                }
-              }
-              url_lists = {
-                URL-LIST-1 = {
-                  name    = "url-list-1",
-                  type    = "SIMPLE"
-                  pattern = "www.oracle.com"
-                }
-                URL-LIST-2 = {
-                  name    = "url-list-2",
-                  type    = "SIMPLE"
-                  pattern = "www.google.com"
+                  addresses = ["192.9.241.52/32"]
+                },
+                ADDRESS-LIST-VCN-HOSTS = {
+                  name = "IP-Address-List-VCN-Hosts"
+                  type ="IP"
+                  addresses = ["192.168.0.10/32"]
                 }
               }
               security_rules = {
-                SECURITY-RULE-A = {
-                  action              = "ALLOW"
-                  name                = "security-rule-a"
-                  application_lists         = ["APP-LIST-1"]
-                  destination_address_lists = ["ADDRESS-LIST-1"]
-                  source_address_lists      = []
-                  url_lists                 = ["URL-LIST-1"]
+                ICMP-PERMIT-RULE = {
+                  action                    = "ALLOW"
+                  name                      = "ICMP-Permit"
+                  application_lists         = ["ICMP-LIST"]
+                  source_address_lists      = ["ADDRESS-LIST-PERMIT"]
+                  destination_address_lists = ["ADDRESS-LIST-VCN-HOSTS"]
                 }
-                SECURITY-RULE-B = {
-                  action              = "INSPECT"
-                  inspection          = "INTRUSION_DETECTION"
-                  name                = "security-rule-b"
-                  application_lists         = ["APP-LIST-1"]
-                  destination_address_lists = []
-                  source_address_lists      = ["ADDRESS-LIST-2"]
-                  url_lists                 = ["URL-LIST-2"]
+                ICMPV6-PERMIT-RULE = {
+                  action                    = "ALLOW"
+                  name                      = "ICMPV6-Permit"
+                  application_lists         = ["ICMPV6-LIST"]
+                  source_address_lists      = ["ADDRESS-LIST-PERMIT"]
+                  destination_address_lists = ["ADDRESS-LIST-VCN-HOSTS"]
                 }
-              }
-              decryption_rules = {
-                DECRYPTION-RULE-1 = {
-                  name = "decryption-rule-1"
-                  action = "NO_DECRYPT"
-                  destination_ip_address_list = "ADDRESS-LIST-1"
-                },
-                DECRYPTION-RULE-2 = {
-                  name = "decryption-rule-2"
-                  action = "NO_DECRYPT"
-                  source_ip_address_list = "ADDRESS-LIST-2"
+                DENY-RULE = {
+                  action                    = "DROP"
+                  name                      = "Deny"
+                  application_lists         = []
+                  source_address_lists      = ["ADDRESS-LIST-DENY"]
+                  destination_address_lists = ["ADDRESS-LIST-VCN-HOSTS"]
                 }
               }
             }
