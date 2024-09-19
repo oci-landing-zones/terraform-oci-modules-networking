@@ -109,7 +109,7 @@ locals {
 
   one_dimension_dns_steering_policies = local.one_dimension_processed_vcns != null ? {
     for flat_dns_steering_policies in flatten([
-      for vcn_key, vcn_value in local.one_dimension_processed_existing_vcns :
+      for vcn_key, vcn_value in local.one_dimension_processed_vcns :
       vcn_value.dns_resolver != null ? vcn_value.dns_resolver.attached_views != null ? [
         for view_key, view_value in vcn_value.dns_resolver.attached_views :
         view_value.dns_zones != null ? [
