@@ -77,8 +77,7 @@ locals {
           display_name   = view_value.display_name
           defined_tags   = view_value.defined_tags
           freeform_tags  = view_value.freeform_tags
-        }
-
+        } if view_value.existing_view_id == null
       ] : [] : []
     ]) : flat_attached_views.view_key => flat_attached_views
   } : {}
@@ -101,6 +100,7 @@ locals {
             external_downstreams = zone_value.external_downstreams != null ? zone_value.external_downstreams : []
             external_masters     = zone_value.external_masters != null ? zone_value.external_masters : []
             zone_type            = zone_value.zone_type
+            view_id              = view_value.existing_view_id
           }
         ] : []
       ] : [] : []
@@ -169,13 +169,11 @@ data "oci_core_vcn_dns_resolver_association" "dns_resolvers" {
 
 resource "oci_dns_view" "these" {
   for_each = local.one_dimension_dns_views
-
-  compartment_id = each.value.compartment_id
-
-  display_name  = each.value.display_name
-  scope         = "PRIVATE"
-  defined_tags  = each.value.defined_tags
-  freeform_tags = each.value.freeform_tags
+    compartment_id = each.value.compartment_id
+    display_name  = each.value.display_name
+    scope         = "PRIVATE"
+    defined_tags  = each.value.defined_tags
+    freeform_tags = each.value.freeform_tags
 }
 
 
@@ -186,7 +184,7 @@ resource "oci_dns_zone" "these" {
   scope          = each.value.scope
   zone_type      = each.value.zone_type
 
-  view_id = each.value.view_key != null ? oci_dns_view.these[each.value.view_key].id : null
+  view_id = each.value.view_key != null ? (contains(keys(oci_dns_view.these),each.value.view_key) ? oci_dns_view.these[each.value.view_key].id : (length(regexall("^ocid1.*$", each.value.view_id)) > 0 ? each.value.view_id : var.network_dependency["dns_private_views"][each.value.view_id].id)) : null
 
   dynamic "external_downstreams" {
     for_each = each.value.external_downstreams
@@ -274,7 +272,7 @@ resource "oci_dns_resolver" "these" {
     for_each = each.value.attached_views
     iterator = views
     content {
-      view_id = oci_dns_view.these[views.key].id
+      view_id = views.key != null ? (contains(keys(oci_dns_view.these),views.key) ? oci_dns_view.these[views.key].id : (length(regexall("^ocid1.*$", views.value.existing_view_id)) > 0 ? views.value.existing_view_id : var.network_dependency["dns_private_views"][views.value.existing_view_id].id)) : null
     }
   }
   defined_tags  = each.value.defined_tags
