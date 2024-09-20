@@ -14,7 +14,7 @@ For detailed description of the ```terraform-oci-landing-zones-networking``` net
 2. Within *terraform.tfvars*, provide tenancy connectivity information and adjust the input variables, by making the appropriate substitutions:
     - Replace \<REPLACE-BY-\*\> placeholder with appropriate value.
 
-Refer to [Networking module README.md](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking/blob/main/README.md) for overall attributes usage.
+Refer to [Networking module README.md](https://github.com/oci-landing-zones/terraform-oci-modules-networking/blob/main/README.md) for overall attributes usage.
 
 3. In this folder, run the typical Terraform workflow:
 ```
