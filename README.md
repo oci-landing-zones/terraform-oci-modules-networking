@@ -279,7 +279,7 @@ Attributes that support a compartment referring key:
   - *compartment_id*
 
 #### network_dependency (Optional)
-A map of map of objects containing the externally managed network resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a client of this module. Within *network_dependency*, VCNs must be indexed with the **vcns** key, DRGs indexed with the **dynamic_routing_gateways** key, DRG attachments indexed with **drg_attachments** key, Local Peering Gateways (LPG) indexed with **local_peering_gateways**, Remote Peering Connections (RPC) indexed with **remote_peering_connections** key. Each VCN, DRG, DRG attachment, LPG and RPC must contain the *id* attribute (to which the actual OCID is assigned). RPCs must also pass the peer region name in the *region_name* attribute.
+A map of map of objects containing the externally managed network resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a client of this module. Within *network_dependency*, VCNs must be indexed with the **vcns** key, DRGs indexed with the **dynamic_routing_gateways** key, DRG attachments indexed with **drg_attachments** key, Local Peering Gateways (LPG) indexed with **local_peering_gateways**, Remote Peering Connections (RPC) indexed with **remote_peering_connections** key, DNS Private Views indexed by **dns_private_views**. Each VCN, DRG, DRG attachment, LPG, RPC and DNS Private View must contain the *id* attribute (to which the actual OCID is assigned). RPCs must also pass the peer region name in the *region_name* attribute.
 
 *network_dependency* example:
 ```
@@ -310,9 +310,14 @@ A map of map of objects containing the externally managed network resources this
       "region_name" : "us-ashburn-1"
     }
   }  
+  "dns_private_views" : {  
+    "XYZ-DNS-VIEW" : {
+      "id" : "ocid1.dnsview.oc1.phx.aaaaaaaa...nhq",
+    }
+  }
 } 
 ```
-**Note**: **vcns**, **dynamic_routing_gateways**, **drg_attachments**, **local_peering_gateways**, and **remote_peering_connections** attributes are all optional. They only become mandatory if the *network_configuration* refers to one of these resources through a referring key. Below are the attributes where a referring key is supported:
+**Note**: **vcns**, **dynamic_routing_gateways**, **drg_attachments**, **local_peering_gateways**, **remote_peering_connections** and **dns_private_views** attributes are all optional. They only become mandatory if the *network_configuration* refers to one of these resources through a referring key. Below are the attributes where a referring key is supported:
 
 *network_dependency* attribute | Attribute names in *network_configuration* where the referring key can be utilized
 --------------|-------------
@@ -321,6 +326,7 @@ A map of map of objects containing the externally managed network resources this
 **drg_attachments** | *drg_attachment_key*
 **local_peering_gateways** | *peer_key* in *local_peering_gateways*
 **remote_peering_connections** | *peer_key* in *remote_peering_connections*
+**dns_private_views** | *existing_view_id* in *dns_resolver's* *attached_views*.
 
 #### private_ips_dependency (Optional)
 A map of map of objects containing the externally managed private IP resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *private_ips_dependency* map. Each private IP must contain the **"id"** attribute (to which the actual OCID is assigned), as in the example below:
