@@ -1,16 +1,16 @@
 # Copyright (c) 2023, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-tenancy_ocid         = "<TENANCY-OCID>"
-user_ocid            = "<USER-OCID>"
-fingerprint          = "<USER-FINGERPRINT>"
-private_key_path     = "<PATH-TO-USER-PRIVATE-KEY-FILE>"
+tenancy_ocid         = "<REPLACE-BY-TENANCY-OCID>"
+user_ocid            = "<REPLACE-BY-USER-OCID>"
+fingerprint          = "<REPLACE-BY-USER-FINGERPRINT>"
+private_key_path     = "<REPLACE-BY-PATH-TO-USER-PRIVATE-KEY-FILE>"
 private_key_password = ""
-region               = "<REGION-NAME>"
+region               = "<REPLACE-BY-REGION-NAME>"
 
 
 network_configuration = {
-  default_compartment_id = "<COMPARTMENT-OCID>"
+  default_compartment_id = "<REPLACE-BY-COMPARTMENT-OCID>"
   network_configuration_categories = {
     DNS-VIEW-INJECTION = {
       
@@ -38,7 +38,7 @@ network_configuration = {
             display_name = "custom-dns-resolver"
             attached_views = {
               DNS-VIEW-1 = {
-                existing_view_id = "<DNS-VIEW-OCID-OR-KEY>" # This is the injected DNS view. It can be either an OCID or a key within 'dns_private_views' attribute of 'network_dependency' variable (see commented out snippet down below).
+                existing_view_id = "<REPLACE-BY-DNS-VIEW-OCID-OR-KEY>" # This is the injected DNS view. It can be either an OCID or a key within 'dns_private_views' attribute of 'network_dependency' variable (see commented out snippet down below).
               }
             }
             rules = [
