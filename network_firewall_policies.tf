@@ -237,7 +237,7 @@ resource "oci_network_firewall_network_firewall_policy_service_list" "these" {
   } }
   network_firewall_policy_id = oci_network_firewall_network_firewall_policy.these[each.value.policy_key].id
   name      = each.value.name
-  services  = each.value.services
+  services  = [for service in each.value.services : oci_network_firewall_network_firewall_policy_service.these["${each.value.policy_key}.${service}"].name]
 }
 
 resource "oci_network_firewall_network_firewall_policy_application" "these" {
