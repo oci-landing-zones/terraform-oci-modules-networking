@@ -1,3 +1,9 @@
+# September 20, 2024 Release Notes - 0.7.0
+
+## Updates
+1. OCI Network Firewall refactored according to updates post Terraform OCI Provider 5.16.0 release. See [oci-network-firewall example](./examples/oci-network-firewall/).
+2. Ability to inject externally managed existing private DNS views into managed DNS resolvers. See [dns-view-injection example](./examples/dns-view-injection/) 
+
 # August 28, 2024 Release Notes - 0.6.9
 
 ## Updates
