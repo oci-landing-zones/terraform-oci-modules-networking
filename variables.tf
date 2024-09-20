@@ -227,6 +227,7 @@ variable "network_configuration" {
           defined_tags  = optional(map(string)),
           freeform_tags = optional(map(string)),
           attached_views = optional(map(object({
+            existing_view_id = optional(string) # an existing externally managed view. Assign either this attribute or the others for having this module managing the view.
             compartment_id = optional(string),
             display_name   = optional(string),
             defined_tags   = optional(map(string)),
@@ -1012,22 +1013,33 @@ variable "network_configuration" {
             defined_tags   = optional(map(string)),
             display_name   = optional(string),
             freeform_tags  = optional(map(string)),
-            # application_lists = optional(map(object({
-            #   application_list_name = string,
-            #   application_values = map(object({
-            #     type         = string,
-            #     icmp_type    = optional(string),
-            #     icmp_code    = optional(string),
-            #     minimum_port = optional(number),
-            #     maximum_port = optional(number)
-            #   }))
-            # })))
+            services = optional(map(object({
+              name = string
+              type = optional(string) # Valid values: "TCP_SERVICE" or "UDP_SERVICE"
+              minimum_port = number
+              maximum_port = optional(number)
+            })))
+            service_lists = optional(map(object({
+              name     = string
+              services = list(string)
+            })))
             applications = optional(map(object({
               name      = string,
               type      = string,
-              icmp_type = optional(string),
-              icmp_code = optional(string),
+              icmp_type = number,
+              icmp_code = optional(number),
             })))
+            application_lists = optional(map(object({
+              name = string,
+              applications = list(string)
+            }))),
+            mapped_secrets = optional(map(object({
+              name            = string,
+              type            = string, # Valid values: SSL_FORWARD_PROXY, SSL_INBOUND_INSPECTION
+              source          = string, # Valid value: OCI_VAULT
+              vault_secret_id = string,
+              version_number  = string,
+            }))),
             decryption_profiles = optional(map(object({
               type                                  = string, # Valid values: "SSL_FORWARD_PROXY", "SSL_INBOUND_INSPECTION"
               name                                  = string,
@@ -1040,43 +1052,36 @@ variable "network_configuration" {
               is_revocation_status_timeout_blocked  = optional(bool), # Applicable only when type = "SSL_FORWARD_PROXY"
               is_unknown_revocation_status_blocked  = optional(bool), # Applicable only when type = "SSL_FORWARD_PROXY"
               is_untrusted_issuer_blocked           = optional(bool)  # Applicable only when type = "SSL_FORWARD_PROXY"
-            })))
-            ip_address_lists = optional(map(object({
+            }))),
+            decryption_rules = optional(map(object({
+              name                        = string,
+              action                      = string,
+              decryption_profile_id       = optional(string),
+              secret                      = optional(string),
+              source_ip_address_list      = optional(string),
+              destination_ip_address_list = optional(string)
+            }))),
+            address_lists = optional(map(object({
               name = string,
               type = string, # Valid values: "FQND", "IP"
               addresses = list(string)
-            })))
-            decryption_rules = optional(map(object({
-              name                  = string,
-              action                = string,
-              decryption_profile_id = optional(string),
-              secret                = optional(string),
-              destination_ip_address_list = optional(string),
-              source_ip_address_list      = optional(string)
-            })))
-            mapped_secrets = optional(map(object({
-              name            = string,
-              type            = string, # Valid values: SSL_FORWARD_PROXY, SSL_INBOUND_INSPECTION
-              source          = string, # Valid value: OCI_VAULT
-              vault_secret_id = string,
-              version_number  = string,
-            })))
-            security_rules = optional(map(object({
-              action              = string, # Valid values: ALLOW,DROP,REJECT,INSPECT
-              name                = string,
-              application         = optional(list(string)),
-              destination_address = optional(list(string)),
-              service             = optional(list(string)),
-              source_address      = optional(list(string)),
-              url                 = optional(list(string)),
-              inspection          = optional(string), # This is only applicable if action is INSPECT
-              after_rule          = optional(string),
-              before_rule         = optional(string)
             })))
             url_lists = optional(map(object({
               name    = string,
               pattern = string,
               type    = string # Valid value: SIMPLE
+            }))),
+            security_rules = optional(map(object({
+              action = string, # Valid values: ALLOW,DROP,REJECT,INSPECT
+              name   = string,
+              application_lists         = optional(list(string)),
+              destination_address_lists = optional(list(string)),
+              service_lists             = optional(list(string)),
+              source_address_lists      = optional(list(string)),
+              url_lists                 = optional(list(string)),
+              inspection  = optional(string), # This is only applicable if action is INSPECT
+              after_rule  = optional(string),
+              before_rule = optional(string)
             })))
           })))
         }))
@@ -1260,7 +1265,7 @@ variable "compartments_dependency" {
 }
 
 variable "network_dependency" {
-  description = "An object containing the externally managed network resources this module may depend on. Supported resources are 'vcns', 'dynamic_routing_gateways', 'drg_attachments', 'local_peering_gateways', and 'remote_peering_connections', represented as map of objects. Each object, when defined, must have an 'id' attribute of string type set with the VCN, DRG OCID, DRG Attachment OCID, Local Peering Gateway OCID or Remote Peering Connection OCID. 'remote_peering_connections' must also pass the peer region name in the region_name attribute. See External Dependencies section in README.md (https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking#ext-dep) for details."
+  description = "An object containing the externally managed network resources this module may depend on. Supported resources are 'vcns', 'dynamic_routing_gateways', 'drg_attachments', 'local_peering_gateways', 'remote_peering_connections', and 'dns_private_views', represented as map of objects. Each object, when defined, must have an 'id' attribute of string type set with the VCN, DRG OCID, DRG Attachment OCID, Local Peering Gateway OCID or Remote Peering Connection OCID. 'remote_peering_connections' must also pass the peer region name in the region_name attribute. See External Dependencies section in README.md (https://github.com/oci-landing-zones/terraform-oci-modules-networking#ext-dep) for details."
   type = object({
     vcns = optional(map(object({
       id = string # the VCN OCID
@@ -1277,6 +1282,9 @@ variable "network_dependency" {
     remote_peering_connections = optional(map(object({
       id = string # the peer RPC OCID
       region_name = string # the peer RPC region name
+    })))
+    dns_private_views = optional(map(object({
+      id = string # the DNS private view OCID
     })))
   })
   default = null
