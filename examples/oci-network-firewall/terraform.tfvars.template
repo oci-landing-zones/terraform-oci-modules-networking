@@ -1,23 +1,23 @@
 # Copyright (c) 2022, Oracle and/or its affiliates.
 # Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
 
-tenancy_ocid         = "<TENANCY-OCID>"
-user_ocid            = "<USER-OCID>"
-fingerprint          = "<USER-FINGERPRINT>"
-private_key_path     = "<PATH-TO-USER-PRIVATE-KEY-FILE>"
+tenancy_ocid         = "<REPLACE-BY-TENANCY-OCID>"
+user_ocid            = "<REPLACE-BY-USER-OCID>"
+fingerprint          = "<REPLACE-BY-USER-FINGERPRINT>"
+private_key_path     = "<REPLACE-BY-PATH-TO-USER-PRIVATE-KEY-FILE>"
 private_key_password = ""
-region               = "<REGION-NAME>"
+region               = "<REPLACE-BY-REGION-NAME>"
 
 network_configuration = {
-  default_compartment_id = "<COMPARTMENT-OCID>"
+  default_compartment_id = "<REPLACE-BY-COMPARTMENT-OCID>"
   network_configuration_categories = {
     FIREWALL = {
       vcns = {
         FIREWALL-VCN = {
-          display_name                     = "firewall-vcn"
+          display_name                     = "VCN1"
           is_ipv6enabled                   = false
           is_oracle_gua_allocation_enabled = false
-          cidr_blocks                      = ["10.0.0.0/24"],
+          cidr_blocks                      = ["192.168.0.0/24"],
           dns_label                        = "firewallvcn"
           is_create_igw                    = false
           is_attach_drg                    = false
@@ -25,8 +25,8 @@ network_configuration = {
           
           subnets = {
             FIREWALL-SUBNET = {
-              cidr_block                 = "10.0.0.0/24"
-              display_name               = "firewall-subnet"
+              cidr_block                 = "192.168.0.0/24"
+              display_name               = "subnet2"
               dns_label                  = "firewallsubnet"
               ipv6cidr_blocks            = []
               prohibit_internet_ingress  = true
@@ -38,15 +38,15 @@ network_configuration = {
         network_firewalls_configuration = {
           network_firewalls = {
             NFW = {
-              display_name                = "nfw"
+              display_name                = "NFW"
               subnet_key                  = "FIREWALL-SUBNET"
-              ipv4address                 = "10.0.0.10"
+              ipv4address                 = "192.168.0.20"
               network_firewall_policy_key = "NFW-POLICY"
             }
           }
           network_firewall_policies = {
             NFW-POLICY = {
-              display_name = "nfw-policy"
+              display_name = "NFW-policy-1"
               applications = {
                 ICMPV6 = {
                   name = "ICMPv6"
