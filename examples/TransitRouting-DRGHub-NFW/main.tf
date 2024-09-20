@@ -9,7 +9,6 @@
 
 module "terraform_oci_networking" {
   source = "../../"
-
   network_configuration = var.network_configuration
 }
 
