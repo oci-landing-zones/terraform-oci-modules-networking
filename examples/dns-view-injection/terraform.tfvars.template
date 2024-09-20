@@ -1,0 +1,92 @@
+# Copyright (c) 2023, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+tenancy_ocid         = "<REPLACE-BY-TENANCY-OCID>"
+user_ocid            = "<REPLACE-BY-USER-OCID>"
+fingerprint          = "<REPLACE-BY-USER-FINGERPRINT>"
+private_key_path     = "<REPLACE-BY-PATH-TO-USER-PRIVATE-KEY-FILE>"
+private_key_password = ""
+region               = "<REPLACE-BY-REGION-NAME>"
+
+
+network_configuration = {
+  default_compartment_id = "<REPLACE-BY-COMPARTMENT-OCID>"
+  network_configuration_categories = {
+    DNS-VIEW-INJECTION = {
+      
+      vcns = {
+        MY-VCN = {
+          display_name                     = "dns-view-injection-vcn"
+          is_ipv6enabled                   = false
+          is_oracle_gua_allocation_enabled = false
+          cidr_blocks                      = ["10.0.0.0/24"],
+          dns_label                        = "dnsvcn"
+          is_create_igw                    = false
+          is_attach_drg                    = false
+          block_nat_traffic                = false
+          
+          subnets = {
+            MY-SUBNET = {
+              cidr_block                 = "10.0.0.0/24"
+              display_name               = "dns-view-injection-subnet"
+              dns_label                  = "dnssubnet"
+              prohibit_internet_ingress  = true
+            }
+          }
+
+          dns_resolver = {
+            display_name = "custom-dns-resolver"
+            attached_views = {
+              DNS-VIEW-1 = {
+                existing_view_id = "<REPLACE-BY-DNS-VIEW-OCID-OR-KEY>" # This is the injected DNS view. It can be either an OCID or a key within 'dns_private_views' attribute of 'network_dependency' variable (see commented out snippet down below).
+              }
+            }
+            rules = [
+              {
+                action                 = "FORWARD"
+                destination_address    = ["10.0.2.128"]
+                source_endpoint_name   = "CUSTOM-RESOLVER-ENDPOINT"
+                qname_cover_conditions = ["internal.example.com"]
+
+              },
+              {
+                action                    = "FORWARD"
+                client_address_conditions = ["192.168.1.0/24"]
+                destination_address       = ["10.0.2.128"]
+                source_endpoint_name      = "CUSTOM-RESOLVER-ENDPOINT"
+
+              }
+            ]
+            resolver_endpoints = {
+              CUSTOM-RESOLVER-ENDPOINT = {
+                enpoint_type       = "VNIC"
+                is_forwarding      = "true"
+                is_listening       = "false"
+                forwarding_address = "10.0.0.32"
+                name               = "custom_resolver_endpoint"
+                subnet             = "MY-SUBNET"
+              }
+            }
+            tsig_keys = {
+              MY-TSIG = {
+                algorithm = "hmac-sha1"
+                name      = "my-tsig"
+                secret    = "welcome1"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/*
+network_dependency = {
+  dns_private_views = {
+    EXTERNALLY-MANAGED-VIEW = {
+      id = "ocid1.dnsview.oc1.....snhq"
+    }   
+  }
+}
+*/

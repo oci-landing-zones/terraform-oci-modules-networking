@@ -1,0 +1,124 @@
+# Copyright (c) 2024, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+tenancy_ocid         = "<REPLACE-BY-TENANCY-OCID>"
+user_ocid            = "<REPLACE-BY-USER-OCID>"
+fingerprint          = "<REPLACE-BY-USER-FINGERPRINT>"
+private_key_path     = "<REPLACE-BY-PATH-TO-USER-PRIVATE-KEY-FILE>"
+private_key_password = ""
+region               = "<REPLACE-BY-REGION-NAME>"
+
+network_configuration = {
+  default_compartment_id           = "<REPLACE-BY-COMPARTMENT-OCID>"
+  network_configuration_categories = {
+    FIREWALL = {
+      vcns = {
+        FIREWALL-VCN = {
+          display_name                     = "firewall-vcn"
+          is_ipv6enabled                   = false
+          is_oracle_gua_allocation_enabled = false
+          cidr_blocks                      = ["192.168.0.0/24"],
+          dns_label                        = "firewallvcn"
+          is_create_igw                    = false
+          is_attach_drg                    = false
+          block_nat_traffic                = false
+
+          subnets = {
+            FIREWALL-SUBNET = {
+              cidr_block                = "192.168.0.16/28"
+              display_name              = "firewall-subnet"
+              dns_label                 = "firewallsubnet"
+              ipv6cidr_blocks           = []
+              prohibit_internet_ingress = true
+            }
+          }
+        }
+      }
+      non_vcn_specific_gateways = {
+        network_firewalls_configuration = {
+          network_firewalls = {
+            NFW = {
+              display_name                = "nfw"
+              subnet_key                  = "FIREWALL-SUBNET"
+              ipv4address                 = "192.168.0.20"
+              network_firewall_policy_key = "NFW-POLICY"
+            }
+          }
+          network_firewall_policies = {
+            NFW-POLICY = {
+              display_name = "nfw-policy"
+              applications = {
+                ICMP = {
+                  name      = "ICMP"
+                  type      = "ICMP"
+                  icmp_type = 8
+                  icmp_code = 0
+                }
+              }
+              application_lists = {
+                ICMP-LIST = {
+                  name         = "ICMP-Application-List"
+                  applications = ["ICMP"]
+                }
+              }
+              services = {
+                SSH = {
+                  name         = "SSH"
+                  type         = "TCP_SERVICE"
+                  minimum_port = 22
+                  maximum_port = 22
+                }
+              }
+              service_lists = {
+                SSH-LIST = {
+                  name     = "SSH-Service-List"
+                  services = ["SSH"]
+                }
+              }
+              address_lists = {
+                ADDRESS-LIST-PERMIT = {
+                  name      = "IP-Address-List-Permit"
+                  type      = "IP"
+                  addresses = ["150.136.212.20/32"]
+                },
+                ADDRESS-LIST-DENY = {
+                  name      = "IP-Address-List-Deny"
+                  type      = "IP"
+                  addresses = ["192.9.241.52/32"]
+                },
+                ADDRESS-LIST-VCN-HOSTS = {
+                  name      = "IP-Address-List-VCN-Hosts"
+                  type      = "IP"
+                  addresses = ["192.168.0.10/32"]
+                }
+              }
+              security_rules = {
+                ICMP-PERMIT-RULE = {
+                  action                    = "ALLOW"
+                  name                      = "ICMP-Permit"
+                  application_lists         = ["ICMP-LIST"]
+                  source_address_lists      = ["ADDRESS-LIST-PERMIT"]
+                  destination_address_lists = ["ADDRESS-LIST-VCN-HOSTS"]
+                }
+                SSH-PERMIT-RULE = {
+                  action                    = "ALLOW"
+                  name                      = "SSH-Permit"
+                  servicen_lists            = ["SSH-LIST"]
+                  source_address_lists      = ["ADDRESS-LIST-PERMIT"]
+                  destination_address_lists = ["ADDRESS-LIST-VCN-HOSTS"]
+                }
+                DENY-RULE = {
+                  action                    = "DROP"
+                  name                      = "Deny"
+                  application_lists         = []
+                  source_address_lists      = ["ADDRESS-LIST-DENY"]
+                  destination_address_lists = ["ADDRESS-LIST-VCN-HOSTS"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

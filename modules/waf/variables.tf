@@ -13,7 +13,6 @@ variable "waf_configuration" {
     waf = map(object({
       display_name            = optional(string)
       defined_tags            = optional(map(string))
-      defined_tags            = optional(map(string))
       freeform_tags           = optional(map(string))
       backend_type            = string
       compartment_id          = optional(string)

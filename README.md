@@ -40,12 +40,12 @@ The separation of code and configuration supports DevOps key concepts for operat
 This repository is part of a broader collection of repositories containing modules that help customers align their OCI implementations with the CIS OCI Foundations Benchmark recommendations:
 <br />
 
-- [Identity & Access Management ](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-iam)
-- [Networking](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking) - current repository
-- [Governance](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-governance)
-- [Security](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-security)
-- [Observability & Monitoring](https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-observability)
-- [Secure Workloads](https://github.com/oracle-quickstart/terraform-oci-secure-workloads)
+- [Identity & Access Management ](https://github.com/oci-landing-zones/terraform-oci-modules-iam)
+- [Networking](https://github.com/oci-landing-zones/terraform-oci-modules-networking) - current repository
+- [Governance](https://github.com/oci-landing-zones/terraform-oci-modules-governance)
+- [Security](https://github.com/github.com/oci-landing-zones/terraform-oci-modules-security)
+- [Observability & Monitoring](https://github.com/oci-landing-zones/terraform-oci-modules-observability)
+- [Secure Workloads](https://github.com/oci-landing-zones/terraform-oci-modules-workloads)
 
 The modules in this collection are designed for flexibility, are straightforward to use, and enforce CIS OCI Foundations Benchmark recommendations when possible.
 <br />
@@ -83,32 +83,30 @@ module "terraform-oci-landing-zones-networking" {
 
 For invoking the module remotely, set the module *source* attribute to the networking module repository, as shown:
 ```
-module "terraform-oci-cis-landing-zone-networking" {
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking"
+module "terraform-oci-landing-zone-networking" {
+  source = "github.com/oci-landing-zones/terraform-oci-modules-networking"
   network_configuration = var.network_configuration
 }
 ```
 For referring to a specific module version, append *ref=\<version\>* to the *source* attribute value, as in:
 ```
-  source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking?ref=v0.1.0"
+  source = "github.com/oci-landing-zones/terraform-oci-modules-networking?ref=v0.1.0"
 ```
 
 ### <a name="with-orm">Using the Module with Resource Manager
 
 For an ad-hoc use where you can select your resources, follow these guidelines:
-1. [![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking/archive/refs/heads/main.zip)
+1. [![Deploy_To_OCI](images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oci-landing-zones/terraform-oci-modules-networking/archive/refs/heads/main.zip)
 2. Accept terms,  wait for the configuration to load. 
 3. Set the working directory to “orm-facade”. 
 4. Set the stack name you prefer.
-5. Set the terraform version to 1.2.x. Click Next. 
-6. Add your json/yaml configuration files. Click Next.
-8. Un-check run apply. Click Create.
+5. Add your JSON/YAML configuration files. Click Next.
+6. Un-check run apply. Click Create.
 
 ## <a name="functioning">Module Functioning
 
 The input parameters for the module can be divided into two categories, for which we recommend to create two different ```*.tfvars.*``` files:
-The input parameters for the module can be divided into two categories, for which we recommend to create two different ```*.tfvars.*``` files:
- 1. OCI REST API authentication information (secrets) - ```terraform.tfvars``` (HCL) or ```terraform.tfvars.json``` (JSON):
+1. OCI REST API authentication information (secrets) - ```terraform.tfvars``` (HCL) or ```terraform.tfvars.json``` (JSON):
     - ```tenancy_ocid```
     - ```user_ocid```
     - ```fingerprint```
@@ -283,7 +281,7 @@ Attributes that support a compartment referring key:
   - *compartment_id*
 
 #### network_dependency (Optional)
-A map of map of objects containing the externally managed network resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a client of this module. Within *network_dependency*, VCNs must be indexed with the **vcns** key, DRGs indexed with the **dynamic_routing_gateways** key, DRG attachments indexed with **drg_attachments** key, Local Peering Gateways (LPG) indexed with **local_peering_gateways**, Remote Peering Connections (RPC) indexed with **remote_peering_connections** key. Each VCN, DRG, DRG attachment, LPG and RPC must contain the *id* attribute (to which the actual OCID is assigned). RPCs must also pass the peer region name in the *region_name* attribute.
+A map of map of objects containing the externally managed network resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a client of this module. Within *network_dependency*, VCNs must be indexed with the **vcns** key, DRGs indexed with the **dynamic_routing_gateways** key, DRG attachments indexed with **drg_attachments** key, Local Peering Gateways (LPG) indexed with **local_peering_gateways**, Remote Peering Connections (RPC) indexed with **remote_peering_connections** key, DNS Private Views indexed by **dns_private_views**. Each VCN, DRG, DRG attachment, LPG, RPC and DNS Private View must contain the *id* attribute (to which the actual OCID is assigned). RPCs must also pass the peer region name in the *region_name* attribute.
 
 *network_dependency* example:
 ```
@@ -314,9 +312,14 @@ A map of map of objects containing the externally managed network resources this
       "region_name" : "us-ashburn-1"
     }
   }  
+  "dns_private_views" : {  
+    "XYZ-DNS-VIEW" : {
+      "id" : "ocid1.dnsview.oc1.phx.aaaaaaaa...nhq",
+    }
+  }
 } 
 ```
-**Note**: **vcns**, **dynamic_routing_gateways**, **drg_attachments**, **local_peering_gateways**, and **remote_peering_connections** attributes are all optional. They only become mandatory if the *network_configuration* refers to one of these resources through a referring key. Below are the attributes where a referring key is supported:
+**Note**: **vcns**, **dynamic_routing_gateways**, **drg_attachments**, **local_peering_gateways**, **remote_peering_connections** and **dns_private_views** attributes are all optional. They only become mandatory if the *network_configuration* refers to one of these resources through a referring key. Below are the attributes where a referring key is supported:
 
 *network_dependency* attribute | Attribute names in *network_configuration* where the referring key can be utilized
 --------------|-------------
@@ -325,6 +328,7 @@ A map of map of objects containing the externally managed network resources this
 **drg_attachments** | *drg_attachment_key*
 **local_peering_gateways** | *peer_key* in *local_peering_gateways*
 **remote_peering_connections** | *peer_key* in *remote_peering_connections*
+**dns_private_views** | *existing_view_id* in *dns_resolver's* *attached_views*.
 
 #### private_ips_dependency (Optional)
 A map of map of objects containing the externally managed private IP resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *private_ips_dependency* map. Each private IP must contain the **"id"** attribute (to which the actual OCID is assigned), as in the example below:
@@ -377,9 +381,6 @@ See [external-dependency example](./examples/external-dependency/) for a functio
    - [Fast Connect Examples](examples/edge-connectivity/fast-connect-examples/)
       - [Generic OCI Fast Connect Partner](examples/edge-connectivity/fast-connect-examples/generic-oci-fastconnect-partner/)
    - [IPSec VPN Examples](examples/edge-connectivity/ipsec-examples/)
-      - [Generic OCI IPSec BGP VPN](examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/)    
-- [Local Peering Gateways](examples/local-peering-gateways/)     
-- [Remote Peering Connections](examples/remote-peering-connections/)  
       - [Generic OCI IPSec BGP VPN](examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/)    
 - [Local Peering Gateways](examples/local-peering-gateways/)     
 - [Remote Peering Connections](examples/remote-peering-connections/)  
