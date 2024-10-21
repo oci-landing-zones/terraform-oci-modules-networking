@@ -222,6 +222,16 @@ variable "network_configuration" {
             icmp_code    = optional(number)
           })))
         })))
+
+        security = optional(object({
+          zpr_attributes = optional(list(object({
+            namespace = optional(string,"oracle-zpr")
+            attr_name = string
+            attr_value = string
+            mode = optional(string,"enforce")
+            })))
+        }))
+        
         dns_resolver = optional(object({
           display_name  = optional(string),
           defined_tags  = optional(map(string)),

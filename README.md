@@ -140,7 +140,22 @@ The ```network_configuration``` is a multidimensional complex object:
               - ```SERVICE_CIDR_BLOCK``` - only for SGW
       - ```dhcp_options```, 
       - ```subnets```, 
-      - ```network_security_groups``` and
+      - ```network_security_groups```,
+      - ```security```
+          - ```zpr_attributes``` - Zero-Packet-Routing attributes
+              - ```namespace``` - The security attribute namespace
+              - ```attr_name``` - Name of the security attribute key
+              - ```attr_value```- Security attribute value
+              - ```mode``` - Mode of security attribute
+            ```
+            security = {
+                zpr_attributes = [
+                  {namespace = "lz-zpr", attr_name = "network", attr_value = "prod"},
+                  {namespace = "lz-zpr", attr_name = "network", attr_value = "dev"}
+                ]
+            }
+            ```
+
       - ```vcn_specific_gateways``` like: 
         - ```internet_gateways```,
         - ```nat_gateways```,

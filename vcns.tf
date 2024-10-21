@@ -39,6 +39,7 @@ locals {
           subnets                          = vcn_value.subnets
           vcn_specific_gateways            = vcn_value.vcn_specific_gateways
           network_security_groups          = vcn_value.network_security_groups
+          security                         = vcn_value.security
           dns_resolver                     = vcn_value.dns_resolver
           route_tables                     = vcn_value.route_tables
           default_dhcp_options             = vcn_value.default_dhcp_options
@@ -52,7 +53,6 @@ locals {
       ] : [] : []
     ]) : flat_vcn.vcn_key => flat_vcn
   } : {} : {} : {}
-
 
   provisioned_vcns = {
     for vcn_key, vcn_value in oci_core_vcn.these : vcn_key => {
@@ -74,6 +74,7 @@ locals {
       is_ipv6enabled                   = vcn_value.is_ipv6enabled
       is_oracle_gua_allocation_enabled = vcn_value.is_oracle_gua_allocation_enabled
       state                            = vcn_value.state
+      security                         = vcn_value.security_attributes
       time_created                     = vcn_value.time_created
       timeouts                         = vcn_value.timeouts
       vcn_domain_name                  = vcn_value.vcn_domain_name
@@ -81,6 +82,23 @@ locals {
       network_configuration_category   = local.one_dimension_processed_vcns[vcn_key].network_configuration_category
     }
   }
+
+  vcn_security_attrs = local.one_dimension_processed_vcns != null ? {
+    for flat_security in flatten([
+      for vcn_key, vcn_value in local.one_dimension_processed_vcns : [
+        {
+          zpr_attributes = vcn_value.security != null ? vcn_value.security.zpr_attributes != null ? [
+            for zattr in vcn_value.security.zpr_attributes : {
+              namespace  = zattr.namespace
+              attr_name  = zattr.attr_name
+              attr_value = zattr.attr_value
+              mode       = zattr.mode
+          }] : [] : []
+          security_attr_key = vcn_key
+        }
+      ]
+    ]) : flat_security.security_attr_key => flat_security
+  } : null
 }
 
 # OCI RESOURCE
@@ -108,4 +126,10 @@ resource "oci_core_vcn" "these" {
   is_ipv6enabled          = each.value.is_ipv6enabled
   # is_oracle_gua_allocation_enabled = each.value.is_oracle_gua_allocation_enabled
   # 400-InvalidParameter, The parameter isOracleGuaAllocationEnabled can only be used with IPv6 enabled Vcn.
+  security_attributes     = merge([
+                              for z, v in local.vcn_security_attrs[each.value.vcn_key].zpr_attributes : {
+                                  "${v.namespace}.${v.attr_name}.value" : v.attr_value
+                                  "${v.namespace}.${v.attr_name}.mode"  : v.mode
+                              }
+                            ]...)
 }
