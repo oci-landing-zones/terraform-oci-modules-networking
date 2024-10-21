@@ -150,8 +150,7 @@ The ```network_configuration``` is a multidimensional complex object:
             ```
             security = {
                 zpr_attributes = [
-                  {namespace = "lz-zpr", attr_name = "network", attr_value = "prod"},
-                  {namespace = "lz-zpr", attr_name = "network", attr_value = "dev"}
+                  {namespace = "lz-zpr", attr_name = "network", attr_value = "prod"}
                 ]
             }
             ```
