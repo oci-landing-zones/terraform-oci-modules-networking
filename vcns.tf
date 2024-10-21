@@ -132,4 +132,12 @@ resource "oci_core_vcn" "these" {
                                   "${v.namespace}.${v.attr_name}.mode"  : v.mode
                               }
                             ]...)
+
+lifecycle {
+  ## VALIDATION ZPR attributes - check for duplicates
+  precondition {
+          condition = try(each.value.security.zpr_attributes,null) != null ?  length(toset([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}"])) ==  length([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}"]): true
+          error_message = try(each.value.security.zpr_attributes,null) != null ? "VALIDATION FAILURE in VCN \"${each.key}\": ZPR security attribute assigned more than once. \"security.zpr-attributes.namespace/security.zpr-attributes.attr_name\" pairs must be unique." : "__void__"
+        }
+  }
 }
