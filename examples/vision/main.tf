@@ -5,4 +5,5 @@ module "vision_network" {
   #source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking?ref=release-0.6.5"
   source = "../../"
   network_configuration = var.network_configuration
+  tenancy_ocid = var.tenancy_ocid
 }
