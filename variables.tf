@@ -1310,4 +1310,5 @@ variable "private_ips_dependency" {
 
 variable "tenancy_ocid" {
   description = "The tenancy OCID"
+  default = null
 }
