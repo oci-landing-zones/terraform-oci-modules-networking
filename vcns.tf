@@ -122,8 +122,10 @@ resource "oci_core_vcn" "these" {
       error_message = try(each.value.security.zpr_attributes, null) != null ? "VALIDATION FAILURE in VCN \"${each.key}\": ZPR security attribute assigned more than once. \"security.zpr_attributes.namespace/security.zpr_attributes.attr_name\" pairs must be unique." : "__void__"
     }
     precondition { ## VALIDATION ZPR attributes - check for existing security namespace and attribute
-      condition     = try(each.value.security.zpr_attributes, null) != null ? alltrue([for a in each.value.security.zpr_attributes : length(try(lookup(local.secattr_list_by_name, "${a.namespace}.${a.attr_name}"), "")) > 0]) : true
-      error_message = try(each.value.security.zpr_attributes, null) != null ? "VALIDATION FAILURE in VCN \"${each.key}\": The security attribute \"security.zpr_attributes.namespace/security.zpr_attributes.attr_name\" does not exist" : "__void__"
+      condition     = try(each.value.security.zpr_attributes, null) != null ? length(setsubtract(toset([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}"]), (toset(local.secattr_list_by_name)))) == 0 : true
+      error_message = try(each.value.security.zpr_attributes, null) != null ? "VALIDATION FAILURE in VCN \"${each.key}\": Security attribute(s) not found: ${local.missing_secattrs[each.key].missing_ns_attr_names[0]}" : "__void__"
     }
   }
 }
+
+# setsubtract(toset([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}"]), (toset(local.secattr_list_by_name)))
