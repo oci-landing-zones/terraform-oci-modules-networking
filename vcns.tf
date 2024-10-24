@@ -82,6 +82,58 @@ locals {
       network_configuration_category   = local.one_dimension_processed_vcns[vcn_key].network_configuration_category
     }
   }
+
+ #------------------------------
+  # ZPR Security Attributes
+#------------------------------
+  vcn_security_attrs = local.one_dimension_processed_vcns != null ? {
+    for flat_security in flatten([
+      for vcn_key, vcn_value in local.one_dimension_processed_vcns : [
+        {
+          zpr_attributes = vcn_value.security != null ? vcn_value.security.zpr_attributes != null ? [
+            for zattr in vcn_value.security.zpr_attributes : {
+              namespace  = zattr.namespace
+              attr_name  = zattr.attr_name
+              attr_value = zattr.attr_value
+              mode       = zattr.mode
+          }] : [] : []
+          security_attr_key = vcn_key
+        }
+      ]
+    ]) : flat_security.security_attr_key => flat_security
+  } : null
+
+  zpr_existing_namespaces = length(data.oci_security_attribute_security_attribute_namespaces.these) > 0 ? [for n in data.oci_security_attribute_security_attribute_namespaces.these.security_attribute_namespaces : n.name] : []
+
+  zpr_existing_attributes = flatten([
+    for n in data.oci_security_attribute_security_attribute_namespaces.these.security_attribute_namespaces : [
+      for a in data.oci_security_attribute_security_attributes.these[n.id].security_attributes : "${a.security_attribute_namespace_name}.${a.name}"
+    ]
+  ])
+}
+
+#------------------------------
+# ZPR namespaces data source
+#------------------------------
+data "oci_security_attribute_security_attribute_namespaces" "these" {
+  compartment_id            = var.tenancy_ocid
+  compartment_id_in_subtree = true
+  filter {
+    name   = "state"
+    values = ["ACTIVE"]
+  }
+}
+
+#------------------------------
+# ZPR attributes data source
+#------------------------------
+data "oci_security_attribute_security_attributes" "these" {
+  for_each                        = length(data.oci_security_attribute_security_attribute_namespaces.these) > 0 ? { for n in data.oci_security_attribute_security_attribute_namespaces.these.security_attribute_namespaces : n.id => n.name } : {}
+  security_attribute_namespace_id = each.key
+  filter {
+    name   = "state"
+    values = ["ACTIVE"]
+  }
 }
 
 # OCI RESOURCE
@@ -117,15 +169,20 @@ resource "oci_core_vcn" "these" {
   ]...)
 
   lifecycle {
-    precondition { ## VALIDATION ZPR attributes - check for duplicates
+    ## VALIDATION ZPR attributes - check for duplicates
+    precondition {
       condition     = try(each.value.security.zpr_attributes, null) != null ? length(toset([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}"])) == length([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}"]) : true
       error_message = try(each.value.security.zpr_attributes, null) != null ? "VALIDATION FAILURE in VCN \"${each.key}\": ZPR security attribute assigned more than once. \"security.zpr_attributes.namespace/security.zpr_attributes.attr_name\" pairs must be unique." : "__void__"
     }
-    precondition { ## VALIDATION ZPR attributes - check for existing security namespace and attribute
-      condition     = try(each.value.security.zpr_attributes, null) != null ? length(setsubtract(toset([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}"]), (toset(local.secattr_list_by_name)))) == 0 : true
-      error_message = try(each.value.security.zpr_attributes, null) != null ? "VALIDATION FAILURE in VCN \"${each.key}\": Security attribute(s) not found: ${local.missing_secattrs[each.key].missing_ns_attr_names[0]}" : "__void__"
+    # VALIDATION ZPR attributes - check ZPR non-existing namespaces
+    precondition {
+      condition = try(each.value.security.zpr_attributes,null) != null ? length([for a in each.value.security.zpr_attributes : a.namespace if contains(local.zpr_existing_namespaces,a.namespace)]) == length(each.value.security.zpr_attributes) : true
+      error_message = try(each.value.security.zpr_attributes,null) != null ? "VALIDATION FAILURE in instance \"${each.key}\" for \"security.zpr-attributes\" attribute: ZPR namespace(s) ${join(", ",[for a in each.value.security.zpr_attributes : "\"${a.namespace}\"" if !contains(local.zpr_existing_namespaces,a.namespace)])} is undefined in ZPR." : "__void__"
+    }
+    ## VALIDATION ZPR attributes - check for existing security attribute
+    precondition {
+      condition = try(each.value.security.zpr_attributes,null) != null ? length([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}" if contains(local.zpr_existing_attributes,"${a.namespace}.${a.attr_name}")]) == length(each.value.security.zpr_attributes) : true
+      error_message = try(each.value.security.zpr_attributes,null) != null ? "VALIDATION FAILURE in instance \"${each.key}\" for \"security.zpr-attributes\" attribute: ${join(", ",[for a in each.value.security.zpr_attributes : "ZPR attribute \"${a.attr_name}\" is undefined in namespace \"${a.namespace}\"" if !contains(local.zpr_existing_attributes,"${a.namespace}.${a.attr_name}")])}." : "__void__"
     }
   }
 }
-
-# setsubtract(toset([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}"]), (toset(local.secattr_list_by_name)))
