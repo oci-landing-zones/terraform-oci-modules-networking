@@ -83,9 +83,9 @@ locals {
     }
   }
 
- #------------------------------
+  #------------------------------
   # ZPR Security Attributes
-#------------------------------
+  #------------------------------
   vcn_security_attrs = local.one_dimension_processed_vcns != null ? {
     for flat_security in flatten([
       for vcn_key, vcn_value in local.one_dimension_processed_vcns : [
@@ -174,15 +174,15 @@ resource "oci_core_vcn" "these" {
       condition     = try(each.value.security.zpr_attributes, null) != null ? length(toset([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}"])) == length([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}"]) : true
       error_message = try(each.value.security.zpr_attributes, null) != null ? "VALIDATION FAILURE in VCN \"${each.key}\": ZPR security attribute assigned more than once. \"security.zpr_attributes.namespace/security.zpr_attributes.attr_name\" pairs must be unique." : "__void__"
     }
-    # VALIDATION ZPR attributes - check ZPR non-existing namespaces
+    ## VALIDATION ZPR attributes - check ZPR non-existing namespaces
     precondition {
-      condition = try(each.value.security.zpr_attributes,null) != null ? length([for a in each.value.security.zpr_attributes : a.namespace if contains(local.zpr_existing_namespaces,a.namespace)]) == length(each.value.security.zpr_attributes) : true
-      error_message = try(each.value.security.zpr_attributes,null) != null ? "VALIDATION FAILURE in instance \"${each.key}\" for \"security.zpr-attributes\" attribute: ZPR namespace(s) ${join(", ",[for a in each.value.security.zpr_attributes : "\"${a.namespace}\"" if !contains(local.zpr_existing_namespaces,a.namespace)])} is undefined in ZPR." : "__void__"
+      condition     = try(each.value.security.zpr_attributes, null) != null ? length([for a in each.value.security.zpr_attributes : a.namespace if contains(local.zpr_existing_namespaces, a.namespace)]) == length(each.value.security.zpr_attributes) : true
+      error_message = try(each.value.security.zpr_attributes, null) != null ? "VALIDATION FAILURE in instance \"${each.key}\" for \"security.zpr-attributes\" attribute: ZPR namespace(s) ${join(", ", [for a in each.value.security.zpr_attributes : "\"${a.namespace}\"" if !contains(local.zpr_existing_namespaces, a.namespace)])} is undefined in ZPR." : "__void__"
     }
-    ## VALIDATION ZPR attributes - check for existing security attribute
+    ## VALIDATION ZPR attributes - check ZPR non-existing attributes
     precondition {
-      condition = try(each.value.security.zpr_attributes,null) != null ? length([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}" if contains(local.zpr_existing_attributes,"${a.namespace}.${a.attr_name}")]) == length(each.value.security.zpr_attributes) : true
-      error_message = try(each.value.security.zpr_attributes,null) != null ? "VALIDATION FAILURE in instance \"${each.key}\" for \"security.zpr-attributes\" attribute: ${join(", ",[for a in each.value.security.zpr_attributes : "ZPR attribute \"${a.attr_name}\" is undefined in namespace \"${a.namespace}\"" if !contains(local.zpr_existing_attributes,"${a.namespace}.${a.attr_name}")])}." : "__void__"
+      condition     = try(each.value.security.zpr_attributes, null) != null ? length([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}" if contains(local.zpr_existing_attributes, "${a.namespace}.${a.attr_name}")]) == length(each.value.security.zpr_attributes) : true
+      error_message = try(each.value.security.zpr_attributes, null) != null ? "VALIDATION FAILURE in instance \"${each.key}\" for \"security.zpr-attributes\" attribute: ${join(", ", [for a in each.value.security.zpr_attributes : "ZPR attribute \"${a.attr_name}\" is undefined in namespace \"${a.namespace}\"" if !contains(local.zpr_existing_attributes, "${a.namespace}.${a.attr_name}")])}." : "__void__"
     }
   }
 }
