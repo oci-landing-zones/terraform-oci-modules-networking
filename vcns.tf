@@ -157,7 +157,7 @@ data "oci_security_attribute_security_attributes" "these" {
   }
 }
 
-## data source comes back oci_security_attribute_security_attributes empty validator list - pull attribute key list of values elsewhere 
+## empty validator list from oci_security_attribute_security_attributes datasource - pull key value list elsewhere by attribute
 data "oci_security_attribute_security_attribute" "these" {
   for_each = local.zpr_existing_attribute_keys
   security_attribute_name = each.key
