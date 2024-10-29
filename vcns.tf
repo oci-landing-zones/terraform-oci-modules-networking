@@ -111,20 +111,22 @@ locals {
     ]
   ])
 
-  zpr_existing_attribute_keys = merge([ for item in {
-      for n in data.oci_security_attribute_security_attributes.these : n.security_attribute_namespace_id => {
-        for a in data.oci_security_attribute_security_attributes.these[n.security_attribute_namespace_id].security_attributes : a.name => a.security_attribute_namespace_id
-      }
-    } : item ]...)
+  zpr_existing_attribute_keys = merge([for item in {
+    for n in data.oci_security_attribute_security_attributes.these : n.security_attribute_namespace_id => {
+      for a in data.oci_security_attribute_security_attributes.these[n.security_attribute_namespace_id].security_attributes : "${a.security_attribute_namespace_name}.${a.name}" => {
+        attr_name = a.name
+      namespace_id = a.security_attribute_namespace_id }
+    }
+  } : item]...)
 
   zpr_existing_attribute_key_values = merge([for item in {
-    for n in data.oci_security_attribute_security_attribute.these : n.security_attribute_name => {
-      for val in data.oci_security_attribute_security_attribute.these[n.security_attribute_name].validator : n.name => {
-        type = val.validator_type
+    for n in data.oci_security_attribute_security_attribute.these : "${n.security_attribute_namespace_name}.${n.security_attribute_name}" => {
+      for val in data.oci_security_attribute_security_attribute.these["${n.security_attribute_namespace_name}.${n.security_attribute_name}"].validator : "${n.security_attribute_namespace_name}.${n.name}" => {
+        type   = val.validator_type
         values = toset(val.values)
-        }
       }
-    } : item ]...)
+    }
+  } : item]...)
 }
 
 #------------------------------
@@ -135,9 +137,9 @@ data "oci_security_attribute_security_attribute_namespaces" "these" {
   compartment_id_in_subtree = true
   lifecycle {
     precondition {
-        condition = var.tenancy_ocid != null
-        error_message = "VALIDATION FAILURE: variable \"tenancy_ocid\" is required when applying security attribute to VCN."
-      }
+      condition     = var.tenancy_ocid != null
+      error_message = "VALIDATION FAILURE: variable \"tenancy_ocid\" is required when applying security attribute to VCN."
+    }
   }
   filter {
     name   = "state"
@@ -159,9 +161,9 @@ data "oci_security_attribute_security_attributes" "these" {
 
 ## empty validator list from oci_security_attribute_security_attributes datasource - pull key value list elsewhere by attribute
 data "oci_security_attribute_security_attribute" "these" {
-  for_each = local.zpr_existing_attribute_keys
-  security_attribute_name = each.key
-  security_attribute_namespace_id = each.value
+  for_each                        = local.zpr_existing_attribute_keys
+  security_attribute_name         = each.value.attr_name
+  security_attribute_namespace_id = each.value.namespace_id
 }
 
 # OCI RESOURCE
@@ -214,8 +216,8 @@ resource "oci_core_vcn" "these" {
     }
     ## VALIDATION ZPR attributes - check ZPR non-existing value from attributes defined list of values
     precondition {
-      condition = try(each.value.security.zpr_attributes, null) != null ? length([for a in each.value.security.zpr_attributes : "${a.attr_value}" if contains(try(local.zpr_existing_attribute_key_values[a.attr_name].values, []), "${a.attr_value}")]) == length([for a in each.value.security.zpr_attributes : "${a.attr_value}" if try(local.zpr_existing_attribute_key_values[a.attr_name].type, []) == "ENUM" ]) : true
-      error_message = try(each.value.security.zpr_attributes, null) != null ? "VALIDATION FAILURE in VCN \"${each.key}\" for \"security.zpr-attributes\" attribute: ${join(", ", [for a in each.value.security.zpr_attributes : "ZPR attribute value \"${a.attr_value}\" is undefined. Value must exist in the pre-defined list of values for key \"${a.attr_name}\" in namespace \"${a.namespace}\"" if !contains(try(local.zpr_existing_attribute_key_values[a.attr_name].values, []), "${a.attr_value}")])}." : "__void__"
+      condition     = try(each.value.security.zpr_attributes, null) != null ? length([for a in each.value.security.zpr_attributes : "${a.attr_value}" if contains(try(local.zpr_existing_attribute_key_values["${a.namespace}.${a.attr_name}"].values, []), "${a.attr_value}")]) == length([for a in each.value.security.zpr_attributes : "${a.attr_value}" if try(local.zpr_existing_attribute_key_values["${a.namespace}.${a.attr_name}"].type, []) == "ENUM"]) : true
+      error_message = try(each.value.security.zpr_attributes, null) != null ? "VALIDATION FAILURE in VCN \"${each.key}\" for \"security.zpr-attributes\" attribute: ${join(", ", [for a in each.value.security.zpr_attributes : "ZPR attribute value \"${a.attr_value}\" is undefined. Value must exist in the pre-defined list of values for key \"${a.attr_name}\" in namespace \"${a.namespace}\"" if try(local.zpr_existing_attribute_key_values["${a.namespace}.${a.attr_name}"].type, []) == "ENUM" && !contains(try(local.zpr_existing_attribute_key_values["${a.namespace}.${a.attr_name}"].values, []), "${a.attr_value}")])}." : "__void__"
     }
   }
 }
