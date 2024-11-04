@@ -1,3 +1,9 @@
+# November 04, 2024 Release Notes - 0.7.1
+
+## Updates
+1. ZPR (Zero Trust Packet Routing) security attributes can now be applied to VCNs. See *zpr_attributes* attribute under [Module Functioning](./README.md#functioning) for details.
+    - Provided ZPR namespaces, keys and values are checked at plan time for valid values.
+
 # September 20, 2024 Release Notes - 0.7.0
 
 ## Updates

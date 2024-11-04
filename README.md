@@ -4,8 +4,6 @@
 
 Welcome to the [OCI Landing Zones (OLZ) Community](https://github.com/oci-landing-zones)! 
 
-OCI Landing Zones simplify onboarding and running on OCI by providing design guidance, best practices, and pre-configured Terraform deployment templates for various architectures and use cases. These enable customers to easily provision a secure tenancy foundation in the cloud along with all required services, and reliably scale as workloads expand.
-
 The **OCI Landing Zones Networking** module is a Terraform networking core module that facilitates, in an optional fashion, the provisioning of a CIS compliant network topology for the entire topology or for specific areas of the topology.
 
 It aims to facilitate the provisioning of any OCI networking topology, covering the internal OCI networking, entirely, and the edge networking, partially.
@@ -106,7 +104,7 @@ For an ad-hoc use where you can select your resources, follow these guidelines:
 ## <a name="functioning">Module Functioning
 
 The input parameters for the module can be divided into two categories, for which we recommend to create two different ```*.tfvars.*``` files:
-1. OCI REST API authentication information (secrets) - ```terraform.tfvars``` (HCL) or ```terraform.tfvars.json``` (JSON):
+ 1. OCI REST API authentication information (secrets) - ```terraform.tfvars``` (HCL) or ```terraform.tfvars.json``` (JSON):
     - ```tenancy_ocid```
     - ```user_ocid```
     - ```fingerprint```
@@ -118,7 +116,6 @@ The input parameters for the module can be divided into two categories, for whic
 The ```network_configuration``` complex type can accept any new networking topology together or separated with injecting resources into existing networking topologies, and all those can map on any compartments topology.
 
 The ```network_configuration``` complex type fully supports optional attributes as long as they do not break any dependency imposed by OCI.
-
 
 The ```network_configuration``` is a multidimensional complex object:
 - ```default_compartment_id``` holds the compartment id that will be used if no compartment id has been set at the specific resource or category (see ```network_configuration_categories``` for details) level. 
@@ -142,7 +139,21 @@ The ```network_configuration``` is a multidimensional complex object:
               - ```SERVICE_CIDR_BLOCK``` - only for SGW
       - ```dhcp_options```, 
       - ```subnets```, 
-      - ```network_security_groups``` and
+      - ```network_security_groups```,
+      - ```security```
+          - ```zpr_attributes``` - Zero-Packet-Routing attributes
+              - ```namespace``` - The security attribute namespace
+              - ```attr_name``` - Name of the security attribute key
+              - ```attr_value```- Security attribute value
+              - ```mode``` - Mode of security attribute
+            ```
+            security = {
+                zpr_attributes = [
+                  {namespace = "lz-zpr", attr_name = "network", attr_value = "prod"}
+                ]
+            }
+            ```
+
       - ```vcn_specific_gateways``` like: 
         - ```internet_gateways```,
         - ```nat_gateways```,
