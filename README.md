@@ -117,7 +117,6 @@ The ```network_configuration``` complex type can accept any new networking topol
 
 The ```network_configuration``` complex type fully supports optional attributes as long as they do not break any dependency imposed by OCI.
 
-
 The ```network_configuration``` is a multidimensional complex object:
 - ```default_compartment_id``` holds the compartment id that will be used if no compartment id has been set at the specific resource or category (see ```network_configuration_categories``` for details) level. 
 - ```default_defined_tags``` and ```default_freeform_tags```  hold the defined_tags and freeform_tags to be used if no specific defined_tags and freeform_tags have been set at the resource or category* level. Those will be merged with the values provided at their higher levels, including the highest level: ```default_defined_tags``` and ```default_freeform_tags```.
@@ -140,7 +139,21 @@ The ```network_configuration``` is a multidimensional complex object:
               - ```SERVICE_CIDR_BLOCK``` - only for SGW
       - ```dhcp_options```, 
       - ```subnets```, 
-      - ```network_security_groups``` and
+      - ```network_security_groups```,
+      - ```security```
+          - ```zpr_attributes``` - Zero-Packet-Routing attributes
+              - ```namespace``` - The security attribute namespace
+              - ```attr_name``` - Name of the security attribute key
+              - ```attr_value```- Security attribute value
+              - ```mode``` - Mode of security attribute
+            ```
+            security = {
+                zpr_attributes = [
+                  {namespace = "lz-zpr", attr_name = "network", attr_value = "prod"}
+                ]
+            }
+            ```
+
       - ```vcn_specific_gateways``` like: 
         - ```internet_gateways```,
         - ```nat_gateways```,

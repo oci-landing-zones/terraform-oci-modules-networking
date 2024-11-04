@@ -36,6 +36,11 @@ network_configuration = {
           cidr_blocks                      = ["10.0.0.0/25"],
           dns_label                        = "visionvcn"
           block_nat_traffic                = false
+          security = {
+            zpr_attributes = [
+              { namespace = "oracle-zpr", attr_name = "network", attr_value = "prod" }
+            ]
+          }
 
           subnets = {
             WEB-SUBNET = {
