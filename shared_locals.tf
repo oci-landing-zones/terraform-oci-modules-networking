@@ -139,6 +139,7 @@ locals {
           default_security_list          = vcn_value.default_security_list
           security_lists                 = vcn_value.security_lists
           subnets                        = vcn_value.subnets
+          dns_resolver                   = vcn_value.dns_resolver
           network_security_groups        = vcn_value.network_security_groups
           route_tables                   = vcn_value.route_tables
           default_dhcp_options           = vcn_value.default_dhcp_options
