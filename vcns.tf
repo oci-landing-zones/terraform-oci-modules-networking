@@ -133,7 +133,7 @@ locals {
 # ZPR namespaces data source
 #------------------------------
 data "oci_security_attribute_security_attribute_namespaces" "these" {
-  count                     = length([for k, v in local.one_dimension_processed_vcns : k if try(v.security.zpr_attributes, null) != null]) > 0 ? 1 : 0
+  count                     = length([for k, v in local.one_dimension_processed_vcns : k if try(v.security.zpr_attributes, null) != null && v.security != null ? length(try(v.security.zpr_attributes, [])) > 0 : length({}) > 0]) > 0 ? 1 : 0
   compartment_id            = var.tenancy_ocid
   compartment_id_in_subtree = true
   lifecycle {
