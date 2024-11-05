@@ -1,8 +1,8 @@
-<!-- BEGIN_TF_DOCS -->
 # OCI Landing Zones Networking Module
 
 ![Landing Zone logo](./images/landing_zone_300.png)
 
+Welcome to the [OCI Landing Zones (OLZ) Community](https://github.com/oci-landing-zones)! 
 
 The **OCI Landing Zones Networking** module is a Terraform networking core module that facilitates, in an optional fashion, the provisioning of a CIS compliant network topology for the entire topology or for specific areas of the topology.
 
