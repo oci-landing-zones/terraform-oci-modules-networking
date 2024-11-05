@@ -103,13 +103,13 @@ locals {
     ]) : flat_security.security_attr_key => flat_security
   } : null
 
-  zpr_existing_namespaces = length(data.oci_security_attribute_security_attribute_namespaces.these) > 0 ? [for n in data.oci_security_attribute_security_attribute_namespaces.these.security_attribute_namespaces : n.name] : []
+  zpr_existing_namespaces = length(data.oci_security_attribute_security_attribute_namespaces.these) > 0 ? [for n in data.oci_security_attribute_security_attribute_namespaces.these[0].security_attribute_namespaces : n.name] : []
 
-  zpr_existing_attributes = flatten([
-    for n in data.oci_security_attribute_security_attribute_namespaces.these.security_attribute_namespaces : [
+  zpr_existing_attributes = length(data.oci_security_attribute_security_attribute_namespaces.these) > 0 ? flatten([
+    for n in data.oci_security_attribute_security_attribute_namespaces.these[0].security_attribute_namespaces : [
       for a in data.oci_security_attribute_security_attributes.these[n.id].security_attributes : "${a.security_attribute_namespace_name}.${a.name}"
     ]
-  ])
+  ]) : []
 
   zpr_existing_attribute_keys = merge([for item in {
     for n in data.oci_security_attribute_security_attributes.these : n.security_attribute_namespace_id => {
@@ -133,6 +133,7 @@ locals {
 # ZPR namespaces data source
 #------------------------------
 data "oci_security_attribute_security_attribute_namespaces" "these" {
+  count                     = length([for k, v in local.one_dimension_processed_vcns : k if try(v.security.zpr_attributes, null) != null && v.security != null ? length(try(v.security.zpr_attributes, [])) > 0 : length({}) > 0]) > 0 ? 1 : 0
   compartment_id            = var.tenancy_ocid
   compartment_id_in_subtree = true
   lifecycle {
@@ -151,7 +152,7 @@ data "oci_security_attribute_security_attribute_namespaces" "these" {
 # ZPR attributes data source
 #------------------------------
 data "oci_security_attribute_security_attributes" "these" {
-  for_each                        = length(data.oci_security_attribute_security_attribute_namespaces.these) > 0 ? { for n in data.oci_security_attribute_security_attribute_namespaces.these.security_attribute_namespaces : n.id => n.name } : {}
+  for_each                        = length(data.oci_security_attribute_security_attribute_namespaces.these) > 0 ? { for n in data.oci_security_attribute_security_attribute_namespaces.these[0].security_attribute_namespaces : n.id => n.name } : {}
   security_attribute_namespace_id = each.key
   filter {
     name   = "state"
