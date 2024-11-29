@@ -1,3 +1,11 @@
+# December 03, 2024 Release Notes - 0.7.2
+
+## Updates
+1. ZPR (Zero Trust Packet Routing) security attributes can now be applied to Network Load Balancers. See *zpr_attributes* attribute in [example template](./modules/nlb/examples/vision/input.auto.tfvars.template) for details.
+2. Redundant *dns_resolver* attribute removed from *network_configuration.vcns* attribute.
+3. Attribute *vcn_route_type* added to *oci_core_drg_attachment* resource.
+
+
 # November 04, 2024 Release Notes - 0.7.1
 
 ## Updates
