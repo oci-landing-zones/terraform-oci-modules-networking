@@ -222,6 +222,116 @@ variable "network_configuration" {
             icmp_code    = optional(number)
           })))
         })))
+        dns_resolver = optional(object({
+          display_name  = optional(string),
+          defined_tags  = optional(map(string)),
+          freeform_tags = optional(map(string)),
+          attached_views = optional(map(object({
+            existing_view_id = optional(string) # an existing externally managed view. Assign either this attribute or the others for having this module managing the view.
+            compartment_id = optional(string),
+            display_name   = optional(string),
+            defined_tags   = optional(map(string)),
+            freeform_tags  = optional(map(string)),
+            dns_zones = optional(map(object({
+              compartment_id = optional(string),
+              name           = optional(string),
+              defined_tags   = optional(map(string)),
+              freeform_tags  = optional(map(string)),
+              scope          = optional(string),
+              zone_type      = optional(string),
+              external_downstreams = optional(list(object({
+                address  = optional(string),
+                ports    = optional(string),
+                tsig_key = optional(string),
+              }))),
+              external_masters = optional(list(object({
+                address  = optional(string),
+                port     = optional(string),
+                tsig_key = optional(string),
+              }))),
+              dns_records = optional(map(object({
+                domain         = optional(string),
+                compartment_id = optional(string),
+                rtype          = optional(string),
+                rdata          = optional(string),
+                ttl            = optional(number),
+              })))
+              dns_rrset = optional(map(object({
+                compartment_id = optional(string)
+                domain = optional(string),
+                rtype  = optional(string),
+                scope  = optional(string),
+                items = optional(list(object({
+                  domain = optional(string),
+                  rdata  = optional(string),
+                  rtype  = optional(string),
+                  ttl    = optional(string),
+                })))
+              })))
+              dns_steering_policies = optional(map(object({
+                compartment_id = optional(string),
+                domain_name    = optional(string),
+                display_name   = optional(string),
+                template       = optional(string),
+                answers = optional(list(object({
+                  name        = optional(string),
+                  rdata       = optional(string),
+                  rtype       = optional(string),
+                  is_disabled = optional(bool),
+                  pool        = optional(string),
+                }))),
+                defined_tags            = optional(map(string)),
+                freeform_tags           = optional(map(string)),
+                health_check_monitor_id = optional(string)
+                rules = optional(list(object({
+                  rule_type = optional(string)
+                  cases = optional(list(object({
+                    answer_data = optional(object({
+                      answer_condition = optional(string)
+                      should_keep      = optional(string)
+                      value            = optional(string)
+                    })),
+                    case_condition = optional(string),
+                    count          = optional(number)
+                  }))),
+                  default_answer_data = optional(object({
+                    answer_condition = optional(string),
+                    should_keep      = optional(bool),
+                    value            = optional(string),
+                  })),
+                  default_count = optional(number),
+                  description   = optional(string),
+                }))),
+                ttl = optional(string),
+              }))),
+            }))),
+          }))),
+          rules = optional(list(object({
+            action                    = optional(string),
+            destination_address       = optional(list(string)),
+            source_endpoint_name      = optional(string),
+            client_address_conditions = optional(list(string)),
+            qname_cover_conditions    = optional(list(string)),
+          }))),
+          resolver_endpoints = optional(map(object({
+            name               = optional(string),
+            is_forwarding      = optional(string),
+            is_listening       = optional(string),
+            subnet             = optional(string),
+            endpoint_type      = optional(string),
+            forwarding_address = optional(string),
+            listening_address  = optional(string),
+            nsg                = optional(list(string)),
+          }))),
+          tsig_keys = optional(map(object({
+            compartment_id = optional(string),
+            algorithm      = optional(string),
+            name           = optional(string),
+            secret         = optional(string),
+            defined_tags   = optional(map(string)),
+            freeform_tags  = optional(map(string)),
+          }))),
+        }))
 
         security = optional(object({
           zpr_attributes = optional(list(object({
@@ -231,7 +341,7 @@ variable "network_configuration" {
             mode = optional(string,"enforce")
             })))
         }))
-        
+
         vcn_specific_gateways = optional(object({
           internet_gateways = optional(map(object({
             compartment_id  = optional(string),
@@ -912,12 +1022,22 @@ variable "network_configuration" {
             defined_tags   = optional(map(string)),
             display_name   = optional(string),
             freeform_tags  = optional(map(string)),
+            services = optional(map(object({
+              name = string
+              type = optional(string) # Valid values: "TCP_SERVICE" or "UDP_SERVICE"
+              minimum_port = number
+              maximum_port = optional(number)
+            })))
+            service_lists = optional(map(object({
+              name     = string
+              services = list(string)
+            })))
             applications = optional(map(object({
               name      = string,
               type      = string,
-              icmp_type = string,
-              icmp_code = optional(string),
-            }))),
+              icmp_type = number,
+              icmp_code = optional(number),
+            })))
             application_lists = optional(map(object({
               name = string,
               applications = list(string)
@@ -954,7 +1074,7 @@ variable "network_configuration" {
               name = string,
               type = string, # Valid values: "FQND", "IP"
               addresses = list(string)
-            }))),
+            })))
             url_lists = optional(map(object({
               name    = string,
               pattern = string,
