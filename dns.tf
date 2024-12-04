@@ -114,7 +114,7 @@ locals {
         for view_key, view_value in vcn_value.dns_resolver.attached_views :
         view_value.dns_zones != null ? [
           for zone_key, zone_value in view_value.dns_zones : [
-            for steering_policy_key, steering_policy_value in zone_value.ns_steering_policies : {
+            for steering_policy_key, steering_policy_value in coalesce(zone_value.dns_steering_policies,{}) : {
               zone_key                = zone_key
               steering_policy_key     = steering_policy_key
               domain_name             = steering_policy_value.domain_name
