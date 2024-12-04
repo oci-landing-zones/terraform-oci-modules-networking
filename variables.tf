@@ -341,11 +341,7 @@ variable "network_configuration" {
             mode = optional(string,"enforce")
             })))
         }))
-<<<<<<< ced1d373d8cc8207e805b910af1e45fbbb462c4e
-
-=======
         
->>>>>>> b14b97eda84e8419254616b855630d57e990c584
         vcn_specific_gateways = optional(object({
           internet_gateways = optional(map(object({
             compartment_id  = optional(string),
