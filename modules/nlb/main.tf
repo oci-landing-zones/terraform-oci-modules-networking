@@ -18,6 +18,14 @@ resource "oci_network_load_balancer_network_load_balancer" "these" {
     is_preserve_source_destination = coalesce(each.value.skip_source_dest_check,true)
     defined_tags  = each.value.defined_tags != null ? each.value.defined_tags : var.nlb_configuration.default_defined_tags
     freeform_tags = merge(local.cislz_module_tag, each.value.freeform_tags != null ? each.value.freeform_tags : var.nlb_configuration.default_freeform_tags)
+    security_attributes            = try(each.value.security.zpr_attributes, null) != null ? merge([for a in each.value.security.zpr_attributes : { "${a.namespace}.${a.attr_name}.value" : a.attr_value, "${a.namespace}.${a.attr_name}.mode" : a.mode }]...) : null
+    lifecycle {
+      ## VALIDATION ZPR attributes - check for duplicates
+      precondition {
+        condition     = try(each.value.security.zpr_attributes, null) != null ? length(toset([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}"])) == length([for a in each.value.security.zpr_attributes : "${a.namespace}.${a.attr_name}"]) : true
+        error_message = try(each.value.security.zpr_attributes, null) != null ? "VALIDATION FAILURE in VCN \"${each.key}\": ZPR security attribute assigned more than once. \"security.zpr_attributes.namespace/security.zpr_attributes.attr_name\" pairs must be unique." : "__void__"
+      }
+    }
 }
 
 locals {

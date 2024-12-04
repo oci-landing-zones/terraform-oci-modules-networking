@@ -172,6 +172,8 @@ resource "oci_core_drg_attachment" "these" {
           }
         }
       )[net_det.value.route_table_key].id : null
+
+      vcn_route_type = net_det.value.vcn_route_type
     }
   }
 }
