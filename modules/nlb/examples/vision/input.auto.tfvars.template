@@ -30,6 +30,9 @@ nlb_configuration = {
     VISION-NLB = {
       display_name = "vision-nlb"
       is_private = true
+      security = {
+        zpr_attributes = {namespace = "<REPLACE-WITH-SEC-NAMESPACE>", attr_name = "<REPLACE-WITH-SEC-ATTR-NAME>", attr_value = "<REPLACE-WITH-SEC-ATTR-VALUE>"}
+      }
       listeners = {
         LISTENER-1 = {
           port = "<REPLACE-WITH-LISTENER-PORT-NUMBER>"
