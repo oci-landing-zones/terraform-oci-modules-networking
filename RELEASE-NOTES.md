@@ -1,4 +1,4 @@
-# February 07, 2024 Release Notes - 0.7.3
+# February 07, 2025 Release Notes - 0.7.3
 
 ## Fixes
 1. *ip_mtu* attribute assignment fixed in [fast_connect_virtual_circuits.tf](./fast_connect_virtual_circuits.tf).
