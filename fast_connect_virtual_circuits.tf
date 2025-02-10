@@ -49,7 +49,7 @@ locals {
             }
           } : null : null
           customer_asn              = fcvc_value.customer_asn
-          ip_mtu                    = fcvc_value.ip_mtu
+          ip_mtu                    = fcvc_value.ip_mtu != null ? format("%s_%s", "MTU", fcvc_value.ip_mtu) : null
           is_bfd_enabled            = fcvc_value.is_bfd_enabled
           gateway_id                = fcvc_value.gateway_id != null ? fcvc_value.gateway_id : fcvc_value.gateway_key != null ? local.provisioned_dynamic_gateways[fcvc_value.gateway_key].id : null
           gateway_key               = fcvc_value.gateway_key
@@ -196,7 +196,7 @@ resource "oci_core_virtual_circuit" "these" {
   defined_tags              = each.value.defined_tags
   display_name              = each.value.display_name
   freeform_tags             = merge(local.cislz_module_tag, each.value.freeform_tags)
-  ip_mtu                    = format("%s_%s", "MTU", each.value.ip_mtu)
+  ip_mtu                    = each.value.ip_mtu
   is_bfd_enabled            = each.value.is_bfd_enabled
   gateway_id                = each.value.gateway_id
   provider_service_id       = each.value.provider_service_id != null ? each.value.provider_service_id : each.value.provider_service_key != null ? local.one_dimmension_fast_connect_provider_services[each.value.provider_service_key].id : null
