@@ -49,7 +49,7 @@ locals {
             }
           } : null : null
           customer_asn              = fcvc_value.customer_asn
-          ip_mtu                    = fcvc_value.ip_mtu
+          ip_mtu                    = fcvc_value.ip_mtu != null ? format("%s_%s", "MTU", fcvc_value.ip_mtu) : null
           is_bfd_enabled            = fcvc_value.is_bfd_enabled
           gateway_id                = fcvc_value.gateway_id != null ? fcvc_value.gateway_id : fcvc_value.gateway_key != null ? local.provisioned_dynamic_gateways[fcvc_value.gateway_key].id : null
           gateway_key               = fcvc_value.gateway_key

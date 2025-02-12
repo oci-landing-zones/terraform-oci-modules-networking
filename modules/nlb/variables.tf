@@ -16,7 +16,8 @@ variable "nlb_configuration" {
       reserved_ips = optional(list(object({ # List of objects representing a reserved IP address to be attached or that is already attached to a network load balancer. 
         id = optional(string) # OCID of the reserved public IP address created with the VCN.
       })))
-      skip_source_dest_check = optional(bool)
+      skip_source_dest_check = optional(bool, true)
+      enable_symmetric_hashing = optional(bool, false)
       listeners = map(object({
         name         = optional(string)
         port         = number

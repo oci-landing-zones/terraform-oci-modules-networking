@@ -15,10 +15,11 @@ resource "oci_network_load_balancer_network_load_balancer" "these" {
         id = each.value.id
       }
     }
-    is_preserve_source_destination = coalesce(each.value.skip_source_dest_check,true)
+    is_preserve_source_destination = each.value.skip_source_dest_check
     defined_tags  = each.value.defined_tags != null ? each.value.defined_tags : var.nlb_configuration.default_defined_tags
     freeform_tags = merge(local.cislz_module_tag, each.value.freeform_tags != null ? each.value.freeform_tags : var.nlb_configuration.default_freeform_tags)
-    security_attributes            = try(each.value.security.zpr_attributes, null) != null ? merge([for a in each.value.security.zpr_attributes : { "${a.namespace}.${a.attr_name}.value" : a.attr_value, "${a.namespace}.${a.attr_name}.mode" : a.mode }]...) : null
+    security_attributes = try(each.value.security.zpr_attributes, null) != null ? merge([for a in each.value.security.zpr_attributes : { "${a.namespace}.${a.attr_name}.value" : a.attr_value, "${a.namespace}.${a.attr_name}.mode" : a.mode }]...) : null
+    is_symmetric_hash_enabled = each.value.enable_symmetric_hashing
     lifecycle {
       ## VALIDATION ZPR attributes - check for duplicates
       precondition {
