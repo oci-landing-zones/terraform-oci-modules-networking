@@ -1,7 +1,11 @@
-# February 07, 2025 Release Notes - 0.7.3
+# February 12, 2025 Release Notes - 0.7.3
+
+## Updates
+1. Symmetric hashing support added for Network Load Balancers via *enable_symmetric_hashing* attribute.
 
 ## Fixes
 1. *ip_mtu* attribute assignment fixed in [fast_connect_virtual_circuits.tf](./fast_connect_virtual_circuits.tf).
+2. Condition check added for *drg_attachment_id* in [drg_route_distributions_statements.tf](./drg_route_distributions_statements.tf).
 
 
 # December 04, 2024 Release Notes - 0.7.2
