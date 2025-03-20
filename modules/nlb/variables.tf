@@ -39,6 +39,7 @@ variable "nlb_configuration" {
             url_path = optional(string) # The path against which to run the health check. Default is "/" Example: "/healthcheck"
           })
           ip_version = optional(string)
+          is_preserve_source = optional(bool)
           backends = map(object({
             name       = string
             port       = number

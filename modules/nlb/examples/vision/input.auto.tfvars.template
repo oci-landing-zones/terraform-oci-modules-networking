@@ -39,6 +39,7 @@ nlb_configuration = {
           protocol = "TCP"
           backend_set = {
             name = "default-backend-set"
+            #is_preserve_source = false  # To Disable NLB preserves the source IP of the packet when it is forwarded to backend
             health_checker = {
               protocol = "TCP"
             }
