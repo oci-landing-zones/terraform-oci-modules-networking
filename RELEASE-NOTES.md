@@ -1,3 +1,9 @@
+# March 24, 2025 Release Notes - 0.7.4
+
+## Updates
+1. *is_preserve_source* attribute added to backend sets in [Network Load Balancer module](./modules/nlb/) When it is set to true (default), the Network Load Balancer preserves the source IP of the packet when it is forwarded to backends. Backends see the original source IP. However, setting it to false has not effect if *skip_source_dest_check* attribute is set to true at the Network Load Balancer level.
+
+
 # February 12, 2025 Release Notes - 0.7.3
 
 ## Updates

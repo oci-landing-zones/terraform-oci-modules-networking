@@ -40,6 +40,7 @@ locals {
         port         = listener_value.port
         ip_version   = listener_value.ip_version
         backend_set  =  listener_value.backend_set
+
       }
     ]
   ])
@@ -79,11 +80,13 @@ resource "oci_network_load_balancer_backend_set" "these" {
                 hc_return_code   = l.backend_set.health_checker.return_code
                 hc_timeout       = l.backend_set.health_checker.timeout_in_millis
                 hc_url_path      = coalesce(l.backend_set.health_checker.url_path,"/")
+                is_preserve_source = l.backend_set.is_preserve_source
   }}  
 
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.these[each.value.nlb_key].id
   name = each.value.name
   policy = each.value.policy
+  is_preserve_source = each.value.is_preserve_source
   health_checker {
     protocol           = each.value.hc_protocol
     interval_in_millis = each.value.hc_interval
