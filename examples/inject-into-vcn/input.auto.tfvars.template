@@ -1,0 +1,80 @@
+# Copyright (c) 2024 Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+#--------------------------------------------------------------------------------------------------------------------------------------
+# 1. Rename this file to <project-name>.auto.tfvars, where <project-name> is a name of your choice.
+# 2. Provide values for "Tenancy Connectivity Variables".
+# 3. Replace <REPLACE-WITH-NETWORK-COMPARTMENT-OCID> placeholder with the network compartment OCID where the VCN is created.
+#--------------------------------------------------------------------------------------------------------------------------------------
+
+#---------------------------------------
+# Tenancy Connectivity Variables
+#---------------------------------------
+
+# tenancy_ocid         = "<tenancy OCID>"            # Get this from OCI Console (after logging in, go to top-right-most menu item and click option "Tenancy: <your tenancy name>").
+# user_ocid            = "<user OCID>"               # Get this from OCI Console (after logging in, go to top-right-most menu item and click option "My profile").
+# fingerprint          = "<PEM key fingerprint>"     # The fingerprint can be gathered from your user account. In the "My profile page, click "API keys" on the menu in left hand side.
+# private_key_path     = "<path to the private key>" # This is the full path on your local system to the API signing private key.
+# private_key_password = ""                          # This is the password that protects the private key, if any.
+# region               = "<your tenancy region>"     # The region name.
+
+#---------------------------------------
+# Input variable
+#---------------------------------------
+
+network_configuration = {
+  default_enable_cis_checks = true
+  default_compartment_id    = "<REPLACE-WITH-NETWORK-COMPARTMENT-OCID>"
+  network_configuration_categories = {
+    production = {
+      vcns = {
+        VISION-VCN = {
+          display_name                     = "vision-vcn"
+          is_ipv6enabled                   = true
+          is_oracle_gua_allocation_enabled = false
+          cidr_blocks                      = ["10.0.0.0/25"],
+          dns_label                        = "visionvcn"
+          block_nat_traffic                = false
+        }
+      }
+      inject_into_existing_vcns = {
+        INJECT-VISION-VCN = {
+          vcn_id = "VISION-VCN"
+          route_tables = {
+            WEB-SUBNET-ROUTE-TABLE = {
+              display_name = "web-subnet-rtable"
+              route_rules = {
+                RULE-1 = {
+                  network_entity_key = "INTERNET-GATEWAY"
+                  description        = "To Internet Gateway."
+                  destination        = "0.0.0.0/0"
+                  destination_type   = "CIDR_BLOCK"
+                }
+                RULE-2 = {
+                  network_entity_key = "SERVICE-GATEWAY"
+                  description        = "To Service Gateway."
+                  destination        = "objectstorage"
+                  destination_type   = "SERVICE_CIDR_BLOCK"
+                }
+              }
+            }
+          }
+          vcn_specific_gateways = {
+            internet_gateways = {
+              INTERNET-GATEWAY = {
+                enabled      = true
+                display_name = "vision-vcn-internet-gateway"
+              }
+            }
+            service_gateways = {
+              SERVICE-GATEWAY = {
+                display_name = "vision-vcn-service-gateway"
+                services = "all-services"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
