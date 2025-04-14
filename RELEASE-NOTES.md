@@ -1,3 +1,9 @@
+# April 15, 2025 Release Notes - 0.7.5
+
+## Updates
+1. Ability to attach an externally managed VCN to DRG. The externally managed VCN must be available in the *vcns* attribute of *network_dependency* variable. The key within the *vcns* attribute is to be referred in *network_configuration_categories.non_vcn_specific_gateways.dynamic_routing_gateways.drg_attachments.network_details.attached_resource_key* attribute of *network_configuration* variable.
+
+
 # March 24, 2025 Release Notes - 0.7.4
 
 ## Updates
