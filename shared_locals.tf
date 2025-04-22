@@ -90,7 +90,7 @@ locals {
       for vcn_non_specific_gw_key, vcn_non_specific_gw_value in local.one_dimension_processed_non_vcn_specific_gateways :
       vcn_non_specific_gw_value.inject_into_existing_drgs != null ? length(vcn_non_specific_gw_value.inject_into_existing_drgs) > 0 ? [
         for existing_drg_key, existing_drg_value in vcn_non_specific_gw_value.inject_into_existing_drgs : {
-          drg_id                         = length(regexall("^ocid1.*$", existing_drg_value.drg_id)) > 0 ? existing_drg_value.drg_id : var.network_dependency["dynamic_routing_gateways"][existing_drg_value.drg_id].id
+          id                             = length(regexall("^ocid1.*$", existing_drg_value.drg_id)) > 0 ? existing_drg_value.drg_id : var.network_dependency["dynamic_routing_gateways"][existing_drg_value.drg_id].id
           category_compartment_id        = vcn_non_specific_gw_value.category_compartment_id
           default_compartment_id         = vcn_non_specific_gw_value.default_compartment_id
           category_defined_tags          = vcn_non_specific_gw_value.category_defined_tags

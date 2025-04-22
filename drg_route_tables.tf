@@ -38,7 +38,7 @@ locals {
         for drgrt_key, drgrt_value in drg_value.drg_route_tables : {
           defined_tags                      = drgrt_value.defined_tags
           freeform_tags                     = drgrt_value.freeform_tags
-          drg_id                            = drg_value.drg_id
+          drg_id                            = drg_value.id
           drg_name                          = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
           drg_key                           = drg_key
           display_name                      = drgrt_value.display_name

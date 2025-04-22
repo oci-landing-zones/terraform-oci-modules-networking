@@ -36,7 +36,7 @@ locals {
         for drgrd_key, drgrd_value in drg_value.drg_route_distributions : {
           defined_tags                   = drgrd_value.defined_tags
           freeform_tags                  = drgrd_value.freeform_tags
-          drg_id                         = drg_value.drg_id
+          drg_id                         = drg_value.id
           drg_name                       = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
           drg_key                        = drg_key
           display_name                   = drgrd_value.display_name
