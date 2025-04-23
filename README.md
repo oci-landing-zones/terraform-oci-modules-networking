@@ -41,7 +41,7 @@ This repository is part of a broader collection of repositories containing modul
 - [Identity & Access Management ](https://github.com/oci-landing-zones/terraform-oci-modules-iam)
 - [Networking](https://github.com/oci-landing-zones/terraform-oci-modules-networking) - current repository
 - [Governance](https://github.com/oci-landing-zones/terraform-oci-modules-governance)
-- [Security](https://github.com/github.com/oci-landing-zones/terraform-oci-modules-security)
+- [Security](https://github.com/oci-landing-zones/terraform-oci-modules-security)
 - [Observability & Monitoring](https://github.com/oci-landing-zones/terraform-oci-modules-observability)
 - [Secure Workloads](https://github.com/oci-landing-zones/terraform-oci-modules-workloads)
 
