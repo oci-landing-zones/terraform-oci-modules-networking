@@ -25,7 +25,7 @@ locals {
           default_defined_tags             = var.network_configuration.default_defined_tags
           category_defined_tags            = network_configuration_category_value.category_defined_tags
           display_name                     = vcn_value.display_name
-          dns_label                        = vcn_value.dns_label
+          dns_label                        = vcn_value.dns_label != null ? trimspace(vcn_value.dns_label) : substr(replace(vcn_value.display_name, "/[^\\w]/", ""), 0, 14)
           freeform_tags                    = merge(vcn_value.freeform_tags, network_configuration_category_value.category_freeform_tags, var.network_configuration.default_freeform_tags)
           default_freeform_tags            = var.network_configuration.default_freeform_tags
           category_freeform_tags           = network_configuration_category_value.category_freeform_tags
