@@ -162,7 +162,7 @@ resource "oci_core_security_list" "these" {
     precondition {
       condition = length([for ir in each.value.ingress_rules : ir if coalesce(ir.dst_port_min, local.TCP_PORT_MIN) > coalesce(ir.dst_port_max, local.TCP_PORT_MAX)]) > 0 ? false : true
       error_message = "VALIDATION FAILURE: Invalid configuration in \"${each.key}\" security list ingress rule(s) ${join(
-        ", ", [for ir in each.value.ingress_rules : "\"${ir.description}\" (\"dst_port_min\":\"${ir.dst_port_min}\",\"dst_port_max\":\"${ir.dst_port_max}\")" if coalesce(ir.dst_port_min, local.TCP_PORT_MIN) > coalesce(ir.dst_port_max, local.TCP_PORT_MAX)]
+        ", ", [for ir in each.value.ingress_rules : "{\"description\":\"${ir.description}\",\"dst_port_min\":\"${ir.dst_port_min}\",\"dst_port_max\":\"${ir.dst_port_max}\"}" if coalesce(ir.dst_port_min, local.TCP_PORT_MIN) > coalesce(ir.dst_port_max, local.TCP_PORT_MAX)]
       )}: \"dst_port_min\" must be less than or equal to \"dst_port_max\"."
     }
     precondition {

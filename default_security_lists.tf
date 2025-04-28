@@ -171,21 +171,21 @@ resource "oci_core_default_security_list" "these" {
     precondition {
       condition = length([for ir in each.value.ingress_rules : ir if coalesce(ir.dst_port_min, local.TCP_PORT_MIN) > coalesce(ir.dst_port_max, local.TCP_PORT_MAX)]) > 0 ? false : true
       error_message = "VALIDATION FAILURE: Invalid configuration in \"default_security_list\" ingress rule(s) ${join(
-        ", ", [for ir in each.value.ingress_rules : "\"${ir.description}\" (\"dst_port_min\":\"${ir.dst_port_min}\",\"dst_port_max\":\"${ir.dst_port_max}\")" if coalesce(ir.dst_port_min, local.TCP_PORT_MIN) > coalesce(ir.dst_port_max, local.TCP_PORT_MAX)]
+        ", ", [for ir in each.value.ingress_rules : "{\"description\":\"${ir.description}\",\"dst_port_min\":\"${ir.dst_port_min}\",\"dst_port_max\":\"${ir.dst_port_max}\"}" if coalesce(ir.dst_port_min, local.TCP_PORT_MIN) > coalesce(ir.dst_port_max, local.TCP_PORT_MAX)]
       )}: \"dst_port_min\" must be less than or equal to \"dst_port_max\"."
     }
     
     precondition {
       condition = each.value.enable_cis_checks ? (length([for ir in each.value.ingress_rules : ir if ir.src_type == "CIDR_BLOCK" && ir.src == local.network_terminology["ANYWHERE"]]) > 0 ? false : true) : true
       error_message = "VALIDATION FAILURE (CIS BENCHMARK NETWORKING 2.5): Provided \"default_security_list\" ingress rule(s) ${join(
-        ", ", [for ir in each.value.ingress_rules : "\"${ir.description}\"" if ir.src_type == "CIDR_BLOCK" && ir.src == local.network_terminology["ANYWHERE"]]
+        ", ", [for ir in each.value.ingress_rules : "{\"description\":\"${ir.description}\"}" if ir.src_type == "CIDR_BLOCK" && ir.src == local.network_terminology["ANYWHERE"]]
       )} violates CIS Benchmark recommendation 2.5: ingress from CIDR 0.0.0.0/0 should be avoided in default security list. Either fix the rule in your configuration by scoping down the source CIDR range, or disable CIS checks altogether by setting \"default_enable_cis_checks\" or \"category_enable_cis_checks\" attributes to false."
     }
 
     precondition {
       condition = each.value.enable_cis_checks ? (length([for er in each.value.egress_rules : er if er.dst_type == "CIDR_BLOCK" && er.dst == local.network_terminology["ANYWHERE"]]) > 0 ? false : true) : true
       error_message = "VALIDATION FAILURE (CIS BENCHMARK NETWORKING 2.5): Provided \"default_security_list\" egress rule(s) ${join(
-        ", ", [for er in each.value.egress_rules : "\"${er.description}\"" if er.dst_type == "CIDR_BLOCK" && er.dst == local.network_terminology["ANYWHERE"]]
+        ", ", [for er in each.value.egress_rules : "{\"description\":\"${er.description}\"}" if er.dst_type == "CIDR_BLOCK" && er.dst == local.network_terminology["ANYWHERE"]]
       )} violates CIS Benchmark recommendation 2.5: egress to CIDR 0.0.0.0/0 should be avoided in default security list. Either fix the rule in your configuration by scoping down the destination CIDR range, or disable CIS checks altogether by setting \"default_enable_cis_checks\" or \"category_enable_cis_checks\" attributes to false."
     }
   }
