@@ -1,3 +1,14 @@
+# April 29, 2025 Release Notes - 0.7.5
+
+## Updates
+1. Ability to attach an externally managed VCN to DRG. The externally managed VCN must be available in the *vcns* attribute of *network_dependency* variable. The key within the *vcns* attribute is to be referred in *network_configuration_categories.non_vcn_specific_gateways.dynamic_routing_gateways.drg_attachments.network_details.attached_resource_key* attribute of *network_configuration* variable.
+2. Any leading and trailing spaces in *dns_label* attribute of *vcns* and *subnets* attributes are removed. The assigned value defaults to *display_name*, constrained to only alphanumeric characters truncated at 15th character.
+3. Unrestricted ingress access from source 0.0.0.0/0 removed from default security list for all protocols. Both ingress and egress rules in the default security list are checked for compliance with CIS Benchmark 3.0.
+
+## Fixes
+1. Route table targets fixed according to the solution for graph cycle described in [Route tables graph cycle](./route-tables-graph-cycle-fix.md). The fixes relate to route table targets that refer to externally managed DRGs and externally managed private IPs.
+
+
 # March 24, 2025 Release Notes - 0.7.4
 
 ## Updates

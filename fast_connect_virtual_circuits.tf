@@ -11,7 +11,8 @@
 data "oci_core_fast_connect_provider_services" "fast_connect_provider_services" {
   for_each = local.one_dimension_fast_connect_virtual_circuits_aux_01
   #Required
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
+
 }
 
 locals {
@@ -172,7 +173,7 @@ resource "oci_core_virtual_circuit" "these" {
     k => v if v.provision_fc_virtual_circuit == true
   } : {} : {}
   #Required
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   type           = each.value.type
 
   #Optional
