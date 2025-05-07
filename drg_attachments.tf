@@ -44,7 +44,7 @@ locals {
         for drga_key, drga_value in drg_value.drg_attachments : {
           defined_tags        = drga_value.defined_tags
           freeform_tags       = drga_value.freeform_tags
-          drg_id              = drg_value.drg_id
+          drg_id              = drg_value.id
           drg_name            = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
           drg_key             = drg_key
           display_name        = drga_value.display_name
@@ -74,7 +74,7 @@ locals {
       ) : vcn_value.default_route_table_id => {
       id  = vcn_value.default_route_table_id
       key = "${vcn_key}_default_route_table"
-    } if vcn_value.default_route_table_id != null
+    }... if vcn_value.default_route_table_id != null
   }
 
   provisioned_drg_attachments = {
@@ -148,7 +148,7 @@ resource "oci_core_drg_attachment" "these" {
     iterator = net_det
     for_each = each.value.network_details != null ? [each.value.network_details] : []
     content {
-      id   = net_det.value.attached_resource_id != null ? net_det.value.attached_resource_id : net_det.value.attached_resource_key != null ? local.provisioned_vcns[net_det.value.attached_resource_key].id : null
+      id   = net_det.value.attached_resource_id != null ? net_det.value.attached_resource_id : (net_det.value.attached_resource_key != null ? (contains(keys(local.provisioned_vcns),net_det.value.attached_resource_key) ? local.provisioned_vcns[net_det.value.attached_resource_key].id : contains(keys(var.network_dependency["vcns"]),net_det.value.attached_resource_key) ? var.network_dependency["vcns"][net_det.value.attached_resource_key].id : null) : null)
       type = net_det.value.type
 
       #Optional

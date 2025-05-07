@@ -5,4 +5,5 @@
 output "provisioned_networking_resources" {
   description = "Provisioned networking resources"
   value       = module.terraform_oci_networking.provisioned_networking_resources
+  sensitive   = true
 }

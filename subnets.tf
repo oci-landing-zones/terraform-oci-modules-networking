@@ -34,7 +34,7 @@ locals {
             }
           )[subnet_value.dhcp_options_key].id : oci_core_vcn.these[vcn_key].default_dhcp_options_id
           display_name               = subnet_value.display_name
-          dns_label                  = subnet_value.dns_label
+          dns_label                  = subnet_value.dns_label != null ? trimspace(subnet_value.dns_label) : substr(replace(subnet_value.display_name, "/[^\\w]/", ""), 0, 14)
           freeform_tags              = merge(subnet_value.freeform_tags, vcn_value.category_freeform_tags, vcn_value.default_freeform_tags)
           category_freeform_tags     = vcn_value.category_freeform_tags
           default_freeform_tags      = vcn_value.default_freeform_tags
@@ -115,7 +115,7 @@ locals {
             }
           )[subnet_value.dhcp_options_key].id : vcn_value.default_dhcp_options_id
           display_name               = subnet_value.display_name
-          dns_label                  = subnet_value.dns_label
+          dns_label                  = subnet_value.dns_label != null ? trimspace(subnet_value.dns_label) : substr(replace(subnet_value.display_name, "/[^\\w]/", ""), 0, 14)
           freeform_tags              = merge(subnet_value.freeform_tags, vcn_value.category_freeform_tags, vcn_value.default_freeform_tags)
           category_freeform_tags     = vcn_value.category_freeform_tags
           default_freeform_tags      = vcn_value.default_freeform_tags

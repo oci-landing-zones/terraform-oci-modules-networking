@@ -56,10 +56,10 @@ locals {
               icmp_type    = i_rule.icmp_type
               icmp_code    = i_rule.icmp_code
             }] : [] : [
-            for i_cidr in concat(vcn_value.cidr_blocks, ["0.0.0.0/0"]) : {
+            for i_cidr in vcn_value.cidr_blocks : {
               stateless    = false
               protocol     = local.network_terminology["ICMP"]
-              description  = i_cidr == "0.0.0.0/0" ? "ICMP type 3 code 4" : "ICMP type 3"
+              description  = "ICMP type 3"
               src          = i_cidr
               src_type     = "CIDR_BLOCK"
               src_port_min = null
@@ -67,8 +67,8 @@ locals {
               dst_port_min = null
               dst_port_max = null
               icmp_type    = 3
-              icmp_code    = i_cidr == "0.0.0.0/0" ? 4 : null
-          }]
+              icmp_code    = null
+            }]
           network_configuration_category = vcn_value.network_configuration_category
           vcn_key                        = vcn_key
           vcn_name                       = vcn_value.display_name
@@ -169,44 +169,24 @@ resource "oci_core_default_security_list" "these" {
 
   lifecycle {
     precondition {
-      condition = length([for ir in each.value.ingress_rules : ir if coalesce(ir.dst_port_min, local.TCP_PORT_MIN) <= coalesce(ir.dst_port_max, local.TCP_PORT_MAX)]) > 0
-      error_message = "VALIDATION FAILURE: Invalid configuration in Security List [${each.key}]: dst_port_min [${join(
-        ",",
-        [
-          for ir in each.value.ingress_rules : coalesce(ir.dst_port_min, local.TCP_PORT_MIN)
-        ]
-        )
-        }] must be less than or equal to dst_port_max [${join(
-          ",",
-          [
-            for ir in each.value.ingress_rules : coalesce(ir.dst_port_max, local.TCP_PORT_MAX)
-          ]
-        )
-      }]."
+      condition = length([for ir in each.value.ingress_rules : ir if coalesce(ir.dst_port_min, local.TCP_PORT_MIN) > coalesce(ir.dst_port_max, local.TCP_PORT_MAX)]) > 0 ? false : true
+      error_message = "VALIDATION FAILURE: Invalid configuration in \"default_security_list\" ingress rule(s) ${join(
+        ", ", [for ir in each.value.ingress_rules : "{\"description\":\"${ir.description}\",\"dst_port_min\":\"${ir.dst_port_min}\",\"dst_port_max\":\"${ir.dst_port_max}\"}" if coalesce(ir.dst_port_min, local.TCP_PORT_MIN) > coalesce(ir.dst_port_max, local.TCP_PORT_MAX)]
+      )}: \"dst_port_min\" must be less than or equal to \"dst_port_max\"."
     }
+    
     precondition {
-      condition = each.value.enable_cis_checks ? (
-        length(flatten(
-          [for ir in each.value.ingress_rules :
-            [
-              for p in each.value.ssh_ports_to_check : p
-              if p >= coalesce(ir.dst_port_min, local.TCP_PORT_MIN) && p <= coalesce(ir.dst_port_max, local.TCP_PORT_MAX)
-            ]
-            if contains(["6", "all"], ir.protocol) && ir.src_type == "CIDR_BLOCK" && ir.src == local.network_terminology["ANYWHERE"]
-          ]
-        )) > 0 ? false : true
-      ) : true
-      error_message = "VALIDATION FAILURE (CIS BENCHMARK NETWORKING 2.3/2.4): Provided Security List [${each.key}] ingress rule violates CIS Benchmark recommendation 2.3/2.4: ingress from CIDR 0.0.0.0/0 on port(s) ${join(
-        ", ", flatten(
-          [
-            for ir in each.value.ingress_rules :
-            [
-              for p in each.value.ssh_ports_to_check : p
-              if p >= coalesce(ir.dst_port_min, 1) && p <= coalesce(ir.dst_port_max, local.TCP_PORT_MAX)
-            ]
-            if contains(["6", "all"], ir.protocol) && ir.src_type == "CIDR_BLOCK" && ir.src == local.network_terminology["ANYWHERE"]
-          ]
-      ))} over TCP(6) or ALL(all) protocols should be avoided. Either fix the rule in your configuration by scoping down the CIDR range, or specify your actual SSH/RDP ports (default is [22,3389]) using default_ssh_ports_to_check/category_ssh_ports_to_check attributes, or disable module CIS checks altogether by setting default_enable_cis_checks/category_enable_cis_checks attributes to false."
+      condition = each.value.enable_cis_checks ? (length([for ir in each.value.ingress_rules : ir if ir.src_type == "CIDR_BLOCK" && ir.src == local.network_terminology["ANYWHERE"]]) > 0 ? false : true) : true
+      error_message = "VALIDATION FAILURE (CIS BENCHMARK NETWORKING 2.5): Provided \"default_security_list\" ingress rule(s) ${join(
+        ", ", [for ir in each.value.ingress_rules : "{\"description\":\"${ir.description}\"}" if ir.src_type == "CIDR_BLOCK" && ir.src == local.network_terminology["ANYWHERE"]]
+      )} violates CIS Benchmark recommendation 2.5: ingress from CIDR 0.0.0.0/0 should be avoided in default security list. Either fix the rule in your configuration by scoping down the source CIDR range, or disable CIS checks altogether by setting \"default_enable_cis_checks\" or \"category_enable_cis_checks\" attributes to false."
+    }
+
+    precondition {
+      condition = each.value.enable_cis_checks ? (length([for er in each.value.egress_rules : er if er.dst_type == "CIDR_BLOCK" && er.dst == local.network_terminology["ANYWHERE"]]) > 0 ? false : true) : true
+      error_message = "VALIDATION FAILURE (CIS BENCHMARK NETWORKING 2.5): Provided \"default_security_list\" egress rule(s) ${join(
+        ", ", [for er in each.value.egress_rules : "{\"description\":\"${er.description}\"}" if er.dst_type == "CIDR_BLOCK" && er.dst == local.network_terminology["ANYWHERE"]]
+      )} violates CIS Benchmark recommendation 2.5: egress to CIDR 0.0.0.0/0 should be avoided in default security list. Either fix the rule in your configuration by scoping down the destination CIDR range, or disable CIS checks altogether by setting \"default_enable_cis_checks\" or \"category_enable_cis_checks\" attributes to false."
     }
   }
 

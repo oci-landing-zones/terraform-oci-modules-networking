@@ -31,6 +31,8 @@ __NOTE 1:__ Please note that the entire configuration is a single complex input 
 
 __NOTE 2:__ This configuration and automation is only covering the provisioning of the OCI resources.
 
+__NOTE 3:__ This configuration sets a value for the variable ``shared_secret`` which requires output variable ``provisioned_networking_resources`` to include ``sensitive = true``. 
+
 ## Diagram of the provisioned networking topology
 
 ![](diagrams/network_vpn_example_static.svg)
