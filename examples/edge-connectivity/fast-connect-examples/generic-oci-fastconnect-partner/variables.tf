@@ -605,8 +605,8 @@ variable "network_configuration" {
                 oracle_interface_ip   = optional(string)
               }))
               encryption_domain_config = optional(object({
-                cpe_traffic_selector    = optional(string),
-                oracle_traffic_selector = optional(string)
+                cpe_traffic_selector    = optional(list(string)),
+                oracle_traffic_selector = optional(list(string))
               }))
               shared_secret = optional(string),
               ike_version   = optional(string)
@@ -619,8 +619,8 @@ variable "network_configuration" {
                 oracle_interface_ip   = optional(string)
               }))
               encryption_domain_config = optional(object({
-                cpe_traffic_selector    = optional(string),
-                oracle_traffic_selector = optional(string)
+                cpe_traffic_selector    = optional(list(string)),
+                oracle_traffic_selector = optional(list(string))
               }))
               shared_secret = optional(string),
               ike_version   = optional(string)
