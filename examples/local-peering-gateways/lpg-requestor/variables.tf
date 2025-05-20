@@ -11,6 +11,5 @@ variable "region" {}
 
 variable "network_configuration" {
   type = any
-  default = null
 }
 
