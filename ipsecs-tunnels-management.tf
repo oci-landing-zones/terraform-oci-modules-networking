@@ -107,7 +107,7 @@ resource "oci_core_ipsec_connection_tunnel_management" "these" {
 
     content {
       cpe_traffic_selector    = each.value.encryption_domain_config.cpe_traffic_selector
-      oracle_traffic_selector = each.value.encryption_domain_configoracle_traffic_selector
+      oracle_traffic_selector = each.value.encryption_domain_config.oracle_traffic_selector
     }
   }
 
