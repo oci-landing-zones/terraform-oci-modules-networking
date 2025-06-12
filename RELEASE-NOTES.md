@@ -1,4 +1,4 @@
-# June 10, 2025 Release Notes - 0.7.6
+# June 12, 2025 Release Notes - 0.7.6
 
 ## Fixes
 1. *cpe_traffic_selector* and *oracle_traffic_selector* are updated to *optional(list(string))* in [variables.tf](./variables.tf)
