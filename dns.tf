@@ -157,6 +157,15 @@ locals {
       ] : [] : []
     ]) : flat_dns_rrset.rrset_key => flat_dns_rrset
   } : {}
+
+  provisioned_resolvers = {
+    for resolver_key, resolver_value in oci_dns_resolver.these : resolver_key => {
+      resolver_id   = resolver_value.resolver_id
+      defined_tags  = resolver_value.defined_tags
+      display_name  = resolver_value.display_name
+      freeform_tags = resolver_value.freeform_tags
+    }
+  }
 }
 
 

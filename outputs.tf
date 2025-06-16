@@ -41,7 +41,7 @@ output "provisioned_networking_resources" {
     dns_zones                                      = local.one_dimension_dns_zones
     dns_rrsets                                     = local.one_dimension_dns_rrset
     dns_steering_policies                          = local.one_dimension_dns_steering_policies
-    dns_resolver                                   = local.one_dimension_resolver
+    dns_resolver                                   = local.provisioned_resolvers
     dns_endpoints                                  = local.one_dimension_resolver_endpoints
     dns_tsig_keys                                  = local.one_dimension_dns_tsig_keys
 
