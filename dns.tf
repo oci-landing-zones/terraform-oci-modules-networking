@@ -235,7 +235,7 @@ locals {
       defined_tags            = steering_policy_value.defined_tags
       freeform_tags           = steering_policy_value.freeform_tags
       health_check_monitor_id = steering_policy_value.health_check_monitor_id
-      rules                   = steering_policy_value
+      rules                   = steering_policy_value.rules
       ttl                     = steering_policy_value.ttl
     }
   }
