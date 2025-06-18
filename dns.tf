@@ -160,6 +160,7 @@ locals {
 
   provisioned_dns_tsig_keys = {
     for tsig_key, tsig_value in oci_dns_tsig_key.these : tsig_key => {
+      ocid           = tsig_value.id
       compartment_id = tsig_value.compartment_id
       name           = tsig_value.name
       secret         = tsig_value.secret
@@ -171,6 +172,7 @@ locals {
 
   provisioned_dns_resolver_endpoints = {
     for endpoint_key, endpoint_value in oci_dns_resolver_endpoint.these : endpoint_key => {
+      ocid               = endpoint_value.id
       is_forwarding      = endpoint_value.is_forwarding
       is_listening       = endpoint_value.is_listening
       name               = endpoint_value.name
@@ -187,6 +189,7 @@ locals {
   provisioned_dns_resolver = {
     for resolver_key, resolver_value in oci_dns_resolver.these : resolver_key => {
       resolver_id    = resolver_value.resolver_id
+      ocid           = resolver_value.id
       scope          = resolver_value.scope
       display_name   = resolver_value.display_name
       attached_views = resolver_value.attached_views
@@ -198,6 +201,7 @@ locals {
 
   provisioned_dns_views = {
     for view_key, view_value in oci_dns_view.these : view_key => {
+      ocid           = view_value.id
       compartment_id = view_value.compartment_id
       display_name   = view_value.display_name
       scope          = view_value.scope
@@ -208,6 +212,7 @@ locals {
 
   provisioned_dns_zones = {
     for zone_key, zone_value in oci_dns_zone.these : zone_key => {
+      ocid                 = zone_value.id
       compartment_id       = zone_value.compartment_id
       name                 = zone_value.name
       scope                = zone_value.scope
@@ -222,6 +227,7 @@ locals {
 
   provisioned_dns_steering_policies = {
     for steering_policy_key, steering_policy_value in oci_dns_steering_policy.these : steering_policy_key => {
+      ocid                    = steering_policy_value.id
       compartment_id          = steering_policy_value.compartment_id
       display_name            = steering_policy_value.display_name
       template                = steering_policy_value.template
@@ -236,6 +242,7 @@ locals {
 
   provisioned_dns_rrset = {
     for rrset_key, rrset_value in oci_dns_rrset.these : rrset_key => {
+      ocid        = rrset_value.id
       compartment_id  = rrset_value.compartment_id
       domain          = rrset_value.domain
       rtype           = rrset_value.rtype
