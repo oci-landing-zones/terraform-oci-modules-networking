@@ -859,7 +859,22 @@ variable "network_configuration" {
                 oracle_traffic_selector = optional(list(string))
               }))
               shared_secret = optional(string),
-              ike_version   = optional(string)
+              ike_version   = optional(string),
+              phase_one_details = optional(object({
+                custom_authentication_algorithm = optional(string),
+                custom_dh_group = optional(string),
+                custom_encryption_algorithm = optional(string),
+                is_custom_phase_one_config = optional(bool),
+                lifetime = optional(number)
+              })),
+              phase_two_details = optional(object({
+                custom_authentication_algorithm = optional(string),
+                dh_group = optional(string),
+                custom_encryption_algorithm = optional(string),
+                is_custom_phase_two_config = optional(bool),
+                is_pfs_enabled = optional(bool),
+                lifetime = optional(number)
+              }))
             })),
             tunnel_2 = optional(object({
               routing = string,
@@ -873,7 +888,22 @@ variable "network_configuration" {
                 oracle_traffic_selector = optional(list(string))
               }))
               shared_secret = optional(string),
-              ike_version   = optional(string)
+              ike_version   = optional(string),
+              phase_one_details = optional(object({
+                custom_authentication_algorithm = optional(string),
+                custom_dh_group = optional(string),
+                custom_encryption_algorithm = optional(string),
+                is_custom_phase_one_config = optional(bool),
+                lifetime = optional(number)
+              })),
+              phase_two_details = optional(object({
+                custom_authentication_algorithm = optional(string),
+                dh_group = optional(string),
+                custom_encryption_algorithm = optional(string),
+                is_custom_phase_two_config = optional(bool),
+                is_pfs_enabled = optional(bool),
+                lifetime = optional(number)
+              })),
             }))
           }))
         })))
