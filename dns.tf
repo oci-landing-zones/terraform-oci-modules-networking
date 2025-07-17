@@ -262,7 +262,7 @@ data "oci_core_vcn_dns_resolver_association" "dns_resolvers" {
 
 resource "oci_dns_view" "these" {
   for_each = local.one_dimension_dns_views
-    compartment_id = each.value.compartment_id
+    compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
     display_name  = each.value.display_name
     scope         = "PRIVATE"
     defined_tags  = each.value.defined_tags
@@ -271,7 +271,7 @@ resource "oci_dns_view" "these" {
 
 resource "oci_dns_zone" "these" {
   for_each       = local.one_dimension_dns_zones
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   name           = each.value.name
   scope          = each.value.scope
   zone_type      = each.value.zone_type
@@ -303,7 +303,7 @@ resource "oci_dns_zone" "these" {
 
 resource "oci_dns_rrset" "these" {
   for_each        = local.one_dimension_dns_rrset
-  compartment_id  = each.value.compartment_id
+  compartment_id  = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   domain          = each.value.domain
   rtype           = each.value.rtype
   zone_name_or_id = oci_dns_zone.these[each.value.zone_key].id
@@ -323,7 +323,7 @@ resource "oci_dns_rrset" "these" {
 
 resource "oci_dns_tsig_key" "these" {
   for_each       = local.one_dimension_dns_tsig_keys
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   name           = each.value.name
   secret         = each.value.secret
   algorithm      = each.value.algorithm
@@ -385,7 +385,7 @@ resource "oci_dns_resolver" "these" {
 
 resource "oci_dns_steering_policy" "these" {
   for_each       = local.one_dimension_dns_steering_policies
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   display_name   = each.value.display_name
   template       = each.value.template
 
