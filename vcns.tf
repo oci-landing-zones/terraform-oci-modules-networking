@@ -115,7 +115,7 @@ data "oci_security_attribute_security_attribute_namespaces" "these" {
       error_message = "VALIDATION FAILURE: variable \"tenancy_ocid\" is required when applying security attribute to VCN."
     }
   }
-  compartment_id            = var.tenancy_ocid
+  compartment_id = var.tenancy_ocid
   compartment_id_in_subtree = true
   filter {
     name   = "state"

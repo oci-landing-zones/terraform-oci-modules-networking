@@ -18,4 +18,4 @@ terraform {
       configuration_aliases = [oci]
     }
   }
-}
+} 
