@@ -3,7 +3,7 @@
 
 module "vision_network" {
   #source = "github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking?ref=release-0..6.5"
-  source                  = "../../"
+  source = "../../"
   network_configuration   = var.network_configuration
   compartments_dependency = jsondecode(file("./dependencies/vision-compartments.json"))
   network_dependency      = jsondecode(file("./dependencies/vision-network.json"))

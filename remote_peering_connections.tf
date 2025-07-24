@@ -70,16 +70,16 @@ locals {
       oci_core_remote_peering_connection.oci_requestor_remote_peering_connections,
       oci_core_remote_peering_connection.oci_acceptor_remote_peering_connections
       ) : rpc_key => {
-      compartment_id           = rpc_value.compartment_id
-      defined_tags             = rpc_value.defined_tags
-      display_name             = rpc_value.display_name
-      drg_id                   = rpc_value.drg_id
-      drg_name                 = local.one_dimension_remote_peering_connections[rpc_key].drg_name
-      drg_key                  = local.one_dimension_remote_peering_connections[rpc_key].drg_key
-      freeform_tags            = rpc_value.freeform_tags
-      id                       = rpc_value.id
-      is_cross_tenancy_peering = rpc_value.is_cross_tenancy_peering
-      peer_id                  = rpc_value.peer_id
+      compartment_id                 = rpc_value.compartment_id
+      defined_tags                   = rpc_value.defined_tags
+      display_name                   = rpc_value.display_name
+      drg_id                         = rpc_value.drg_id
+      drg_name                       = local.one_dimension_remote_peering_connections[rpc_key].drg_name
+      drg_key                        = local.one_dimension_remote_peering_connections[rpc_key].drg_key
+      freeform_tags                  = rpc_value.freeform_tags
+      id                             = rpc_value.id
+      is_cross_tenancy_peering       = rpc_value.is_cross_tenancy_peering
+      peer_id                        = rpc_value.peer_id
       #peer_key                       = can([for rpc_key2, rpc_value2 in merge(oci_core_remote_peering_connection.oci_requestor_remote_peering_connections, oci_core_remote_peering_connection.oci_acceptor_remote_peering_connections) : rpc_key2 if rpc_value2.id == rpc_value.peer_id][0]) ? [for rpc_key2, rpc_value2 in merge(oci_core_remote_peering_connection.oci_requestor_remote_peering_connections, oci_core_remote_peering_connection.oci_acceptor_remote_peering_connections) : rpc_key2 if rpc_value2.id == rpc_value.peer_id][0] : "NOT PEERED OR PARTNER RPC CREATED OUTSIDE THIS AUTOMATION"
       #peer_name                      = can([for rpc_key2, rpc_value2 in merge(oci_core_remote_peering_connection.oci_requestor_remote_peering_connections, oci_core_remote_peering_connection.oci_acceptor_remote_peering_connections) : rpc_value2.display_name if rpc_value2.id == rpc_value.peer_id][0]) ? [for rpc_key2, rpc_value2 in merge(oci_core_remote_peering_connection.oci_requestor_remote_peering_connections, oci_core_remote_peering_connection.oci_acceptor_remote_peering_connections) : rpc_key2 if rpc_value2.id == rpc_value.peer_id][0] : "NOT PEERED OR PARTNER RPC CREATED OUTSIDE THIS AUTOMATION"
       peer_region_name               = rpc_value.peer_region_name
@@ -122,7 +122,7 @@ resource "oci_core_remote_peering_connection" "oci_requestor_remote_peering_conn
   display_name  = each.value.display_name
   freeform_tags = merge(local.cislz_module_tag, each.value.freeform_tags)
 
-  peer_region_name = contains(keys(try(var.network_dependency["remote_peering_connections"], {})), each.value.peer_key) ? var.network_dependency["remote_peering_connections"][each.value.peer_key].region_name : each.value.peer_region_name
+  peer_region_name = contains(keys(try(var.network_dependency["remote_peering_connections"],{})),each.value.peer_key) ? var.network_dependency["remote_peering_connections"][each.value.peer_key].region_name : each.value.peer_region_name
 
-  peer_id = each.value.peer_id != null ? each.value.peer_id : (each.value.peer_key != null ? merge(oci_core_remote_peering_connection.oci_acceptor_remote_peering_connections, try(var.network_dependency["remote_peering_connections"], {}))[each.value.peer_key].id : null)
+  peer_id = each.value.peer_id != null ? each.value.peer_id : (each.value.peer_key != null ? merge(oci_core_remote_peering_connection.oci_acceptor_remote_peering_connections, try(var.network_dependency["remote_peering_connections"],{}))[each.value.peer_key].id : null)
 }

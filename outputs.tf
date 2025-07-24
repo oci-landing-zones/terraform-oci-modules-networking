@@ -36,14 +36,14 @@ output "provisioned_networking_resources" {
     network_security_groups_egress_rules           = local.provisioned_network_security_groups_egress_rules
     oci_network_firewall_network_firewalls         = local.provisioned_oci_network_firewall_network_firewalls
     oci_network_firewall_network_firewall_policies = local.provisioned_oci_network_firewall_network_firewall_policies
-
-    dns_views             = local.one_dimension_dns_views
-    dns_zones             = local.one_dimension_dns_zones
-    dns_rrsets            = local.one_dimension_dns_rrset
-    dns_steering_policies = local.one_dimension_dns_steering_policies
-    dns_resolver          = local.one_dimension_resolver
-    dns_endpoints         = local.one_dimension_resolver_endpoints
-    dns_tsig_keys         = local.one_dimension_dns_tsig_keys
+    
+    dns_views                                      = local.one_dimension_dns_views
+    dns_zones                                      = local.one_dimension_dns_zones
+    dns_rrsets                                     = local.one_dimension_dns_rrset
+    dns_steering_policies                          = local.one_dimension_dns_steering_policies
+    dns_resolver                                   = local.one_dimension_resolver
+    dns_endpoints                                  = local.one_dimension_resolver_endpoints
+    dns_tsig_keys                                  = local.one_dimension_dns_tsig_keys
 
     nat_gateways                       = local.provisioned_nat_gateways
     local_peering_gateways             = local.provisioned_local_peering_gateways

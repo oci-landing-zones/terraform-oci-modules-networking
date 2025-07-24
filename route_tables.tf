@@ -131,9 +131,9 @@ locals {
     local.provisioned_service_gateways,
     local.provisioned_dynamic_gateways,
     local.provisioned_local_peering_gateways,
-    coalesce(var.private_ips_dependency, {}),
+    coalesce(var.private_ips_dependency,{}),
     local.one_dimension_inject_into_existing_drgs,
-    coalesce(try(var.network_dependency["dynamic_routing_gateways"], null), {})
+    coalesce(try(var.network_dependency["dynamic_routing_gateways"],null),{})
   )
 
   // Process the input for the route tables defined as part of the newly defined VCNs. 
@@ -165,12 +165,12 @@ locals {
             [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.igw if contains(keys(local.merged_one_dimension_processed_internet_gateways), coalesce(rr_value.network_entity_key, " "))],
             [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.natgw if contains(keys(local.merged_one_dimension_processed_nat_gateways), coalesce(rr_value.network_entity_key, " "))],
             [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.sgw if contains(keys(local.merged_one_dimension_processed_service_gateways), coalesce(rr_value.network_entity_key, " "))],
-            [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.drg if contains(keys(merge(local.one_dimension_dynamic_routing_gateways, local.one_dimension_inject_into_existing_drgs, coalesce(try(var.network_dependency["dynamic_routing_gateways"], null), {}))), coalesce(rr_value.network_entity_key, " "))],
+            [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.drg if contains(keys(merge(local.one_dimension_dynamic_routing_gateways, local.one_dimension_inject_into_existing_drgs, coalesce(try(var.network_dependency["dynamic_routing_gateways"],null),{}))), coalesce(rr_value.network_entity_key, " "))],
             [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.lpg if contains(keys(local.merged_one_dimension_processed_local_peering_gateways), coalesce(rr_value.network_entity_key, " "))],
             [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.private_ip if length(regexall("ocid1.privateip", coalesce(rr_value.network_entity_id, " "))) > 0],
             [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.null_target if rr_value.network_entity_id == null && rr_value.network_entity_key == null],
             [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.ocid_non_private_ip_target if rr_value.network_entity_key == null && rr_value.network_entity_id != null && length(regexall("ocid1.privateip", coalesce(rr_value.network_entity_id, " "))) <= 0],
-            [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.target_not_found if !contains(keys(local.merged_one_dimension_processed_internet_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.merged_one_dimension_processed_nat_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.merged_one_dimension_processed_service_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(merge(local.one_dimension_dynamic_routing_gateways, local.one_dimension_inject_into_existing_drgs, coalesce(try(var.network_dependency["dynamic_routing_gateways"], null), {}))), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.merged_one_dimension_processed_local_peering_gateways), coalesce(rr_value.network_entity_key, " ")) && rr_value.network_entity_id == null && rr_value.network_entity_key != null]
+            [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.target_not_found if !contains(keys(local.merged_one_dimension_processed_internet_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.merged_one_dimension_processed_nat_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.merged_one_dimension_processed_service_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(merge(local.one_dimension_dynamic_routing_gateways, local.one_dimension_inject_into_existing_drgs, coalesce(try(var.network_dependency["dynamic_routing_gateways"],null),{}))), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.merged_one_dimension_processed_local_peering_gateways), coalesce(rr_value.network_entity_key, " ")) && rr_value.network_entity_id == null && rr_value.network_entity_key != null]
           ])) : [local.route_tables_route_rules_targets.no_route_rules] : [local.route_tables_route_rules_targets.no_route_rules]
           network_configuration_category = vcn_value.network_configuration_category
           vcn_key                        = vcn_key
@@ -212,12 +212,12 @@ locals {
             [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.igw if contains(keys(local.merged_one_dimension_processed_internet_gateways), coalesce(rr_value.network_entity_key, " "))],
             [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.natgw if contains(keys(local.merged_one_dimension_processed_nat_gateways), coalesce(rr_value.network_entity_key, " "))],
             [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.sgw if contains(keys(local.merged_one_dimension_processed_service_gateways), coalesce(rr_value.network_entity_key, " "))],
-            [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.drg if contains(keys(merge(local.one_dimension_dynamic_routing_gateways, local.one_dimension_inject_into_existing_drgs, coalesce(try(var.network_dependency["dynamic_routing_gateways"], null), {}))), coalesce(rr_value.network_entity_key, " "))],
+            [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.drg if contains(keys(merge(local.one_dimension_dynamic_routing_gateways, local.one_dimension_inject_into_existing_drgs, coalesce(try(var.network_dependency["dynamic_routing_gateways"],null),{}))), coalesce(rr_value.network_entity_key, " "))],
             [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.lpg if contains(keys(local.merged_one_dimension_processed_local_peering_gateways), coalesce(rr_value.network_entity_key, " "))],
             [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.private_ip if length(regexall("ocid1.privateip", coalesce(rr_value.network_entity_id, " "))) > 0],
             [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.null_target if rr_value.network_entity_id == null && rr_value.network_entity_key == null],
             [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.ocid_non_private_ip_target if rr_value.network_entity_key == null && rr_value.network_entity_id != null && length(regexall("ocid1.privateip", coalesce(rr_value.network_entity_id, " "))) <= 0],
-            [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.target_not_found if !contains(keys(local.merged_one_dimension_processed_internet_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.merged_one_dimension_processed_nat_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.merged_one_dimension_processed_service_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(merge(local.one_dimension_dynamic_routing_gateways, local.one_dimension_inject_into_existing_drgs, coalesce(try(var.network_dependency["dynamic_routing_gateways"], null), {}))), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.merged_one_dimension_processed_local_peering_gateways), coalesce(rr_value.network_entity_key, " ")) && rr_value.network_entity_id == null && rr_value.network_entity_key != null]
+            [for rr_key, rr_value in route_table_value.route_rules : local.route_tables_route_rules_targets.target_not_found if !contains(keys(local.merged_one_dimension_processed_internet_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.merged_one_dimension_processed_nat_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.merged_one_dimension_processed_service_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(merge(local.one_dimension_dynamic_routing_gateways, local.one_dimension_inject_into_existing_drgs, coalesce(try(var.network_dependency["dynamic_routing_gateways"],null),{}))), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.merged_one_dimension_processed_local_peering_gateways), coalesce(rr_value.network_entity_key, " ")) && rr_value.network_entity_id == null && rr_value.network_entity_key != null]
           ])) : [local.route_tables_route_rules_targets.no_route_rules] : [local.route_tables_route_rules_targets.no_route_rules]
           network_configuration_category = vcn_value.network_configuration_category
           vcn_key                        = vcn_key
@@ -248,7 +248,7 @@ locals {
   // defining all posible route rules targets for IGW specific route tables
   // MARKING an external dependency on subnets and IP addresses for searching for private IP OCID for Private IP targets
   #route_rules_targets_for_IGW_NATGW_specific_RTs = {}
-  route_rules_targets_for_IGW_NATGW_specific_RTs = coalesce(var.private_ips_dependency, {})
+  route_rules_targets_for_IGW_NATGW_specific_RTs = coalesce(var.private_ips_dependency,{})
 
   // Search for all the route tables that have route rules that satisfy ANY of the criterias for being attached to a IGW/NAT-GW considering their route rules target   
   igw_natgw_attachable_specific_route_tables = local.merged_one_dimension_processed_route_tables != null ? length(local.merged_one_dimension_processed_route_tables) > 0 ? {
@@ -293,7 +293,7 @@ locals {
   // defining all posible route rules targets for SGW specific route tables
   #route_rules_targets_for_SGW_specific_RTs = merge(local.provisioned_dynamic_gateways)
   #route_rules_targets_for_SGW_specific_RTs = merge(local.provisioned_dynamic_gateways,coalesce(try(var.network_dependency["dynamic_routing_gateways"],null),{}))
-  route_rules_targets_for_SGW_specific_RTs = merge(local.provisioned_dynamic_gateways, local.one_dimension_inject_into_existing_drgs, coalesce(try(var.network_dependency["dynamic_routing_gateways"], null), {}))
+  route_rules_targets_for_SGW_specific_RTs = merge(local.provisioned_dynamic_gateways,local.one_dimension_inject_into_existing_drgs,coalesce(try(var.network_dependency["dynamic_routing_gateways"],null),{}))
 
   // Search for all the sgw specific route tables that have route rules that satisfy:
   //      1. CONDITION 1
@@ -420,7 +420,7 @@ locals {
   #   local.provisioned_local_peering_gateways,
   #   local.provisioned_service_gateways
   # )
-  route_rules_targets_for_DRGA_specific_RTs = merge(
+   route_rules_targets_for_DRGA_specific_RTs = merge(
     local.provisioned_local_peering_gateways,
     local.provisioned_service_gateways,
     var.private_ips_dependency

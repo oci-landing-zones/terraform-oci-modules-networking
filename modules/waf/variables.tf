@@ -6,9 +6,9 @@
 variable "waf_configuration" {
   description = "Web Application Firewall (WAF) configuration settings for the WAF and related WAF policies."
   type = object({
-    default_compartment_id = optional(string),
-    default_defined_tags   = optional(map(string)),
-    default_freeform_tags  = optional(map(string)),
+    default_compartment_id     = optional(string),
+    default_defined_tags       = optional(map(string)),
+    default_freeform_tags      = optional(map(string)),
 
     waf = map(object({
       display_name            = optional(string)

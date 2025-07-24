@@ -8,7 +8,7 @@
 # ####################################################################################################### #
 
 module "terraform_oci_networking" {
-  source                = "../../"
+  source = "../../"
   network_configuration = var.network_configuration
 }
 

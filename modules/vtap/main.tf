@@ -7,7 +7,7 @@
 # Create VTAP and Capture Filter Resources
 # -----------------------------------------------------------------------------
 resource "oci_core_capture_filter" "these" {
-  for_each       = var.vtaps_configuration != null ? (var.vtaps_configuration.capture_filters != null ? var.vtaps_configuration.capture_filters : {}) : {}
+  for_each = var.vtaps_configuration != null ? (var.vtaps_configuration.capture_filters != null ? var.vtaps_configuration.capture_filters : {}) : {}
   compartment_id = each.value.compartment_id != null ? each.value.compartment_id : (var.vtaps_configuration.default_compartment_id != null ? var.vtaps_configuration.default_compartment_id : null)
   filter_type    = each.value.filter_type
   display_name   = each.value.display_name
@@ -61,14 +61,14 @@ resource "oci_core_capture_filter" "these" {
 }
 
 resource "oci_network_load_balancer_network_load_balancer" "these" {
-  for_each       = var.vtaps_configuration != null ? (var.vtaps_configuration.network_load_balancers != null ? var.vtaps_configuration.network_load_balancers : {}) : {}
+  for_each = var.vtaps_configuration != null ? (var.vtaps_configuration.network_load_balancers != null ? var.vtaps_configuration.network_load_balancers : {}) : {}
   compartment_id = each.value.compartment_id != null ? each.value.compartment_id : (var.vtaps_configuration.default_compartment_id != null ? var.vtaps_configuration.default_compartment_id : null)
   display_name   = each.value.display_name
   subnet_id      = each.value.subnet_id
 }
 
 resource "oci_core_vtap" "these" {
-  for_each          = var.vtaps_configuration != null ? (var.vtaps_configuration.vtaps != null ? var.vtaps_configuration.vtaps : {}) : {}
+  for_each = var.vtaps_configuration != null ? (var.vtaps_configuration.vtaps != null ? var.vtaps_configuration.vtaps : {}) : {}
   capture_filter_id = oci_core_capture_filter.these[each.value.capture_filter_id].id
   compartment_id    = each.value.compartment_id != null ? each.value.compartment_id : (var.vtaps_configuration.default_compartment_id != null ? var.vtaps_configuration.default_compartment_id : null)
   source_type       = each.value.source_type
@@ -85,7 +85,7 @@ resource "oci_core_vtap" "these" {
 # -----------------------------------------------------------------------------
 
 resource "oci_network_load_balancer_listener" "these" {
-  for_each                 = var.vtaps_configuration != null ? (var.vtaps_configuration.network_load_balancer_listeners != null ? var.vtaps_configuration.network_load_balancer_listeners : {}) : {}
+  for_each = var.vtaps_configuration != null ? (var.vtaps_configuration.network_load_balancer_listeners != null ? var.vtaps_configuration.network_load_balancer_listeners : {}) : {}
   default_backend_set_name = oci_network_load_balancer_backend_set.these[each.value.default_backend_set_name].name
   name                     = each.value.listener_name
   network_load_balancer_id = oci_network_load_balancer_network_load_balancer.these[each.value.network_load_balancer_id].id

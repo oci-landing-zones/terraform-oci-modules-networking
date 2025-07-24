@@ -16,4 +16,4 @@ terraform {
       source = "oracle/oci"
     }
   }
-}
+} 

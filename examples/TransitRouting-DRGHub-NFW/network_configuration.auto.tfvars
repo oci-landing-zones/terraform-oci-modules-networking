@@ -8,7 +8,7 @@
 # ####################################################################################################### #
 
 network_configuration = {
-  default_compartment_id = "ocid1.compartment.oc1....."
+  default_compartment_id    = "ocid1.compartment.oc1....."
   default_freeform_tags = {
     "vision-environment" = "vision"
   }
@@ -315,7 +315,7 @@ network_configuration = {
               }
               application_lists = {
                 HUBNFW-APP-LIST = {
-                  name         = "hubnfw-app-list"
+                  name = "hubnfw-app-list"
                   applications = ["HUBNFW-APP-1"]
                 }
               }
@@ -340,8 +340,8 @@ network_configuration = {
               }
               security_rules = {
                 SECURITY-RULE-A = {
-                  action                    = "ALLOW"
-                  name                      = "security-rule-a"
+                  action              = "ALLOW"
+                  name                = "security-rule-a"
                   application_lists         = []
                   destination_address_lists = ["HUBNFW-IP-LIST"]
                   source_address_lists      = []

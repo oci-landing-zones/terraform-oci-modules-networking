@@ -228,10 +228,10 @@ variable "network_configuration" {
           freeform_tags = optional(map(string)),
           attached_views = optional(map(object({
             existing_view_id = optional(string) # an existing externally managed view. Assign either this attribute or the others for having this module managing the view.
-            compartment_id   = optional(string),
-            display_name     = optional(string),
-            defined_tags     = optional(map(string)),
-            freeform_tags    = optional(map(string)),
+            compartment_id = optional(string),
+            display_name   = optional(string),
+            defined_tags   = optional(map(string)),
+            freeform_tags  = optional(map(string)),
             dns_zones = optional(map(object({
               compartment_id = optional(string),
               name           = optional(string),
@@ -258,9 +258,9 @@ variable "network_configuration" {
               })))
               dns_rrset = optional(map(object({
                 compartment_id = optional(string)
-                domain         = optional(string),
-                rtype          = optional(string),
-                scope          = optional(string),
+                domain = optional(string),
+                rtype  = optional(string),
+                scope  = optional(string),
                 items = optional(list(object({
                   domain = optional(string),
                   rdata  = optional(string),
@@ -335,13 +335,13 @@ variable "network_configuration" {
 
         security = optional(object({
           zpr_attributes = optional(list(object({
-            namespace  = optional(string, "oracle-zpr")
-            attr_name  = string
+            namespace = optional(string,"oracle-zpr")
+            attr_name = string
             attr_value = string
-            mode       = optional(string, "enforce")
-          })))
+            mode = optional(string,"enforce")
+            })))
         }))
-
+        
         vcn_specific_gateways = optional(object({
           internet_gateways = optional(map(object({
             compartment_id  = optional(string),
@@ -1023,8 +1023,8 @@ variable "network_configuration" {
             display_name   = optional(string),
             freeform_tags  = optional(map(string)),
             services = optional(map(object({
-              name         = string
-              type         = optional(string) # Valid values: "TCP_SERVICE" or "UDP_SERVICE"
+              name = string
+              type = optional(string) # Valid values: "TCP_SERVICE" or "UDP_SERVICE"
               minimum_port = number
               maximum_port = optional(number)
             })))
@@ -1039,7 +1039,7 @@ variable "network_configuration" {
               icmp_code = optional(number),
             })))
             application_lists = optional(map(object({
-              name         = string,
+              name = string,
               applications = list(string)
             }))),
             mapped_secrets = optional(map(object({
@@ -1071,8 +1071,8 @@ variable "network_configuration" {
               destination_ip_address_list = optional(string)
             }))),
             address_lists = optional(map(object({
-              name      = string,
-              type      = string, # Valid values: "FQND", "IP"
+              name = string,
+              type = string, # Valid values: "FQND", "IP"
               addresses = list(string)
             })))
             url_lists = optional(map(object({
@@ -1081,16 +1081,16 @@ variable "network_configuration" {
               type    = string # Valid value: SIMPLE
             }))),
             security_rules = optional(map(object({
-              action                    = string, # Valid values: ALLOW,DROP,REJECT,INSPECT
-              name                      = string,
+              action = string, # Valid values: ALLOW,DROP,REJECT,INSPECT
+              name   = string,
               application_lists         = optional(list(string)),
               destination_address_lists = optional(list(string)),
               service_lists             = optional(list(string)),
               source_address_lists      = optional(list(string)),
               url_lists                 = optional(list(string)),
-              inspection                = optional(string), # This is only applicable if action is INSPECT
-              after_rule                = optional(string),
-              before_rule               = optional(string)
+              inspection  = optional(string), # This is only applicable if action is INSPECT
+              after_rule  = optional(string),
+              before_rule = optional(string)
             })))
           })))
         }))
@@ -1259,10 +1259,10 @@ variable "network_configuration" {
   })
 }
 
-variable "module_name" {
+variable module_name {
   description = "The module name."
-  type        = string
-  default     = "networking"
+  type = string
+  default = "networking"
 }
 
 variable "compartments_dependency" {
@@ -1289,7 +1289,7 @@ variable "network_dependency" {
       id = string # the LPG OCID
     })))
     remote_peering_connections = optional(map(object({
-      id          = string # the peer RPC OCID
+      id = string # the peer RPC OCID
       region_name = string # the peer RPC region name
     })))
     dns_private_views = optional(map(object({
@@ -1309,5 +1309,5 @@ variable "private_ips_dependency" {
 
 variable "tenancy_ocid" {
   description = "The tenancy OCID"
-  default     = null
+  default = null
 }
