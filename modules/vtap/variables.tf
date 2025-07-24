@@ -8,26 +8,26 @@ variable "vtaps_configuration" {
   type = object({
     default_compartment_id = optional(string)
     capture_filters = optional(map(object({
-      compartment_id            = optional(string)
-      filter_type               = string
-      display_name              = optional(string)
+      compartment_id = optional(string)
+      filter_type    = string
+      display_name   = optional(string)
       vtap_capture_filter_rules = optional(map(object({
         traffic_direction = optional(string)
         rule_action       = optional(string)
         source_cidr       = optional(string)
         destination_cidr  = optional(string)
         protocol          = optional(string)
-        icmp_options      = optional(map(object({
+        icmp_options = optional(map(object({
           type = optional(string)
           code = optional(string)
         })))
-        tcp_options       = optional(map(object({
+        tcp_options = optional(map(object({
           destination_port_range_max = optional(number)
           destination_port_range_min = optional(number)
           source_port_range_max      = optional(number)
           source_port_range_min      = optional(number)
         })))
-        udp_options       = optional(map(object({
+        udp_options = optional(map(object({
           destination_port_range_max = optional(number)
           destination_port_range_min = optional(number)
           source_port_range_max      = optional(number)
@@ -79,7 +79,7 @@ variable "compartments_dependency" {
   default = null
 }
 
-variable network_dependency {
+variable "network_dependency" {
   description = "An object containing the externally managed network resources this module may depend on. Supported resource is 'subnets' , represented as map of objects. Each object, when defined, must have an 'id' attribute of string type set with the subnet OCID."
   type = object({
     subnets = optional(map(object({

@@ -68,7 +68,7 @@ locals {
               dst_port_max = null
               icmp_type    = 3
               icmp_code    = null
-            }]
+          }]
           network_configuration_category = vcn_value.network_configuration_category
           vcn_key                        = vcn_key
           vcn_name                       = vcn_value.display_name
@@ -174,7 +174,7 @@ resource "oci_core_default_security_list" "these" {
         ", ", [for ir in each.value.ingress_rules : "{\"description\":\"${ir.description}\",\"dst_port_min\":\"${ir.dst_port_min}\",\"dst_port_max\":\"${ir.dst_port_max}\"}" if coalesce(ir.dst_port_min, local.TCP_PORT_MIN) > coalesce(ir.dst_port_max, local.TCP_PORT_MAX)]
       )}: \"dst_port_min\" must be less than or equal to \"dst_port_max\"."
     }
-    
+
     precondition {
       condition = each.value.enable_cis_checks ? (length([for ir in each.value.ingress_rules : ir if ir.src_type == "CIDR_BLOCK" && ir.src == local.network_terminology["ANYWHERE"]]) > 0 ? false : true) : true
       error_message = "VALIDATION FAILURE (CIS BENCHMARK NETWORKING 2.5): Provided \"default_security_list\" ingress rule(s) ${join(

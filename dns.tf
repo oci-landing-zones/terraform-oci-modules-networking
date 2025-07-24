@@ -114,7 +114,7 @@ locals {
         for view_key, view_value in vcn_value.dns_resolver.attached_views :
         view_value.dns_zones != null ? [
           for zone_key, zone_value in view_value.dns_zones : [
-            for steering_policy_key, steering_policy_value in coalesce(zone_value.dns_steering_policies,{}) : {
+            for steering_policy_key, steering_policy_value in coalesce(zone_value.dns_steering_policies, {}) : {
               zone_key                = zone_key
               steering_policy_key     = steering_policy_key
               domain_name             = steering_policy_value.domain_name
@@ -148,7 +148,7 @@ locals {
                 view_key       = view_key
                 compartment_id = rrset_value.compartment_id != null ? rrset_value.compartment_id : vcn_value.category_compartment_id != null ? vcn_value.category_compartment_id : vcn_value.default_compartment_id != null ? vcn_value.default_compartment_id : null
                 rtype          = rrset_value.rtype
-                domain = rrset_value.domain
+                domain         = rrset_value.domain
                 scope          = rrset_value.scope
                 items          = rrset_value.items
             }] : []
@@ -168,12 +168,12 @@ data "oci_core_vcn_dns_resolver_association" "dns_resolvers" {
 
 
 resource "oci_dns_view" "these" {
-  for_each = local.one_dimension_dns_views
-    compartment_id = each.value.compartment_id
-    display_name  = each.value.display_name
-    scope         = "PRIVATE"
-    defined_tags  = each.value.defined_tags
-    freeform_tags = each.value.freeform_tags
+  for_each       = local.one_dimension_dns_views
+  compartment_id = each.value.compartment_id
+  display_name   = each.value.display_name
+  scope          = "PRIVATE"
+  defined_tags   = each.value.defined_tags
+  freeform_tags  = each.value.freeform_tags
 }
 
 
@@ -184,7 +184,7 @@ resource "oci_dns_zone" "these" {
   scope          = each.value.scope
   zone_type      = each.value.zone_type
 
-  view_id = each.value.view_key != null ? (contains(keys(oci_dns_view.these),each.value.view_key) ? oci_dns_view.these[each.value.view_key].id : (length(regexall("^ocid1.*$", each.value.view_id)) > 0 ? each.value.view_id : var.network_dependency["dns_private_views"][each.value.view_id].id)) : null
+  view_id = each.value.view_key != null ? (contains(keys(oci_dns_view.these), each.value.view_key) ? oci_dns_view.these[each.value.view_key].id : (length(regexall("^ocid1.*$", each.value.view_id)) > 0 ? each.value.view_id : var.network_dependency["dns_private_views"][each.value.view_id].id)) : null
 
   dynamic "external_downstreams" {
     for_each = each.value.external_downstreams
@@ -272,7 +272,7 @@ resource "oci_dns_resolver" "these" {
     for_each = each.value.attached_views
     iterator = views
     content {
-      view_id = views.key != null ? (contains(keys(oci_dns_view.these),views.key) ? oci_dns_view.these[views.key].id : (length(regexall("^ocid1.*$", views.value.existing_view_id)) > 0 ? views.value.existing_view_id : var.network_dependency["dns_private_views"][views.value.existing_view_id].id)) : null
+      view_id = views.key != null ? (contains(keys(oci_dns_view.these), views.key) ? oci_dns_view.these[views.key].id : (length(regexall("^ocid1.*$", views.value.existing_view_id)) > 0 ? views.value.existing_view_id : var.network_dependency["dns_private_views"][views.value.existing_view_id].id)) : null
     }
   }
   defined_tags  = each.value.defined_tags
