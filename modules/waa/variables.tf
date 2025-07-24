@@ -6,9 +6,9 @@
 variable "waa_configuration" {
   description = "Web application acceleration (WAA) configuration settings for the WAA and the WAA policies."
   type = object({
-    default_compartment_id     = optional(string),
-    default_defined_tags       = optional(map(string)),
-    default_freeform_tags      = optional(map(string)),
+    default_compartment_id = optional(string),
+    default_defined_tags   = optional(map(string)),
+    default_freeform_tags  = optional(map(string)),
 
     web_app_accelerations = map(object({
       compartment_id                           = optional(string)
