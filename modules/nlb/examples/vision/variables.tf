@@ -9,6 +9,6 @@ variable "private_key_path" { default = "" }
 variable "private_key_password" { default = "" }
 
 variable "nlb_configuration" {
-  type = any
+  type    = any
   default = {}
 }
