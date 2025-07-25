@@ -112,7 +112,7 @@ locals {
       for network_configuration_category_key, network_configuration_category_value in var.network_configuration.network_configuration_categories :
       network_configuration_category_value.inject_into_existing_vcns != null ? length(network_configuration_category_value.inject_into_existing_vcns) > 0 ? [
         for vcn_key, vcn_value in network_configuration_category_value.inject_into_existing_vcns : {
-          vcn_id  = length(regexall("^ocid1.*$", vcn_value.vcn_id)) > 0 ? vcn_value.vcn_id : contains(keys(oci_core_vcn.these),vcn_value.vcn_id) ? oci_core_vcn.these[vcn_value.vcn_id].id : var.network_dependency["vcns"][vcn_value.vcn_id].id
+          vcn_id  = length(regexall("^ocid1.*$", vcn_value.vcn_id)) > 0 ? vcn_value.vcn_id : contains(keys(oci_core_vcn.these), vcn_value.vcn_id) ? oci_core_vcn.these[vcn_value.vcn_id].id : var.network_dependency["vcns"][vcn_value.vcn_id].id
           vcn_key = vcn_key
         }
       ] : [] : []
@@ -125,7 +125,7 @@ locals {
       network_configuration_category_value.inject_into_existing_vcns != null ? length(network_configuration_category_value.inject_into_existing_vcns) > 0 ? [
         for vcn_key, vcn_value in network_configuration_category_value.inject_into_existing_vcns : {
           vcn_key                        = vcn_key
-          vcn_id                         = length(regexall("^ocid1.*$", vcn_value.vcn_id)) > 0 ? vcn_value.vcn_id : contains(keys(oci_core_vcn.these),vcn_value.vcn_id) ? oci_core_vcn.these[vcn_value.vcn_id].id : var.network_dependency["vcns"][vcn_value.vcn_id].id
+          vcn_id                         = length(regexall("^ocid1.*$", vcn_value.vcn_id)) > 0 ? vcn_value.vcn_id : contains(keys(oci_core_vcn.these), vcn_value.vcn_id) ? oci_core_vcn.these[vcn_value.vcn_id].id : var.network_dependency["vcns"][vcn_value.vcn_id].id
           network_configuration_category = network_configuration_category_key
           vcn_name                       = data.oci_core_vcn.existing_vcns[vcn_key].display_name
           compartment_id                 = data.oci_core_vcn.existing_vcns[vcn_key].compartment_id

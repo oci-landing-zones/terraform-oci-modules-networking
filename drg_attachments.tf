@@ -148,7 +148,7 @@ resource "oci_core_drg_attachment" "these" {
     iterator = net_det
     for_each = each.value.network_details != null ? [each.value.network_details] : []
     content {
-      id   = net_det.value.attached_resource_id != null ? net_det.value.attached_resource_id : (net_det.value.attached_resource_key != null ? (contains(keys(local.provisioned_vcns),net_det.value.attached_resource_key) ? local.provisioned_vcns[net_det.value.attached_resource_key].id : contains(keys(var.network_dependency["vcns"]),net_det.value.attached_resource_key) ? var.network_dependency["vcns"][net_det.value.attached_resource_key].id : null) : null)
+      id   = net_det.value.attached_resource_id != null ? net_det.value.attached_resource_id : (net_det.value.attached_resource_key != null ? (contains(keys(local.provisioned_vcns), net_det.value.attached_resource_key) ? local.provisioned_vcns[net_det.value.attached_resource_key].id : contains(keys(var.network_dependency["vcns"]), net_det.value.attached_resource_key) ? var.network_dependency["vcns"][net_det.value.attached_resource_key].id : null) : null)
       type = net_det.value.type
 
       #Optional

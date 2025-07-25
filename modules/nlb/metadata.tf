@@ -3,5 +3,5 @@
 
 #-- Used to inform module and release number.
 locals {
-    cislz_module_tag = {"ocilz-terraform-module" : fileexists("${path.module}/../release.txt") ? "${var.module_name}/${file("${path.module}/../release.txt")}" : "${var.module_name}"}
+  cislz_module_tag = { "ocilz-terraform-module" : fileexists("${path.module}/../release.txt") ? "${var.module_name}/${file("${path.module}/../release.txt")}" : "${var.module_name}" }
 }    
