@@ -14,4 +14,4 @@ networking-prep-test-cases-pull:
     - git commit -m "Automated commit from pipeline [skip ci]" || echo "No changes to commit"
     - git remote set-url origin https://terraform-runner-token:${CI_ACCESS_TOKEN}@orahub.oci.oraclecorp.com/nace-shared-services/oci-core-landing-zone.git
     - git push origin HEAD:$CI_COMMIT_BRANCH
-    - echo "  ----- Completed terraform fmt before run -----  "
+    - echo "  ----- Completed terraform fmt -----  "
