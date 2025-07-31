@@ -9,9 +9,9 @@
 
 locals {
   one_dimension_cross_connects = local.one_dimension_cross_connect_groups != null ? {
-      for flat_cc in flatten([
-        for ccg_key, ccg_value in local.one_dimension_cross_connect_groups :
-       ccg_value.cross_connects != null ? length(ccg_value.cross_connects) > 0 ? [
+          for flat_cc in flatten([
+      for ccg_key, ccg_value in local.one_dimension_cross_connect_groups :
+      ccg_value.cross_connects != null ? length(ccg_value.cross_connects) > 0 ? [
         for cc_key, cc_value in ccg_value.cross_connects : {
           compartment_id                                = cc_value.compartment_id != null ? cc_value.compartment_id : ccg_value.category_compartment_id != null ? ccg_value.category_compartment_id : ccg_value.default_compartment_id != null ? ccg_value.default_compartment_id : null
           category_compartment_id                       = ccg_value.category_compartment_id
