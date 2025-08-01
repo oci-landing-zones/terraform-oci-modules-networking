@@ -9,7 +9,7 @@
 
 locals {
   one_dimension_cross_connects = local.one_dimension_cross_connect_groups != null ? {
-          for flat_cc in flatten([
+    for flat_cc in flatten([
       for ccg_key, ccg_value in local.one_dimension_cross_connect_groups :
       ccg_value.cross_connects != null ? length(ccg_value.cross_connects) > 0 ? [
         for cc_key, cc_value in ccg_value.cross_connects : {
