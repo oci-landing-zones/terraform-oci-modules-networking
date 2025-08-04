@@ -9,7 +9,7 @@
 
 locals {
   one_dimension_cross_connect_groups = local.one_dimension_processed_non_vcn_specific_gateways != null ? {
-        for flat_ccg in flatten([
+    for flat_ccg in flatten([
       for vcn_non_specific_gw_key, vcn_non_specific_gw_value in local.one_dimension_processed_non_vcn_specific_gateways :
       vcn_non_specific_gw_value.cross_connect_groups != null ? length(vcn_non_specific_gw_value.cross_connect_groups) > 0 ? [
         for ccg_key, ccg_value in vcn_non_specific_gw_value.cross_connect_groups : {
