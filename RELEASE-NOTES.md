@@ -1,4 +1,4 @@
-# July 29, 2025 Release Notes - 0.7.7
+# August 4, 2025 Release Notes - 0.7.7
 
 ## Fixes
 1. Resolve missing DNS resolver IDs.
