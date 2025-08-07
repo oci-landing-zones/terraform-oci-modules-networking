@@ -292,7 +292,7 @@ Attributes that support a compartment referring key:
   - *compartment_id*
 
 #### network_dependency (Optional)
-A map of map of objects containing the externally managed network resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a client of this module. Within *network_dependency*, VCNs must be indexed with the **vcns** key, DRGs indexed with the **dynamic_routing_gateways** key, DRG attachments indexed with **drg_attachments** key, Local Peering Gateways (LPG) indexed with **local_peering_gateways**, Remote Peering Connections (RPC) indexed with **remote_peering_connections** key, DNS Private Views indexed by **dns_private_views**. Each VCN, DRG, DRG attachment, LPG, RPC and DNS Private View must contain the *id* attribute (to which the actual OCID is assigned). RPCs must also pass the peer region name in the *region_name* attribute.
+A map of map of objects containing the externally managed network resources this module may depend on. This mechanism allows for the usage of referring keys (instead of OCIDs) in some attributes. The module replaces the keys by the OCIDs provided within *network_dependency* map. Contents of *network_dependency* is typically the output of a client of this module. Within *network_dependency*, VCNs must be indexed with the **vcns** key, DRGs indexed with the **dynamic_routing_gateways** key, DRG attachments indexed with **drg_attachments** key, Local Peering Gateways (LPG) indexed with **local_peering_gateways**, Remote Peering Connections (RPC) indexed with **remote_peering_connections** key, DNS Private Views indexed by **dns_private_views**, Reserved Public IPs indexed by **public_ips**. Each VCN, DRG, DRG attachment, LPG, RPC, DNS, and Resevered Public IP Private View must contain the *id* attribute (to which the actual OCID is assigned). RPCs must also pass the peer region name in the *region_name* attribute.
 
 *network_dependency* example:
 ```
@@ -322,10 +322,15 @@ A map of map of objects containing the externally managed network resources this
       "id" : "ocid1.remotepeeringconnection.oc1.us-ashburn-1.aaaaaaaa...4rt",
       "region_name" : "us-ashburn-1"
     }
-  }  
+  },  
   "dns_private_views" : {  
     "XYZ-DNS-VIEW" : {
       "id" : "ocid1.dnsview.oc1.phx.aaaaaaaa...nhq",
+    }
+  },
+  "public_ips" : {  
+    "XYZ-PUBLIC-IPS" : {
+      "id" : "ocid1.publicip.oc1.iad.amaaaaaaa...lqa",
     }
   }
 } 
