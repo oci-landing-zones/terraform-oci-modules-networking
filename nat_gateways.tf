@@ -20,7 +20,8 @@ locals {
           route_table_id                 = null
           route_table_key                = natgw_value.route_table_key
           block_traffic                  = natgw_value.block_traffic
-          public_ip_id                   = natgw_value.public_ip_id
+          public_ip_id                   = natgw_value.public_ip_id != null ? (length(regexall("^ocid1.*$", natgw_value.public_ip_id))) > 0 ? natgw_value.public_ip_id : var.network_dependency != null ? var.network_dependency.public_ips[natgw_value.public_ip_id].id : oci_core_public_ip.these[natgw_value.public_ip_id].id !=  null ? oci_core_public_ip.these[natgw_value.public_ip_id].id : null : null
+
           network_configuration_category = vcn_specific_gw_value.network_configuration_category
           natgw_key                      = natgw_key
           vcn_name                       = vcn_specific_gw_value.vcn_name
@@ -124,3 +125,4 @@ resource "oci_core_nat_gateway" "these" {
     }
   )[each.value.route_table_key].id : null
 }
+
