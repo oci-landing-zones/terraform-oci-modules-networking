@@ -1,9 +1,10 @@
-# July 29, 2025 Release Notes - 0.7.7
+# August 4, 2025 Release Notes - 0.7.7
 
 ## Fixes
-1. Resolve missing DNS resolver IDs
-2. Ability to set up IPSEC Tunnels Phase 1 and 2 details
-3. Resolve private DNS Zone not being able to accept a compartment key
+1. Resolve missing DNS resolver IDs.
+2. Ability to set up IPSEC Tunnels Phase 1 and 2 details.
+3. Resolve private DNS Zone not being able to accept a compartment key.
+4. Format code to adhere to Terraform standards.
 
 
 # June 10, 2025 Release Notes - 0.7.6
