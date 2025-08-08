@@ -76,7 +76,7 @@
 ### 3.1. Changing Route Table Node
 Once a route table update will generate a switch from one RT-NODE to another one, and the initial node is referenced by an AT-NODE, this will generate an error as terraform will
 attempt to delete the RT from the current node and recreated as part of a different node without updating the AT-NODE(referencing node)
-  - The workaround will be to 1st delete manualy the refereance from the *tfvars/json/yaml configuration, run terraform apply and them update and apply the RT with an update that will generate
+  - The workaround will be to 1st delete manually the reference from the *tfvars/json/yaml configuration, run terraform apply and them update and apply the RT with an update that will generate
 a move from one RT-NODE to another one.
   - This limitation will also, as said, generate a recreation of the object and not just an update of the RT object.
 

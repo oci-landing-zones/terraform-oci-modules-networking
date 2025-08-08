@@ -258,9 +258,9 @@ variable "network_configuration" {
               })))
               dns_rrset = optional(map(object({
                 compartment_id = optional(string)
-                domain         = optional(string),
-                rtype          = optional(string),
-                scope          = optional(string),
+                domain = optional(string),
+                rtype  = optional(string),
+                scope  = optional(string),
                 items = optional(list(object({
                   domain = optional(string),
                   rdata  = optional(string),
@@ -1069,7 +1069,7 @@ variable "network_configuration" {
               icmp_code = optional(number),
             })))
             application_lists = optional(map(object({
-              name         = string,
+              name = string,
               applications = list(string)
             }))),
             mapped_secrets = optional(map(object({
