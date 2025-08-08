@@ -13,14 +13,15 @@ locals {
       for vcn_specific_gw_key, vcn_specific_gw_value in local.one_dimension_processed_vcn_specific_gateways :
       vcn_specific_gw_value.nat_gateways != null ? length(vcn_specific_gw_value.nat_gateways) > 0 ? [
         for natgw_key, natgw_value in vcn_specific_gw_value.nat_gateways : {
-          compartment_id                 = natgw_value.compartment_id != null ? natgw_value.compartment_id : vcn_specific_gw_value.category_compartment_id != null ? vcn_specific_gw_value.category_compartment_id : vcn_specific_gw_value.default_compartment_id != null ? vcn_specific_gw_value.default_compartment_id : null
-          defined_tags                   = merge(natgw_value.defined_tags, vcn_specific_gw_value.category_defined_tags, vcn_specific_gw_value.default_defined_tags)
-          freeform_tags                  = merge(natgw_value.freeform_tags, vcn_specific_gw_value.category_freeform_tags, vcn_specific_gw_value.default_freeform_tags)
-          display_name                   = natgw_value.display_name
-          route_table_id                 = null
-          route_table_key                = natgw_value.route_table_key
-          block_traffic                  = natgw_value.block_traffic
-          public_ip_id                   = natgw_value.public_ip_id
+          compartment_id  = natgw_value.compartment_id != null ? natgw_value.compartment_id : vcn_specific_gw_value.category_compartment_id != null ? vcn_specific_gw_value.category_compartment_id : vcn_specific_gw_value.default_compartment_id != null ? vcn_specific_gw_value.default_compartment_id : null
+          defined_tags    = merge(natgw_value.defined_tags, vcn_specific_gw_value.category_defined_tags, vcn_specific_gw_value.default_defined_tags)
+          freeform_tags   = merge(natgw_value.freeform_tags, vcn_specific_gw_value.category_freeform_tags, vcn_specific_gw_value.default_freeform_tags)
+          display_name    = natgw_value.display_name
+          route_table_id  = null
+          route_table_key = natgw_value.route_table_key
+          block_traffic   = natgw_value.block_traffic
+          public_ip_id    = natgw_value.public_ip_id != null ? (length(regexall("^ocid1.*$", natgw_value.public_ip_id))) > 0 ? natgw_value.public_ip_id : var.network_dependency != null ? var.network_dependency.public_ips[natgw_value.public_ip_id].id : oci_core_public_ip.these[natgw_value.public_ip_id].id != null ? oci_core_public_ip.these[natgw_value.public_ip_id].id : null : null
+
           network_configuration_category = vcn_specific_gw_value.network_configuration_category
           natgw_key                      = natgw_key
           vcn_name                       = vcn_specific_gw_value.vcn_name
@@ -124,3 +125,4 @@ resource "oci_core_nat_gateway" "these" {
     }
   )[each.value.route_table_key].id : null
 }
+

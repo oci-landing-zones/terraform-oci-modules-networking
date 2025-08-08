@@ -114,7 +114,7 @@ locals {
         for view_key, view_value in vcn_value.dns_resolver.attached_views :
         view_value.dns_zones != null ? [
           for zone_key, zone_value in view_value.dns_zones : [
-            for steering_policy_key, steering_policy_value in coalesce(zone_value.dns_steering_policies,{}) : {
+            for steering_policy_key, steering_policy_value in coalesce(zone_value.dns_steering_policies, {}) : {
               zone_key                = zone_key
               steering_policy_key     = steering_policy_key
               domain_name             = steering_policy_value.domain_name
@@ -148,7 +148,7 @@ locals {
                 view_key       = view_key
                 compartment_id = rrset_value.compartment_id != null ? rrset_value.compartment_id : vcn_value.category_compartment_id != null ? vcn_value.category_compartment_id : vcn_value.default_compartment_id != null ? vcn_value.default_compartment_id : null
                 rtype          = rrset_value.rtype
-                domain = rrset_value.domain
+                domain         = rrset_value.domain
                 scope          = rrset_value.scope
                 items          = rrset_value.items
             }] : []
@@ -157,8 +157,102 @@ locals {
       ] : [] : []
     ]) : flat_dns_rrset.rrset_key => flat_dns_rrset
   } : {}
-}
 
+  provisioned_dns_tsig_keys = {
+    for tsig_key, tsig_value in oci_dns_tsig_key.these : tsig_key => {
+      ocid           = tsig_value.id
+      compartment_id = tsig_value.compartment_id
+      name           = tsig_value.name
+      secret         = tsig_value.secret
+      algorithm      = tsig_value.algorithm
+      defined_tags   = tsig_value.defined_tags
+      freeform_tags  = tsig_value.freeform_tags
+    }
+  }
+
+  provisioned_dns_resolver_endpoints = {
+    for endpoint_key, endpoint_value in oci_dns_resolver_endpoint.these : endpoint_key => {
+      ocid               = endpoint_value.id
+      is_forwarding      = endpoint_value.is_forwarding
+      is_listening       = endpoint_value.is_listening
+      name               = endpoint_value.name
+      resolver_id        = endpoint_value.resolver_id
+      subnet_id          = endpoint_value.subnet_id
+      scope              = endpoint_value.scope
+      endpoint_type      = endpoint_value.endpoint_type
+      forwarding_address = endpoint_value.forwarding_address
+      listening_address  = endpoint_value.listening_address
+      nsg_ids            = endpoint_value.nsg_ids
+    }
+  }
+
+  provisioned_dns_resolver = {
+    for resolver_key, resolver_value in oci_dns_resolver.these : resolver_key => {
+      resolver_id    = resolver_value.resolver_id
+      ocid           = resolver_value.id
+      scope          = resolver_value.scope
+      display_name   = resolver_value.display_name
+      attached_views = resolver_value.attached_views
+      defined_tags   = resolver_value.defined_tags
+      freeform_tags  = resolver_value.freeform_tags
+      rules          = resolver_value.rules
+    }
+  }
+
+  provisioned_dns_views = {
+    for view_key, view_value in oci_dns_view.these : view_key => {
+      ocid           = view_value.id
+      compartment_id = view_value.compartment_id
+      display_name   = view_value.display_name
+      scope          = view_value.scope
+      defined_tags   = view_value.defined_tags
+      freeform_tags  = view_value.freeform_tags
+    }
+  }
+
+  provisioned_dns_zones = {
+    for zone_key, zone_value in oci_dns_zone.these : zone_key => {
+      ocid                 = zone_value.id
+      compartment_id       = zone_value.compartment_id
+      name                 = zone_value.name
+      scope                = zone_value.scope
+      zone_type            = zone_value.zone_type
+      view_id              = zone_value.view_id
+      external_downstreams = zone_value.external_downstreams
+      external_masters     = zone_value.external_masters
+      defined_tags         = zone_value.defined_tags
+      freeform_tags        = zone_value.freeform_tags
+    }
+  }
+
+  provisioned_dns_steering_policies = {
+    for steering_policy_key, steering_policy_value in oci_dns_steering_policy.these : steering_policy_key => {
+      ocid                    = steering_policy_value.id
+      compartment_id          = steering_policy_value.compartment_id
+      display_name            = steering_policy_value.display_name
+      template                = steering_policy_value.template
+      answers                 = steering_policy_value.answers
+      defined_tags            = steering_policy_value.defined_tags
+      freeform_tags           = steering_policy_value.freeform_tags
+      health_check_monitor_id = steering_policy_value.health_check_monitor_id
+      rules                   = steering_policy_value.rules
+      ttl                     = steering_policy_value.ttl
+    }
+  }
+
+  provisioned_dns_rrset = {
+    for rrset_key, rrset_value in oci_dns_rrset.these : rrset_key => {
+      ocid            = rrset_value.id
+      compartment_id  = rrset_value.compartment_id
+      domain          = rrset_value.domain
+      rtype           = rrset_value.rtype
+      zone_name_or_id = rrset_value.zone_name_or_id
+      view_id         = rrset_value.view_id
+      scope           = rrset_value.scope
+      items           = rrset_value.items
+    }
+  }
+}
 
 data "oci_core_vcn_dns_resolver_association" "dns_resolvers" {
   for_each   = local.one_dimension_processed_vcns
@@ -166,25 +260,23 @@ data "oci_core_vcn_dns_resolver_association" "dns_resolvers" {
   depends_on = [time_sleep.wait_for_dns_resolver]
 }
 
-
 resource "oci_dns_view" "these" {
-  for_each = local.one_dimension_dns_views
-    compartment_id = each.value.compartment_id
-    display_name  = each.value.display_name
-    scope         = "PRIVATE"
-    defined_tags  = each.value.defined_tags
-    freeform_tags = each.value.freeform_tags
+  for_each       = local.one_dimension_dns_views
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
+  display_name   = each.value.display_name
+  scope          = "PRIVATE"
+  defined_tags   = each.value.defined_tags
+  freeform_tags  = each.value.freeform_tags
 }
-
 
 resource "oci_dns_zone" "these" {
   for_each       = local.one_dimension_dns_zones
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   name           = each.value.name
   scope          = each.value.scope
   zone_type      = each.value.zone_type
 
-  view_id = each.value.view_key != null ? (contains(keys(oci_dns_view.these),each.value.view_key) ? oci_dns_view.these[each.value.view_key].id : (length(regexall("^ocid1.*$", each.value.view_id)) > 0 ? each.value.view_id : var.network_dependency["dns_private_views"][each.value.view_id].id)) : null
+  view_id = each.value.view_key != null ? (contains(keys(oci_dns_view.these), each.value.view_key) ? oci_dns_view.these[each.value.view_key].id : (length(regexall("^ocid1.*$", each.value.view_id)) > 0 ? each.value.view_id : var.network_dependency["dns_private_views"][each.value.view_id].id)) : null
 
   dynamic "external_downstreams" {
     for_each = each.value.external_downstreams
@@ -209,11 +301,9 @@ resource "oci_dns_zone" "these" {
   freeform_tags = each.value.freeform_tags
 }
 
-
-
 resource "oci_dns_rrset" "these" {
   for_each        = local.one_dimension_dns_rrset
-  compartment_id  = each.value.compartment_id
+  compartment_id  = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   domain          = each.value.domain
   rtype           = each.value.rtype
   zone_name_or_id = oci_dns_zone.these[each.value.zone_key].id
@@ -233,7 +323,7 @@ resource "oci_dns_rrset" "these" {
 
 resource "oci_dns_tsig_key" "these" {
   for_each       = local.one_dimension_dns_tsig_keys
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   name           = each.value.name
   secret         = each.value.secret
   algorithm      = each.value.algorithm
@@ -241,7 +331,6 @@ resource "oci_dns_tsig_key" "these" {
   freeform_tags  = each.value.freeform_tags
 
 }
-
 
 resource "oci_dns_resolver_endpoint" "these" {
   for_each           = local.one_dimension_resolver_endpoints
@@ -272,7 +361,7 @@ resource "oci_dns_resolver" "these" {
     for_each = each.value.attached_views
     iterator = views
     content {
-      view_id = views.key != null ? (contains(keys(oci_dns_view.these),views.key) ? oci_dns_view.these[views.key].id : (length(regexall("^ocid1.*$", views.value.existing_view_id)) > 0 ? views.value.existing_view_id : var.network_dependency["dns_private_views"][views.value.existing_view_id].id)) : null
+      view_id = views.key != null ? (contains(keys(oci_dns_view.these), views.key) ? oci_dns_view.these[views.key].id : (length(regexall("^ocid1.*$", views.value.existing_view_id)) > 0 ? views.value.existing_view_id : var.network_dependency["dns_private_views"][views.value.existing_view_id].id)) : null
     }
   }
   defined_tags  = each.value.defined_tags
@@ -296,7 +385,7 @@ resource "oci_dns_resolver" "these" {
 
 resource "oci_dns_steering_policy" "these" {
   for_each       = local.one_dimension_dns_steering_policies
-  compartment_id = each.value.compartment_id
+  compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   display_name   = each.value.display_name
   template       = each.value.template
 
