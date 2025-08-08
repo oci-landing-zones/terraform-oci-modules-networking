@@ -1,9 +1,9 @@
-# August 4, 2025 Release Notes - 0.7.7
+# August 08, 2025 Release Notes - 0.7.7
 
 ## Fixes
-1. Resolve missing DNS resolver IDs
-2. Ability to set up IPSEC Tunnels Phase 1 and 2 details
-3. Resolve private DNS Zone not being able to accept a compartment key
+1. Resolve missing DNS resolver IDs.
+2. Ability to set up IPSEC Tunnels Phase 1 and 2 details.
+3. Resolve private DNS Zone not being able to accept a compartment key.
 4. Format code to adhere to Terraform standards.
 5. Ability for NAT Gateway resource to support assigning a reserved IP using a logical key.
 
