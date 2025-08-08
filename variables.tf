@@ -1325,6 +1325,9 @@ variable "network_dependency" {
     dns_private_views = optional(map(object({
       id = string # the DNS private view OCID
     })))
+    public_ips = optional(map(object({
+      id = string # The OCID of the public IP
+    })))
   })
   default = null
 }
