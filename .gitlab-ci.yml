@@ -1,0 +1,19 @@
+stages:
+  - format
+
+terraform-format-job:
+  stage: format
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      changes:
+        - "**/*.tf"
+        - "**/*.yml"
+  script:
+    - set -o pipefail
+    - echo "  ----- Running terraform fmt -----  "
+    - terraform fmt -recursive
+    - git add .
+    - git commit -m "Automated commit from pipeline [skip ci]" || echo "No changes to commit"
+    - git remote set-url origin https://terraform-runner-token:${CI_ACCESS_TOKEN}@orahub.oci.oraclecorp.com/nace-shared-services/terraform-oci-cis-landing-zone-networking.git
+    - git push origin HEAD:$CI_COMMIT_BRANCH
+    - echo "  ----- Completed terraform fmt -----  "

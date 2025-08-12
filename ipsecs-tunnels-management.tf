@@ -36,6 +36,8 @@ locals {
           drg_id                         = ipsec_value.drg_id
           drg_key                        = ipsec_value.drg_key
           drg_name                       = ipsec_value.drg_name
+          phase_one_details              = ipsec_tunnel_management_value.phase_one_details
+          phase_two_details              = ipsec_tunnel_management_value.phase_two_details
         } if ipsec_tunnel_management_value != null
       ] : [] : []
     ]) : flat_ipsec_tunnel_management.ipsec_tunnel_management_key => flat_ipsec_tunnel_management
@@ -113,4 +115,30 @@ resource "oci_core_ipsec_connection_tunnel_management" "these" {
 
   shared_secret = each.value.shared_secret
   ike_version   = each.value.ike_version
+
+  dynamic "phase_one_details" {
+    for_each = each.value.phase_one_details != null ? [1] : []
+
+    content {
+      custom_authentication_algorithm = each.value.phase_one_details.custom_authentication_algorithm
+      custom_dh_group                 = each.value.phase_one_details.custom_dh_group
+      custom_encryption_algorithm     = each.value.phase_one_details.custom_encryption_algorithm
+      is_custom_phase_one_config      = each.value.phase_one_details.is_custom_phase_one_config
+      lifetime                        = each.value.phase_one_details.lifetime
+    }
+  }
+
+  dynamic "phase_two_details" {
+    for_each = each.value.phase_two_details != null ? [1] : []
+
+    content {
+      custom_authentication_algorithm = each.value.phase_two_details.custom_authentication_algorithm
+      dh_group                        = each.value.phase_two_details.dh_group
+      custom_encryption_algorithm     = each.value.phase_two_details.custom_encryption_algorithm
+      is_custom_phase_two_config      = each.value.phase_two_details.is_custom_phase_two_config
+      is_pfs_enabled                  = each.value.phase_two_details.is_pfs_enabled
+      lifetime                        = each.value.phase_two_details.lifetime
+    }
+  }
 }
+
