@@ -657,7 +657,7 @@ resource "oci_core_route_table" "drga_specific_route_tables" {
     content {
       destination       = rule.value.destination
       destination_type  = rule.value.destination_type
-      network_entity_id = rule.value.network_entity_id != null ? rule.value.network_entity_id : rule.value.network_entity_key != null ? local.route_rules_targets_for_LPG_specific_RTs[rule.value.network_entity_key].id : null
+      network_entity_id = rule.value.network_entity_id != null ? rule.value.network_entity_id : rule.value.network_entity_key != null ? local.route_rules_targets_for_DRGA_specific_RTs[rule.value.network_entity_key].id : null
       description       = rule.value.description
     }
   }
