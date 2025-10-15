@@ -6,10 +6,7 @@
 # Last Modified: Mon Dec 11 2023                                                                          #
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
-output "one_dimension_inject_into_existing_drgs" {
-  value = local.one_dimension_inject_into_existing_drgs
-  description = "Debug output for one_dimension_inject_into_existing_drgs"
-}
+
 
 locals {
   one_dimension_remote_peering_connections_1 = local.one_dimension_dynamic_routing_gateways != null ? length(local.one_dimension_dynamic_routing_gateways) > 0 ? {
