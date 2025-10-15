@@ -6,7 +6,10 @@
 # Last Modified: Mon Dec 11 2023                                                                          #
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
-
+output "one_dimension_inject_into_existing_drgs" {
+  value = local.one_dimension_inject_into_existing_drgs
+  description = "Debug output for one_dimension_inject_into_existing_drgs"
+}
 
 locals {
   one_dimension_remote_peering_connections_1 = local.one_dimension_dynamic_routing_gateways != null ? length(local.one_dimension_dynamic_routing_gateways) > 0 ? {
@@ -39,7 +42,7 @@ locals {
           compartment_id                 = rpc_value.compartment_id != null ? rpc_value.compartment_id : drg_value.category_compartment_id != null ? drg_value.category_compartment_id : drg_value.default_compartment_id != null ? drg_value.default_compartment_id : null
           defined_tags                   = rpc_value.defined_tags
           freeform_tags                  = rpc_value.freeform_tags
-          drg_id                         = drg_value.drg_id
+          drg_id                         = drg_value.id
           drg_key                        = drg_key
           drg_name                       = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
           display_name                   = rpc_value.display_name
