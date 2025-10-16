@@ -161,4 +161,9 @@ resource "oci_load_balancer_load_balancer" "these" {
     maximum_bandwidth_in_mbps = each.value.shape_details.maximum_bandwidth_in_mbps
     minimum_bandwidth_in_mbps = each.value.shape_details.minimum_bandwidth_in_mbps
   }
+  lifecycle {
+    ignore_changes = [
+      defined_tags
+    ]
+  }
 }
