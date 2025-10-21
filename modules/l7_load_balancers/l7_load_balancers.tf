@@ -143,13 +143,13 @@ resource "oci_load_balancer_load_balancer" "these" {
   compartment_id = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
   display_name   = each.value.display_name
   shape          = each.value.shape
-#   subnet_ids     = each.value.subnet_ids
-# #   subnet_ids = [ for subnet_id in each.value.subnet_ids :  length(regexall("^ocid1.*$", subnet_id)) > 0 ? subnet_id : var.network_dependency["subnets"][subnet_id].id ]
+  #   subnet_ids     = each.value.subnet_ids
+  # #   subnet_ids = [ for subnet_id in each.value.subnet_ids :  length(regexall("^ocid1.*$", subnet_id)) > 0 ? subnet_id : var.network_dependency["subnets"][subnet_id].id ]
   subnet_ids = [
     for subnet_id in each.value.subnet_ids :
-      length(regexall("^ocid1.*$", subnet_id)) > 0
-        ? subnet_id
-        : var.network_dependency.subnets[subnet_id].id
+    length(regexall("^ocid1.*$", subnet_id)) > 0
+    ? subnet_id
+    : var.network_dependency.subnets[subnet_id].id
   ]
 
   #Optional
