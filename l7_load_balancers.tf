@@ -81,4 +81,5 @@ module "l7_load_balancers" {
     l7_load_balancers = local.one_dimension_processed_l7_load_balancers
   }
   compartments_dependency = var.compartments_dependency
+  network_dependency      = var.network_dependency
 }
