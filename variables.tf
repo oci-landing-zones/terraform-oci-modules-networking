@@ -1304,7 +1304,7 @@ variable "compartments_dependency" {
 }
 
 variable "network_dependency" {
-  description = "An object containing the externally managed network resources this module may depend on. Supported resources are 'vcns', 'dynamic_routing_gateways', 'drg_attachments', 'local_peering_gateways', 'remote_peering_connections', and 'dns_private_views', represented as map of objects. Each object, when defined, must have an 'id' attribute of string type set with the VCN, DRG OCID, DRG Attachment OCID, Local Peering Gateway OCID or Remote Peering Connection OCID. 'remote_peering_connections' must also pass the peer region name in the region_name attribute. See External Dependencies section in README.md (https://github.com/oci-landing-zones/terraform-oci-modules-networking#ext-dep) for details."
+  description = "An object containing the externally managed network resources this module may depend on. Supported resources are 'vcns', 'dynamic_routing_gateways', 'drg_attachments', 'local_peering_gateways', 'remote_peering_connections',  'dns_private_views', and 'subnets' represented as map of objects. Each object, when defined, must have an 'id' attribute of string type set with the VCN, DRG OCID, DRG Attachment OCID, Local Peering Gateway OCID or Remote Peering Connection OCID. 'remote_peering_connections' must also pass the peer region name in the region_name attribute. See External Dependencies section in README.md (https://github.com/oci-landing-zones/terraform-oci-modules-networking#ext-dep) for details."
   type = object({
     vcns = optional(map(object({
       id = string # the VCN OCID
@@ -1327,6 +1327,9 @@ variable "network_dependency" {
     })))
     public_ips = optional(map(object({
       id = string # The OCID of the public IP
+    })))
+    subnets = optional(map(object({
+      id = string # The OCID of the subnets
     })))
   })
   default = null

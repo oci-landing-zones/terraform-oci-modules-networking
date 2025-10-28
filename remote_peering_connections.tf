@@ -39,7 +39,7 @@ locals {
           compartment_id                 = rpc_value.compartment_id != null ? rpc_value.compartment_id : drg_value.category_compartment_id != null ? drg_value.category_compartment_id : drg_value.default_compartment_id != null ? drg_value.default_compartment_id : null
           defined_tags                   = rpc_value.defined_tags
           freeform_tags                  = rpc_value.freeform_tags
-          drg_id                         = drg_value.drg_id
+          drg_id                         = drg_value.id
           drg_key                        = drg_key
           drg_name                       = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
           display_name                   = rpc_value.display_name
