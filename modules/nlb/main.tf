@@ -40,7 +40,6 @@ locals {
         port         = listener_value.port
         ip_version   = listener_value.ip_version
         backend_set  = listener_value.backend_set
-
       }
     ]
   ])
