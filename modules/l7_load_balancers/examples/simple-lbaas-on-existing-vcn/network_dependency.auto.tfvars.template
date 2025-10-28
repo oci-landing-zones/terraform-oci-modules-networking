@@ -1,0 +1,16 @@
+
+# Working with Network Dependencies for Subnets
+# 1) Rename this file to network_dependency.auto.tfvars.
+# 2) Update the subnet OCIDs with the OCIDs specific to your environment.
+# 3) Optionally, rename the subnet key names (e.g., example1, example2) to match your naming conventions.
+
+network_dependency = {
+  subnets = {
+    example1  = {
+      id = "ocid1.subnet.oc1..."
+    }
+    example2 = {
+      id = "ocid1.subnet.oc1..."
+    }
+  }
+}

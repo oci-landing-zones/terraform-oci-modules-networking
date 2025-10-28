@@ -255,3 +255,13 @@ variable "compartments_dependency" {
   }))
   default = null
 }
+
+variable "network_dependency" {
+  description = "An object containing the externally managed network resources this module may depend on. Supported resources are 'subnets' represented as map of objects. Each object, when defined, must have an 'id' attribute of string type set with the subnet OCID."
+  type = object({
+    subnets = optional(map(object({
+      id = string # the subnet OCID
+    })))
+  })
+  default = null
+}

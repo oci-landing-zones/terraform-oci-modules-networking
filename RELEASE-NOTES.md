@@ -1,3 +1,10 @@
+# October 28, 2025 Release Notes - 0.7.8
+
+## Fixes
+1. Add network dependency to L7 Load Balancers.
+2. Resolve issue blocking Remote Peering Connections from attaching to DRG.
+3. Resolve issue affecting route rules targeting Local Peering Gateways.
+
 # August 08, 2025 Release Notes - 0.7.7
 
 ## Fixes

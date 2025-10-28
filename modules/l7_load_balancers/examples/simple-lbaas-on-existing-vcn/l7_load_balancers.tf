@@ -72,4 +72,5 @@ module "l7_load_balancers" {
     },
     l7_load_balancers = local.one_dimension_processed_l7_load_balancers
   }
+  network_dependency = var.network_dependency
 }

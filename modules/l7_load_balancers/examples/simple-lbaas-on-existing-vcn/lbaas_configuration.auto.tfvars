@@ -5,7 +5,7 @@ l7_load_balancers_configuration = {
       display_name               = "lbaas-example-01"
       shape                      = "flexible"
       subnet_keys                = null
-      subnet_ids                 = ["ocid1.subnet.oc1..."]
+      subnet_ids                 = ["ocid1.subnet.oc1..."] # If using network_dependency, you may also specify subnet keys here (e.g. subnet_ids = ["example_key"])
       ip_mode                    = "IPV4",
       is_private                 = false,
       network_security_group_ids = ["ocid1.networksecuritygroup.oc1..."],

@@ -19,7 +19,6 @@ network_configuration = {
       category_freeform_tags = {
         "vision-sub-environment" = "hub"
       }
-
       vcns = {
         VCN-HUB-KEY = {
           display_name                     = "VCN-Hub"
