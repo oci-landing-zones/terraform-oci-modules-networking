@@ -25,7 +25,7 @@ variable "nlb_configuration" {
         ip_version = optional(string)
         backend_set = object({
           name   = string
-          policy = optional(string)
+          policy = optional(string, "FIVE_TUPLE") # The network load balancer policy for the backend set. Valid values: "TWO_TUPLE", "THREE_TUPLE", and "FIVE_TUPLE". Default is "FIVE_TUPLE".
           health_checker = object({
             protocol            = string           # The protocol the health check must use. Valid values: "HTTP", "HTTPS", "UDP", "TCP".
             interval_in_millis  = optional(number) # The interval between health checks, in milliseconds. The default value is 10000 (10 seconds)

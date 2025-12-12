@@ -1,5 +1,5 @@
 <!-- BEGIN_TF_DOCS -->
-# Simple OCI Native Application(L7) Load Balancer provisioned on an existing VCN/subnet 
+# Simple OCI Native Application(L7) Load Balancer provisioned on an existing VCN/subnet
 
 ## Description
 
