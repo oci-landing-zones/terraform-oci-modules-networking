@@ -1,4 +1,4 @@
-# January 28, 2025 Release Notes - 0.7.9
+# January 28, 2026 Release Notes - 0.7.9
 
 ## Fixes
 1. Update default value for Network Load Balancer health checker
