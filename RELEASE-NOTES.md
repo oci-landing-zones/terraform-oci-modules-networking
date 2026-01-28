@@ -1,3 +1,8 @@
+# January 28, 2026 Release Notes - 0.7.9
+
+## Fixes
+1. Update default value for Network Load Balancer health checker
+
 # October 28, 2025 Release Notes - 0.7.8
 
 ## Fixes
@@ -13,12 +18,15 @@
 3. Resolve private DNS Zone not being able to accept a compartment key.
 4. Format code to adhere to Terraform standards.
 
-
-# June 10, 2025 Release Notes - 0.7.6
+# June 12, 2025 Release Notes - 0.7.6
 
 ## Fixes
 1. *cpe_traffic_selector* and *oracle_traffic_selector* are updated to *optional(list(string))* in [variables.tf](./variables.tf)
 2. *oracle_traffic_selector* typo corrected in [ipsecs-tunnels-management.tf](./ipsecs-tunnels-management.tf)
+
+## Updates
+1. Steps to generate Self-Signed certificates for Load Balancers added in [README.md
+(simple-no_vcn-oci-native-l7-lbaas-example)](./examples/simple-no_vcn-oci-native-l7-lbaas-example/README.md)  and [README.md (standard-vcn-oci-native-l7-lbaas-example)](./examples/standard-vcn-oci-native-l7-lbaas-example/README.md)
 
 # April 29, 2025 Release Notes - 0.7.5
 
