@@ -53,6 +53,27 @@ __NOTE 1:__ Please note the redudancy in defining both security lists and NSGs. 
 
 __NOTE 2:__ Please note that the entire configuration is a single complex input parameter and you're able to edit it and change the resources names and any of their configuration (like VCN and subnet CIDR blocks, dns labels...) and, also, you're able to change the input configuration topology/structure like adding more categories, more VCNs inside a category, more subnets inside a VCN or inject new resources into existing VCNs and this will reflect into the topology that terraform will provision.
 
+## Step to generate Self-Signed certificates for Load Balancers:
+  - Follow the below instructions, in case you doesn't have trusted CA certificates.
+  - Create a Self-Signed Root CA:  
+      ```openssl req -x509 -sha256 -days 1825 -newkey rsa:2048 -keyout ca.key -out ca.crt```
+  
+  - Create a cert key and certificate signing request (CSR):  
+      ```openssl req -newkey rsa:2048 -nodes -keyout my_cert.key -out my_cert.csr```
+  
+  - Create a file ```my_cert.txt``` with the below content  
+    ```cat > my_cert.txt```  
+    ```authorityKeyIdentifier=keyid,issuer```  
+      ```basicConstraints=CA:FALSE```  
+      ```subjectAltName = @alt_names [alt_names]```   
+      ```DNS.1 = oe01.com```  
+
+  - Sign the certificate CSR with Root CA:         
+      ```openssl x509 -req -CA ca.crt -CAkey ca.key -in my_cert.csr -out my_cert.crt -days 365 -CAcreateserial -extfile my_cert.txt```   
+  
+  - Check the cert:  
+      ```openssl x509 -text -noout -in my_cert.crt```  
+
 ## Diagram of the provisioned networking topology
 
 ![](diagrams/public-lb.png)
