@@ -68,7 +68,7 @@ resource "oci_network_load_balancer_backend_set" "these" {
   for_each = { for l in local.listeners : "${l.nlb_key}.${l.listener_key}.BACKENDSET" => {
     nlb_key                = l.nlb_key
     name                   = l.backend_set.name
-    policy                 = coalesce(l.backend_set.policy, "FIVE_TUPLE")
+    policy                 = l.backend_set.policy
     hc_protocol            = l.backend_set.health_checker.protocol
     hc_interval            = l.backend_set.health_checker.interval_in_millis
     hc_port                = l.backend_set.health_checker.port
@@ -78,7 +78,7 @@ resource "oci_network_load_balancer_backend_set" "these" {
     hc_retries             = l.backend_set.health_checker.retries
     hc_return_code         = l.backend_set.health_checker.return_code
     hc_timeout             = l.backend_set.health_checker.timeout_in_millis
-    hc_url_path            = coalesce(l.backend_set.health_checker.url_path, "/")
+    hc_url_path            = l.backend_set.health_checker.url_path
     is_preserve_source     = l.backend_set.is_preserve_source
   } }
 
