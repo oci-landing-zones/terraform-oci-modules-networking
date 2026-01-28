@@ -25,7 +25,7 @@ variable "nlb_configuration" {
         ip_version = optional(string)
         backend_set = object({
           name   = string
-          policy = optional(string)
+          policy = optional(string, "FIVE_TUPLE") # The network load balancer policy for the backend set. Valid values: "TWO_TUPLE", "THREE_TUPLE", and "FIVE_TUPLE". Default is "FIVE_TUPLE".
           health_checker = object({
             protocol            = string           # The protocol the health check must use. Valid values: "HTTP", "HTTPS", "UDP", "TCP".
             interval_in_millis  = optional(number) # The interval between health checks, in milliseconds. The default value is 10000 (10 seconds)
@@ -36,7 +36,7 @@ variable "nlb_configuration" {
             retries             = optional(number) # The number of retries to attempt before a backend server is considered "unhealthy". This number also applies when recovering a server to the "healthy" state. The default value is 3.
             return_code         = optional(number) # The status code a healthy backend server should return. If you configure the health check policy to use the HTTP protocol, then you can use common HTTP status codes such as "200".
             timeout_in_millis   = optional(number) # The maximum time, in milliseconds, to wait for a reply to a health check. A health check is successful only if a reply returns within this timeout period. The default value is 3000 (3 seconds)
-            url_path            = optional(string) # The path against which to run the health check. Default is "/" Example: "/healthcheck"
+            url_path            = optional(string) # The path against which to run the health check. Required only if protocol is "HTTP" or "HTTPS".
           })
           ip_version         = optional(string)
           is_preserve_source = optional(bool)
