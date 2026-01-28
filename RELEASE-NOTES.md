@@ -1,3 +1,7 @@
+# Feb , 2026 Release Notes - 0.7.10
+## Fixes
+1. Resolved issue with routing policies showing value of condition_language_version in [L7 Load Balancers](./modules/l7_load_balancers).
+
 # January 28, 2026 Release Notes - 0.7.9
 
 ## Fixes
