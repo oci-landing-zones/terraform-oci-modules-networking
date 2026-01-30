@@ -1,11 +1,12 @@
 # Feb , 2026 Release Notes - 0.7.10
 ## Fixes
 1. Resolved issue with routing policies showing value of condition_language_version in [L7 Load Balancers](./modules/l7_load_balancers).
+2. Resolved issue blocking reserved IPs usage by removing redundant reserved_public_ips variable in [L7 Load Balancers](./modules/l7_load_balancers).
 
 # January 28, 2026 Release Notes - 0.7.9
 
 ## Fixes
-1. Update default value for Network Load Balancer health checker
+1. Remove default URL path variable for Network Load Balancer Health Checker. URL path is only required for NLB Health Checkers using protocols HTTP or HTTPS.
 
 # October 28, 2025 Release Notes - 0.7.8
 
