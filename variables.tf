@@ -1283,6 +1283,14 @@ variable "network_configuration" {
               verify_peer_certificate           = optional(bool)
             }))
           })))
+          security = optional(object({
+            zpr_attributes = optional(list(object({
+              namespace  = optional(string, "oracle-zpr")
+              attr_name  = string
+              attr_value = string
+              mode       = optional(string, "enforce")
+            })))
+          }))
         })))
       }))
       }

@@ -133,6 +133,7 @@ locals {
         }
       }
       network_configuration_category = local.one_dimension_processed_l7_load_balancers[l7lb_key].network_configuration_category
+      security_attributes            = l7lb_value.security_attributes
     }
   }
 }
@@ -161,4 +162,10 @@ resource "oci_load_balancer_load_balancer" "these" {
     maximum_bandwidth_in_mbps = each.value.shape_details.maximum_bandwidth_in_mbps
     minimum_bandwidth_in_mbps = each.value.shape_details.minimum_bandwidth_in_mbps
   }
+  security_attributes = merge([
+    for z, v in each.value.security.zpr_attributes : {
+      "${v.namespace}.${v.attr_name}.value" : v.attr_value
+      "${v.namespace}.${v.attr_name}.mode" : v.mode
+    }
+  ]...)
 }

@@ -2,6 +2,7 @@
 
 ## Updates
 1. CIS checks can be now be managed at the VCN level via new attribute *enable_cis_checks*. With this addition, CIS checks can be managed at the most global level (affecting all VCNs), at the category level (affecting all VCNs at that category), and now at the VCN level.
+2. Add ZPR security_attributes in [L7 Load Balancers](./modules/l7_load_balancers).
 
 ## Fixes
 1. Resolved issue with routing policies showing value of condition_language_version in [L7 Load Balancers](./modules/l7_load_balancers).
