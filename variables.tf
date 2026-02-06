@@ -24,6 +24,7 @@ variable "network_configuration" {
       category_ssh_ports_to_check = optional(list(number)),
 
       vcns = optional(map(object({
+        enable_cis_checks = optional(bool)
         compartment_id = optional(string),
         display_name   = optional(string),
         byoipv6cidr_details = optional(map(object({
@@ -387,7 +388,7 @@ variable "network_configuration" {
       })))
 
       inject_into_existing_vcns = optional(map(object({
-
+        enable_cis_checks = optional(bool,true)
         vcn_id = string,
 
         default_security_list = optional(object({

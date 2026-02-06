@@ -24,7 +24,7 @@ locals {
           default_freeform_tags   = vcn_value.default_freeform_tags
           category_freeform_tags  = vcn_value.category_freeform_tags
           display_name            = sec_list_value.display_name
-          enable_cis_checks       = vcn_value.category_enable_cis_checks != null ? vcn_value.category_enable_cis_checks : vcn_value.default_enable_cis_checks != null ? vcn_value.default_enable_cis_checks : true
+          enable_cis_checks       = vcn_value.enable_cis_checks != null ? vcn_value.enable_cis_checks : vcn_value.category_enable_cis_checks != null ? vcn_value.category_enable_cis_checks : vcn_value.default_enable_cis_checks != null ? vcn_value.default_enable_cis_checks : true
           ssh_ports_to_check      = vcn_value.category_ssh_ports_to_check != null ? vcn_value.category_ssh_ports_to_check : vcn_value.default_ssh_ports_to_check != null ? vcn_value.default_ssh_ports_to_check : local.DEFAULT_SSH_PORTS_TO_CHECK
 
           egress_rules = sec_list_value.egress_rules != null ? [
@@ -82,7 +82,7 @@ locals {
           default_freeform_tags   = vcn_value.default_freeform_tags
           category_freeform_tags  = vcn_value.category_freeform_tags
           display_name            = sec_list_value.display_name
-          enable_cis_checks       = vcn_value.category_enable_cis_checks != null ? vcn_value.category_enable_cis_checks : vcn_value.default_enable_cis_checks != null ? vcn_value.default_enable_cis_checks : true
+          enable_cis_checks       = vcn_value.enable_cis_checks != null ? vcn_value.enable_cis_checks : vcn_value.category_enable_cis_checks != null ? vcn_value.category_enable_cis_checks : vcn_value.default_enable_cis_checks != null ? vcn_value.default_enable_cis_checks : true
           ssh_ports_to_check      = vcn_value.category_ssh_ports_to_check != null ? vcn_value.category_ssh_ports_to_check : vcn_value.default_ssh_ports_to_check != null ? vcn_value.default_ssh_ports_to_check : local.DEFAULT_SSH_PORTS_TO_CHECK
 
           egress_rules = sec_list_value.egress_rules != null ? [
@@ -187,7 +187,7 @@ resource "oci_core_security_list" "these" {
             ]
             if contains(["6", "all"], ir.protocol) && ir.src_type == "CIDR_BLOCK" && ir.src == local.network_terminology["ANYWHERE"]
           ]
-      ))} over TCP(6) or ALL(all) protocols should be avoided. Either fix the rule in your configuration by scoping down the CIDR range, or specify your actual SSH/RDP ports (default is [22,3389]) using default_ssh_ports_to_check/category_ssh_ports_to_check attributes, or disable module CIS checks altogether by setting default_enable_cis_checks/category_enable_cis_checks attributes to false."
+      ))} over TCP(6) or ALL(all) protocols should be avoided. Either fix the rule in your configuration by scoping down the CIDR range, or specify your actual SSH/RDP ports (default is [22,3389]) using default_ssh_ports_to_check/category_ssh_ports_to_check attributes, or disable module CIS checks altogether by setting default_enable_cis_checks/category_enable_cis_checks/enable_cis_checks attributes to false."
     }
   }
   #Required
