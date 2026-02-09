@@ -1,4 +1,4 @@
-# February XX, 2026 Release Notes - 0.8.0
+# February 10, 2026 Release Notes - 0.8.0
 
 ## Updates
 1. CIS checks can be now be managed at the VCN level via new attribute *enable_cis_checks*. With this addition, CIS checks can be managed at the most global level (affecting all VCNs), at the category level (affecting all VCNs at that category), and now at the VCN level.
