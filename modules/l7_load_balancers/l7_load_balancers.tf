@@ -162,10 +162,13 @@ resource "oci_load_balancer_load_balancer" "these" {
     maximum_bandwidth_in_mbps = each.value.shape_details.maximum_bandwidth_in_mbps
     minimum_bandwidth_in_mbps = each.value.shape_details.minimum_bandwidth_in_mbps
   }
-  security_attributes = merge([
-    for z, v in each.value.security.zpr_attributes : {
+
+  security_attributes = merge({}, [
+    for v in try(each.value.security.zpr_attributes, []) : {
       "${v.namespace}.${v.attr_name}.value" : v.attr_value
       "${v.namespace}.${v.attr_name}.mode" : v.mode
     }
   ]...)
+
+
 }
