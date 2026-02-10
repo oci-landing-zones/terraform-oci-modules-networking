@@ -49,7 +49,7 @@ resource "oci_load_balancer_load_balancer_routing_policy" "these" {
   #Required
   condition_language_version = each.value.condition_language_version
   load_balancer_id           = each.value.load_balancer_id
-  name                       = each.value.condition_language_version
+  name                       = each.value.name
   dynamic "rules" {
     for_each = each.value.rules != null ? length(each.value.rules) > 0 ? each.value.rules : {} : {}
     content {

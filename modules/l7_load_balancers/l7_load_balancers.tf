@@ -57,36 +57,36 @@ locals {
       }
 
       reserved_ips = l7lb_value.reserved_ips
-      reserved_public_ips = {
-        for rpip in flatten(l7lb_value.reserved_ips != null ? [
-          for rpip_id in l7lb_value.reserved_ips : contains([
-            for rpip_id_key, rpip_id_value in local.provisioned_oci_core_public_ips : rpip_id_value.id
-            ],
-
-            rpip_id) ? local.provisioned_oci_core_public_ips != null ? [
-            for rpip_id_key, rpip_id_value in local.provisioned_oci_core_public_ips : {
-              display_name = rpip_id_value.display_name
-              rpip_id_key  = rpip_id_key
-              rpip_id      = rpip_id
-            } if rpip_id_value.id == rpip_id] : [
-            {
-              display_name = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
-              rpip_id_key  = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
-              rpip_id      = rpip_id
-            }
-            ] : [
-            {
-              display_name = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
-              rpip_id_key  = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
-              rpip_id      = rpip_id
-            }
-          ]
-          ] : []) : rpip.rpip_id => {
-          display_name = rpip.display_name
-          rpip_id_key  = rpip.rpip_id_key
-          rpip_id      = rpip.rpip_id
-        }
-      }
+      #      reserved_public_ips = {
+      #        for rpip in flatten(l7lb_value.reserved_ips != null ? [
+      #          for rpip_id in l7lb_value.reserved_ips : contains([
+      #            for rpip_id_key, rpip_id_value in local.provisioned_oci_core_public_ips : rpip_id_value.id
+      #            ],
+      #
+      #            rpip_id) ? local.provisioned_oci_core_public_ips != null ? [
+      #            for rpip_id_key, rpip_id_value in local.provisioned_oci_core_public_ips : {
+      #              display_name = rpip_id_value.display_name
+      #              rpip_id_key  = rpip_id_key
+      #              rpip_id      = rpip_id
+      #            } if rpip_id_value.id == rpip_id] : [
+      #            {
+      #              display_name = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+      #              rpip_id_key  = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+      #              rpip_id      = rpip_id
+      #            }
+      #            ] : [
+      #            {
+      #              display_name = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+      #              rpip_id_key  = "NOT DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+      #              rpip_id      = rpip_id
+      #            }
+      #          ]
+      #          ] : []) : rpip.rpip_id => {
+      #          display_name = rpip.display_name
+      #          rpip_id_key  = rpip.rpip_id_key
+      #          rpip_id      = rpip.rpip_id
+      #        }
+      #      }
       shape         = l7lb_value.shape
       shape_details = l7lb_value.shape_details
       subnet_ids    = l7lb_value.subnet_ids
@@ -133,6 +133,7 @@ locals {
         }
       }
       network_configuration_category = local.one_dimension_processed_l7_load_balancers[l7lb_key].network_configuration_category
+      security_attributes            = l7lb_value.security_attributes
     }
   }
 }
@@ -161,4 +162,13 @@ resource "oci_load_balancer_load_balancer" "these" {
     maximum_bandwidth_in_mbps = each.value.shape_details.maximum_bandwidth_in_mbps
     minimum_bandwidth_in_mbps = each.value.shape_details.minimum_bandwidth_in_mbps
   }
+
+  security_attributes = merge({}, [
+    for v in try(each.value.security.zpr_attributes, []) : {
+      "${v.namespace}.${v.attr_name}.value" : v.attr_value
+      "${v.namespace}.${v.attr_name}.mode" : v.mode
+    }
+  ]...)
+
+
 }

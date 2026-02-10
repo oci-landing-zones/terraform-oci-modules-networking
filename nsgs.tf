@@ -32,7 +32,7 @@ locals {
           vcn_name                       = vcn_value.display_name
           nsg_key                        = nsg_key
           nsg_name                       = nsg_value.display_name
-          enable_cis_checks              = vcn_value.category_enable_cis_checks != null ? vcn_value.category_enable_cis_checks : vcn_value.default_enable_cis_checks != null ? vcn_value.default_enable_cis_checks : true
+          enable_cis_checks              = vcn_value.enable_cis_checks != null ? vcn_value.enable_cis_checks : vcn_value.category_enable_cis_checks != null ? vcn_value.category_enable_cis_checks : vcn_value.default_enable_cis_checks != null ? vcn_value.default_enable_cis_checks : true
           ssh_ports_to_check             = vcn_value.category_ssh_ports_to_check != null ? vcn_value.category_ssh_ports_to_check : vcn_value.default_ssh_ports_to_check != null ? vcn_value.default_ssh_ports_to_check : local.DEFAULT_SSH_PORTS_TO_CHECK
         }
       ] : [] : []
@@ -62,7 +62,7 @@ locals {
           vcn_name                       = vcn_value.vcn_name
           nsg_key                        = nsg_key
           nsg_name                       = nsg_value.display_name
-          enable_cis_checks              = vcn_value.category_enable_cis_checks != null ? vcn_value.category_enable_cis_checks : vcn_value.default_enable_cis_checks != null ? vcn_value.default_enable_cis_checks : true
+          enable_cis_checks              = vcn_value.enable_cis_checks != null ? vcn_value.enable_cis_checks : vcn_value.category_enable_cis_checks != null ? vcn_value.category_enable_cis_checks : vcn_value.default_enable_cis_checks != null ? vcn_value.default_enable_cis_checks : true
           ssh_ports_to_check             = vcn_value.category_ssh_ports_to_check != null ? vcn_value.category_ssh_ports_to_check : vcn_value.default_ssh_ports_to_check != null ? vcn_value.default_ssh_ports_to_check : local.DEFAULT_SSH_PORTS_TO_CHECK
         }
       ] : [] : []
@@ -226,7 +226,7 @@ resource "oci_core_network_security_group_security_rule" "ingress" {
           for p in each.value.ssh_ports_to_check : p
           if p >= coalesce(each.value.dst_port_min, local.TCP_PORT_MIN) && p <= coalesce(each.value.dst_port_max, local.TCP_PORT_MAX) && contains(["6", "all"], each.value.protocol) && each.value.src_type == "CIDR_BLOCK" && each.value.src == local.network_terminology["ANYWHERE"]
         ]
-      )} over TCP(6) or ALL(all) protocols should be avoided. Either fix the rule in your configuration by scoping down the CIDR range, or specify your actual SSH/RDP ports (default is [22,3389]) using default_ssh_ports_to_check/category_ssh_ports_to_check attributes, or disable module CIS checks altogether by setting default_enable_cis_checks/category_enable_cis_checks attributes to false."
+      )} over TCP(6) or ALL(all) protocols should be avoided. Either fix the rule in your configuration by scoping down the CIDR range, or specify your actual SSH/RDP ports (default is [22,3389]) using default_ssh_ports_to_check/category_ssh_ports_to_check attributes, or disable module CIS checks altogether by setting default_enable_cis_checks/category_enable_cis_checks/enable_cis_checks attributes to false."
     }
   }
 

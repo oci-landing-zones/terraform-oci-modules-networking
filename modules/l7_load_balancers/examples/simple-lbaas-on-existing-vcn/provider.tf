@@ -21,8 +21,8 @@ terraform {
   required_providers {
     oci = {
       source                = "oracle/oci"
-      version               = "<= 5.16.0"
+      version               = ">= 6.35.0"
       configuration_aliases = [oci]
     }
   }
-} 
+}

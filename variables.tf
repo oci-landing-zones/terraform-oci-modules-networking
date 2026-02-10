@@ -24,8 +24,9 @@ variable "network_configuration" {
       category_ssh_ports_to_check = optional(list(number)),
 
       vcns = optional(map(object({
-        compartment_id = optional(string),
-        display_name   = optional(string),
+        enable_cis_checks = optional(bool)
+        compartment_id    = optional(string),
+        display_name      = optional(string),
         byoipv6cidr_details = optional(map(object({
           byoipv6range_id = string
           ipv6cidr_block  = string
@@ -387,8 +388,8 @@ variable "network_configuration" {
       })))
 
       inject_into_existing_vcns = optional(map(object({
-
-        vcn_id = string,
+        enable_cis_checks = optional(bool, true)
+        vcn_id            = string,
 
         default_security_list = optional(object({
           compartment_id = optional(string),
@@ -1282,6 +1283,14 @@ variable "network_configuration" {
               verify_peer_certificate           = optional(bool)
             }))
           })))
+          security = optional(object({
+            zpr_attributes = optional(list(object({
+              namespace  = optional(string, "oracle-zpr")
+              attr_name  = string
+              attr_value = string
+              mode       = optional(string, "enforce")
+            })))
+          }))
         })))
       }))
       }
