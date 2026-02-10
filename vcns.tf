@@ -45,6 +45,7 @@ locals {
           default_dhcp_options             = vcn_value.default_dhcp_options
           default_route_table              = vcn_value.default_route_table
           dhcp_options                     = vcn_value.dhcp_options
+          enable_cis_checks                = vcn_value.enable_cis_checks
           category_enable_cis_checks       = network_configuration_category_value.category_enable_cis_checks
           category_ssh_ports_to_check      = network_configuration_category_value.category_ssh_ports_to_check
           default_enable_cis_checks        = var.network_configuration.default_enable_cis_checks != null ? var.network_configuration.default_enable_cis_checks : true
