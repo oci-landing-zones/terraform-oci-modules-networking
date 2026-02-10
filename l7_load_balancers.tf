@@ -64,6 +64,7 @@ locals {
           rule_sets                      = l7lb_value.rule_sets
           certificates                   = l7lb_value.certificates
           listeners                      = l7lb_value.listeners
+          security                       = l7lb_value.security
         }
       ] : [] : []
     ]) : flat_l7lb.l7lb_key => flat_l7lb
