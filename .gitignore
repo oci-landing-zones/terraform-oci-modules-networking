@@ -55,3 +55,5 @@ Temporary Items
 sdf-oci-terraform-test/
 test-environment.sh
 creds/
+
+.gitlab-ci.yml
