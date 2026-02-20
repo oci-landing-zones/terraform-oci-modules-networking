@@ -1,3 +1,9 @@
+# February 20, 2026 Release Notes - 0.8.1
+
+## Updates
+1. Shared secrets of IPSec tunnels can now refer to an OCI secret OCID, in addition to a literal value. The referred secret can be in ether base64 or plain text formats.
+2. Clarification on network firewall policy updates on [README.md](./README.md): _"Note that a network firewall policy cannot be updated when attached to a firewall. To update a policy, attach another policy to the firewall, update the original policy and attach it back. This process requires two Terraform executions. See [Change a Firewall Policy](https://docs.oracle.com/en-us/Content/network-firewall/edit-policy.htm) for details."_
+
 # February 10, 2026 Release Notes - 0.8.0
 
 ## Updates

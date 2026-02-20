@@ -3,8 +3,8 @@
 # Licensed under the Universal Permissive License v 1.0 as shown at https: //oss.oracle.com/licenses/upl. #
 # Author: Cosmin Tudor                                                                                    #
 # Author email: cosmin.tudor@oracle.com                                                                   #
-# Last Modified: Wed Nov 15 2023                                                                          #
-# Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
+# Last Modified: Feb 19 2026                                                                              #
+# Modified by: Andre Correa, email: andre.correa@oracle.com                                               #
 # ####################################################################################################### #
 
 data "oci_core_ipsec_connection_tunnels" "these" {
@@ -79,19 +79,40 @@ locals {
       network_configuration_category = local.one_dimension_ipsec_tunnels_management[ipsec_tunnel_management_key].network_configuration_category
     }
   }
+
+  # Regex to detect OCI vault secret OCID provided in shared_secret attribute.
+  secret_ocid_regex = "^ocid1\\.vaultsecret\\."
+
+  # Identify which tunnels need a lookup
+  tunnels_requiring_vault = {for k, v in local.one_dimension_ipsec_tunnels_management : k => v if try(can(regex(local.secret_ocid_regex, v.shared_secret)), false)
+  }
+
+  raw_tunnel_secret_contents = {
+    # Determines if provided shared_secret OCID refers to an existing vault secret. It checks data source results. Returns __NO_DATA_FOUND__ if the data lookup fails.
+    for k, v in local.one_dimension_ipsec_tunnels_management : k => try(data.oci_secrets_secretbundle.bundle[k].secret_bundle_content[0].content, "__NO_DATA_FOUND__")
+  }
+
+  resolved_tunnel_secrets = {
+    # If shared_secret is not an existing vault secret, the code falls back to literal value. If it is an existing vault secret try to base64decode it to valid UTF-8. If the try fails, use the content as-is (plaintext).
+    for k, v in local.one_dimension_ipsec_tunnels_management : k => (local.raw_tunnel_secret_contents[k] == "__NO_DATA_FOUND__" ? v.shared_secret : try(base64decode(local.raw_tunnel_secret_contents[k]), local.raw_tunnel_secret_contents[k]))
+  }
+
+}
+
+data "oci_secrets_secretbundle" "bundle" {
+  for_each  = local.tunnels_requiring_vault
+    secret_id = each.value.shared_secret
 }
 
 resource "oci_core_ipsec_connection_tunnel_management" "these" {
   for_each = local.one_dimension_ipsec_tunnels_management
+  
   #Required
   ipsec_id  = each.value.ipsec_id
   tunnel_id = each.value.tunnel_id
   routing   = each.value.routing
 
-
-
   #Optional
-
   dynamic "bgp_session_info" {
     for_each = each.value.bgp_session_info != null ? [1] : []
 
@@ -113,7 +134,7 @@ resource "oci_core_ipsec_connection_tunnel_management" "these" {
     }
   }
 
-  shared_secret = each.value.shared_secret
+  shared_secret = local.resolved_tunnel_secrets[each.key]
   ike_version   = each.value.ike_version
 
   dynamic "phase_one_details" {
@@ -141,4 +162,3 @@ resource "oci_core_ipsec_connection_tunnel_management" "these" {
     }
   }
 }
-
