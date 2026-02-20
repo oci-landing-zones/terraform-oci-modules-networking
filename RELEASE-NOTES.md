@@ -1,4 +1,4 @@
-# February 19, 2026 Release Notes - 0.8.1
+# February 20, 2026 Release Notes - 0.8.1
 
 ## Updates
 1. Shared secrets of IPSec tunnels can now refer to an OCI secret OCID, in addition to a literal value. The referred secret can be in ether base64 or plain text formats.
