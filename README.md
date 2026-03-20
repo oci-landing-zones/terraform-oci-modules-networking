@@ -400,6 +400,8 @@ See [external-dependency example](./examples/external-dependency/) for a functio
       - [Generic OCI IPSec BGP VPN](examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/)    
 - [Local Peering Gateways](examples/local-peering-gateways/)     
 - [Remote Peering Connections](examples/remote-peering-connections/)  
+- [Private Service Access](examples/private-service-access) 
+
 
 ## <a name="related">Related Documentation
 - [OCI Networking Overview](https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/overview.htm)
