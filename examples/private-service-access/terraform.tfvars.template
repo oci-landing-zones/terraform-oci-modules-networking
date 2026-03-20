@@ -1,0 +1,48 @@
+# Copyright (c) 2026, Oracle and/or its affiliates.
+# Licensed under the Universal Permissive License v 1.0 as shown at https://oss.oracle.com/licenses/upl.
+
+tenancy_ocid         = "<REPLACE-BY-TENANCY-OCID>"
+user_ocid            = "<REPLACE-BY-USER-OCID>"
+fingerprint          = "<REPLACE-BY-USER-FINGERPRINT>"
+private_key_path     = "<REPLACE-BY-PATH-TO-USER-PRIVATE-KEY-FILE>"
+private_key_password = ""
+region               = "<REPLACE-BY-REGION-NAME>"
+
+
+network_configuration = {
+  default_compartment_id           = "<COMPARTMENT_OCID>"
+  network_configuration_categories = {
+    PSA = {
+      vcns = {
+        PSA-VCN = {
+          display_name                     = "psa-vcn"
+          is_ipv6enabled                   = false
+          is_oracle_gua_allocation_enabled = false
+          cidr_blocks                      = ["192.168.0.0/24"],
+          dns_label                        = "psavcn"
+          is_create_igw                    = false
+          is_attach_drg                    = false
+          block_nat_traffic                = false
+
+          subnets = {
+            PSA-SUBNET = {
+              cidr_block                = "192.168.0.16/28"
+              display_name              = "psa-subnet"
+              dns_label                 = "psa"
+              ipv6cidr_blocks           = []
+              prohibit_internet_ingress = true
+            }
+          }
+        }
+      }
+      private_service_access = {
+        objectstorage = {
+          compartment_id    = var.compartment_id
+          #target_service_id = "object-storage"     ## Object Storage Service
+          target_service_id = "database-service"    ## Database Service API
+          subnet_key        = "PSA-SUBNET"
+        }
+      }
+    }
+  }
+}
