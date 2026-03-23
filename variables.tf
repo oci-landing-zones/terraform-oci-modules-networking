@@ -1294,6 +1294,7 @@ variable "network_configuration" {
       private_service_access = optional(map(object({
         target_service_id = string,
         display_name      = optional(string),
+        description       = optional(string),
         compartment_id    = optional(string),
         subnet_id         = optional(string),
         subnet_key        = optional(string),
