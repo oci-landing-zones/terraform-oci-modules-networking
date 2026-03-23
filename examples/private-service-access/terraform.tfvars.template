@@ -36,10 +36,10 @@ network_configuration = {
         }
       }
       private_service_access = {
-        objectstorage = {
+        OBJECT-STORAGE = {
           compartment_id    = var.compartment_id
-          #target_service_id = "object-storage"     ## Object Storage Service
-          target_service_id = "database-service"    ## Database Service API
+          target_service_id = "object-storage"       ## Object Storage Service
+          #target_service_id = "database-service"    ## Database Service API
           subnet_key        = "PSA-SUBNET"
         }
       }
