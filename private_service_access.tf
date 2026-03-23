@@ -49,10 +49,14 @@ locals {
       nsg_keys            = try(psa_value.nsg_keys, null)
       security_attributes = try(psa_value.zpr_attributes, null)
       network_configuration_category = try(psa_value.network_configuration_category, null)
-      display_name        = replace(coalesce(try(psa_value.display_name, null), try(psa_value.name, null), psa_key), "/\\s+/", "-")
-      description         = coalesce(try(psa_value.description, null), coalesce(try(psa_value.display_name, null), try(psa_value.name, null), psa_key))
+      display_name        = replace(coalesce(try(psa_value.display_name, null), try(psa_value.target_service_id, null)), "/\\s+/", "-")
+      description         = coalesce(try(psa_value.description, null), try(psa_value.display_name, null), try(psa_value.target_service_id, null))
     }
   } : {}
+
+  network_dependency_network_security_group_ids = {
+    for key, value in try(var.network_dependency.network_security_groups, {}) : key => value.id
+  }
 }
 
 resource "oci_psa_private_service_access" "these" {
@@ -77,15 +81,16 @@ resource "oci_psa_private_service_access" "these" {
 
   ipv4ip = each.value.ipv4_address
 
-  nsg_ids = each.value.nsg_ids != null ? (
-    can(tolist(each.value.nsg_ids)) ? tolist(each.value.nsg_ids) : [each.value.nsg_ids]
-    ) : each.value.nsg_keys != null ? (
-    can(tolist(each.value.nsg_keys)) ? [
-      for nsg_key in tolist(each.value.nsg_keys) : oci_core_network_security_group.these[nsg_key].id
-      ] : [
-      oci_core_network_security_group.these[each.value.nsg_keys].id
-    ]
-  ) : null
+  nsg_ids = each.value.nsg_ids != null ? [
+    for nsg_id in (can(tolist(each.value.nsg_ids)) ? tolist(each.value.nsg_ids) : [each.value.nsg_ids]) :
+    length(regexall("^ocid1.*$", nsg_id)) > 0 ? nsg_id : lookup(local.network_dependency_network_security_group_ids, nsg_id, nsg_id)
+  ] : each.value.nsg_keys != null ? [
+    for nsg_key in (can(tolist(each.value.nsg_keys)) ? tolist(each.value.nsg_keys) : [each.value.nsg_keys]) :
+    try(
+      oci_core_network_security_group.these[nsg_key].id,
+      local.network_dependency_network_security_group_ids[nsg_key]
+    )
+  ] : null
 
   security_attributes = each.value.security_attributes
 }

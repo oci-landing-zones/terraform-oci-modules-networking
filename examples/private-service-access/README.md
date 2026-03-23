@@ -47,7 +47,7 @@ Use this example as a starting point for connecting private workloads to Object 
    - `region`
 
 4. **Provide the PSA target service ID.**
-   - Locate the Object Storage PSA OCID for your region (for example, `ocid1.psaservice.oc1.iad...`). You can retrieve this from the [OCI CLI](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/cliinstall.htm) with:
+   - Locate the Service-ID for OSN service via [OCI CLI](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/cliinstall.htm) with:
      ```bash
      oci network private-service-access list-available-services --region <region>
      ```
