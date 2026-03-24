@@ -78,14 +78,14 @@ network_configuration = {
           nsg_keys           = ["PSA-NSG-KEY"]
           #Make Sure the Security Attributes are defined 
           #In the OCI Console, go to Identity & Security → Zero Trust Packet Routing and confirm that the namespace oracle-zpr exists, that the attribute fleet-update is defined in that namespace, and that "test" is an allowed value or matches the attribute’s type. If not change the value as needed
-          zpr_attributes = {
-            "oracle-zpr" = {
-              "fleet-update" = {
-                value = "test"
-                mode  = "enforce"
-              }
+          zpr_attributes = [
+            {
+              namespace  = "oracle-zpr"
+              attr_name  = "fleet-update"
+              attr_value = "test"
+              mode       = "enforce"
             }
-          }
+          ]
         }
       }
     }

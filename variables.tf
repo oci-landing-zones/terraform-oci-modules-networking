@@ -1300,7 +1300,14 @@ variable "network_configuration" {
         subnet_key        = optional(string),
         nsg_ids           = optional(list(string)),
         nsg_keys          = optional(list(string)),
-        zpr_attributes    = optional(map(map(map(string)))),
+        zpr_attributes = optional(
+          list(object({
+            namespace  = optional(string, "oracle-zpr")
+            attr_name  = string
+            attr_value = string
+            mode       = optional(string, "enforce")
+          }))
+        ),
         ipv4_address      = optional(string),
         defined_tags      = optional(map(string)),
         freeform_tags     = optional(map(string))

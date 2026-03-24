@@ -59,7 +59,7 @@ Use this example as a starting point for connecting private workloads to Object 
 
 6. **(Optional) Configure additional networking controls** by extending each PSA entry with the `nsg_ids` or `nsg_keys` attributes. Supplying `nsg_keys` lets the module resolve the IDs of NSGs created within the same configuration.
 
-7. **(Optional) Attach Zero Trust Packet Routing (ZPR) security attributes** by adding a nested `zpr_attributes` block that matches the namespace and attribute names defined in your tenancy. For example:
+7. **(Optional) Attach Zero Trust Packet Routing (ZPR) security attributes** by adding a `zpr_attributes` list of objects that matches the namespace and attribute names defined in your tenancy. For example:
 
    ```hcl
    private_service_access = {
@@ -67,17 +67,23 @@ Use this example as a starting point for connecting private workloads to Object 
        target_service_id = "object-storage"
        subnet_key        = "PSA-SUBNET"
        nsg_keys          = ["PSA-NSG-KEY"]
-       zpr_attributes = {
-         "oracle-zpr" = {
-           sensitivity = {
-             value = "test"
-             mode  = "enforce"
-           }
+       zpr_attributes = [
+         {
+           namespace  = "oracle-zpr"
+           attr_name  = "sensitivity"
+           attr_value = "test"
+           mode       = "enforce"
          }
-       }
+       ]
      }
    }
    ```
+
+   Each item requires:
+   - `namespace` (optional): defaults to `oracle-zpr` when omitted.
+   - `attr_name`: the security attribute name defined in the namespace.
+   - `attr_value`: the literal value to assign.
+   - `mode` (optional): choose `enforce`, `audit`, or other modes supported by the attribute (defaults to `enforce`).
 
    Ensure the namespace (`oracle-zpr` in this example) and attribute (`sensitivity`) exist in **Identity & Security → Zero Trust Packet Routing**; otherwise the OCI API will reject the update with an *Invalid tags* error.
 
