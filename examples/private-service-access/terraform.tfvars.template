@@ -91,3 +91,13 @@ network_configuration = {
     }
   }
 }
+network_dependency = {
+/*
+  "network_security_groups" = {
+    "PSA-NSG" = {"id": "ocid1.networksecuritygroup.oc1..*"},
+  },
+  "subnets" = {
+    "PSA-SUBNET": {"id": "ocid1.subnet.oc1..*"}
+  }
+*/
+}
