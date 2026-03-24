@@ -71,7 +71,7 @@ network_configuration = {
       }
       private_service_access = {
         OBJECT-STORAGE = {
-          compartment_id    = var.compartment_id
+          #compartment_id    = "<COMPARTMENT_OCID>"
           target_service_id = "object-storage"       ## Object Storage Service
           #target_service_id = "database-service"    ## Database Service API
           subnet_key        = "PSA-SUBNET"
@@ -94,10 +94,10 @@ network_configuration = {
 network_dependency = {
 /*
   "network_security_groups" = {
-    "PSA-NSG" = {"id": "ocid1.networksecuritygroup.oc1..*"},
+    "PSA-NSG" = {"id": "<NSG_OCID>"},
   },
   "subnets" = {
-    "PSA-SUBNET": {"id": "ocid1.subnet.oc1..*"}
+    "PSA-SUBNET": {"id": "<SUBNET_OCID>"}
   }
 */
 }
