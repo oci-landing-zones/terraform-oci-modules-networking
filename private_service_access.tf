@@ -47,29 +47,24 @@ locals {
       ipv4_address        = try(psa_value.ipv4_address, null)
       nsg_ids             = try(psa_value.nsg_ids, null)
       nsg_keys            = try(psa_value.nsg_keys, null)
-      security_attributes = try(psa_value.zpr_attributes, null) != null ? (
-        length([
-          for v in values(try(tomap(psa_value.zpr_attributes), {})) :
-          1 if can(tomap(v))
-        ]) == length(keys(try(tomap(psa_value.zpr_attributes), {}))) ? {
-          for attr in flatten([
-            for namespace, attrs in try(tomap(psa_value.zpr_attributes), {}) : [
-              for attr_name, attr_vals in try(tomap(attrs), {}) : [
-                {
-                  key   = "${namespace}.${attr_name}.value"
-                  value = lookup(try(tomap(attr_vals), {}), "value", null)
-                },
-                {
-                  key   = "${namespace}.${attr_name}.mode"
-                  value = lookup(try(tomap(attr_vals), {}), "mode", "enforce")
-                }
-              ]
-            ]
-          ]) : attr.key => attr.value if attr.value != null
-        } : {
-          for k, v in try(tomap(psa_value.zpr_attributes), {}) : k => tostring(v) if v != null
-        }
-      ) : {}
+      security_attributes = try(psa_value.zpr_attributes, null) != null && length(psa_value.zpr_attributes) > 0 ? merge([
+        for attr in psa_value.zpr_attributes : merge(
+          try(attr.attr_name, null) != null && try(attr.attr_value, null) != null ? {
+            format(
+              "%s.%s.value",
+              coalesce(try(attr.namespace, null), "oracle-zpr"),
+              attr.attr_name
+            ) = attr.attr_value
+          } : {},
+          try(attr.attr_name, null) != null ? {
+            format(
+              "%s.%s.mode",
+              coalesce(try(attr.namespace, null), "oracle-zpr"),
+              attr.attr_name
+            ) = try(attr.mode, "enforce")
+          } : {}
+        )
+      ]...) : {}
       network_configuration_category = try(psa_value.network_configuration_category, null)
       display_name        = replace(coalesce(try(psa_value.display_name, null), try(psa_value.target_service_id, null)), "/\\s+/", "-")
       description         = coalesce(try(psa_value.description, null), try(psa_value.display_name, null), try(psa_value.target_service_id, null))
