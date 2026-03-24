@@ -33,6 +33,40 @@ network_configuration = {
               prohibit_internet_ingress = true
             }
           }
+          network_security_groups = {
+            PSA-NSG-KEY = {
+              display_name = "nsg-lb"
+              egress_rules = {
+                anywhere = {
+                  description = "egress to 0.0.0.0/0 over TCP"
+                  stateless   = false
+                  protocol    = "TCP"
+                  dst         = "0.0.0.0/0"
+                  dst_type    = "CIDR_BLOCK"
+                }
+              }
+              ingress_rules = {
+                ssh_22 = {
+                  description  = "ingress from 192.168.0.0/24 over TCP22"
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "192.168.0.0/24"
+                  src_type     = "CIDR_BLOCK"
+                  dst_port_min = 22
+                  dst_port_max = 22
+                }
+                http_443 = {
+                  description  = "ingress from 192.168.0.0/24 over https:443"
+                  stateless    = false
+                  protocol     = "TCP"
+                  src          = "192.168.0.0/24"
+                  src_type     = "CIDR_BLOCK"
+                  dst_port_min = 443
+                  dst_port_max = 443
+                }
+              }
+            }
+          }
         }
       }
       private_service_access = {
@@ -41,6 +75,17 @@ network_configuration = {
           target_service_id = "object-storage"       ## Object Storage Service
           #target_service_id = "database-service"    ## Database Service API
           subnet_key        = "PSA-SUBNET"
+          nsg_keys           = ["PSA-NSG-KEY"]
+          #Make Sure the Security Attributes are defined 
+          #In the OCI Console, go to Identity & Security → Zero Trust Packet Routing and confirm that the namespace oracle-zpr exists, that the attribute fleet-update is defined in that namespace, and that "test" is an allowed value or matches the attribute’s type. If not change the value as needed
+          zpr_attributes = {
+            "oracle-zpr" = {
+              "fleet-update" = {
+                value = "test"
+                mode  = "enforce"
+              }
+            }
+          }
         }
       }
     }

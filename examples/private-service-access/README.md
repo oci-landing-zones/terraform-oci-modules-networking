@@ -28,8 +28,8 @@ Use this example as a starting point for connecting private workloads to Object 
 
 ## Configuration Steps
 
-1. Manually Configure the PSA Policy on Tenancy.
-    
+1. Configure the PSA policies at the tenancy level.
+
     `Allow group <GROUP NAME> to manage private-service-access in tenancy`
     `Allow group <GROUP NAME> to read private-service-access in tenancy`
 
@@ -47,7 +47,7 @@ Use this example as a starting point for connecting private workloads to Object 
    - `region`
 
 4. **Provide the PSA target service ID.**
-   - Locate the Service-ID for OSN service via [OCI CLI](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/cliinstall.htm) with:
+   - Locate the Object Storage PSA OCID for your region (for example, `ocid1.psaservice.oc1.iad...`). You can retrieve it from the [OCI CLI](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/cliinstall.htm) with:
      ```bash
      oci network private-service-access list-available-services --region <region>
      ```
@@ -57,7 +57,29 @@ Use this example as a starting point for connecting private workloads to Object 
    - Update `cidr_blocks`, subnet definitions, and DNS labels to fit your CIDR plan.
    - If you need additional VCNs or PSA targets, expand the maps following the same pattern.
 
-6. **(Optional) Configure network security groups or additional PSA attributes** (for example, `nsg_keys`, `ipv4_address`, `freeform_tags`) by extending the `private_service_access` map.
+6. **(Optional) Configure additional networking controls** by extending each PSA entry with the `nsg_ids` or `nsg_keys` attributes. Supplying `nsg_keys` lets the module resolve the IDs of NSGs created within the same configuration.
+
+7. **(Optional) Attach Zero Trust Packet Routing (ZPR) security attributes** by adding a nested `zpr_attributes` block that matches the namespace and attribute names defined in your tenancy. For example:
+
+   ```hcl
+   private_service_access = {
+     OBJECT-STORAGE = {
+       target_service_id = "object-storage"
+       subnet_key        = "PSA-SUBNET"
+       nsg_keys          = ["PSA-NSG-KEY"]
+       zpr_attributes = {
+         "oracle-zpr" = {
+           sensitivity = {
+             value = "test"
+             mode  = "enforce"
+           }
+         }
+       }
+     }
+   }
+   ```
+
+   Ensure the namespace (`oracle-zpr` in this example) and attribute (`sensitivity`) exist in **Identity & Security → Zero Trust Packet Routing**; otherwise the OCI API will reject the update with an *Invalid tags* error.
 
 ## Running Terraform
 
@@ -71,7 +93,7 @@ terraform apply plan.out
 ## Verifying the Deployment
 
 - Review the output `provisioned_networking_resources.private_service_access` to confirm the PSA resource status and OCIDs.
-- In the OCI Console, navigate to **Networking → Private Service Access** to verify the connection targets Object Storage and is attached to the correct subnet.
+- In the OCI Console, navigate to **Networking → Private Service Access** to confirm the connection targets Object Storage and is attached to the correct subnet.
 
 
 ## Cleanup
@@ -86,4 +108,4 @@ terraform destroy
 
 - [OCI Private Service Access documentation](https://www.oracle.com/cloud/networking/private-service-access/)
 - [terraform-oci-landing-zones-networking module README](../../README.md)
-- [OCI provider PSA resource reference](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/psa_private_service_acces)
+- [OCI provider PSA resource reference](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/psa_private_service_access)

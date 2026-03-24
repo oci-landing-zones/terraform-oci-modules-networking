@@ -26,11 +26,11 @@ locals {
   } : {}
 
   private_service_access_defaults = {
-    default_defined_tags  = try(var.network_configuration.default_defined_tags, {})
-    default_freeform_tags = try(var.network_configuration.default_freeform_tags, {})
+    default_defined_tags  = try(var.network_configuration.default_defined_tags, {}) != null ? try(var.network_configuration.default_defined_tags, {}) : {}
+    default_freeform_tags = try(var.network_configuration.default_freeform_tags, {}) != null ? try(var.network_configuration.default_freeform_tags, {}) : {}
     default_compartment   = try(var.network_configuration.default_compartment_id, null)
     entries = merge(
-      var.network_configuration != null ? try(var.network_configuration.private_service_access, {}) : {},
+      var.network_configuration != null && try(var.network_configuration.private_service_access, {}) != null ? try(var.network_configuration.private_service_access, {}) : {},
       local.category_level_private_service_access
     )
   }
@@ -42,12 +42,34 @@ locals {
       target_service_id   = psa_value.target_service_id
       subnet_id           = psa_value.subnet_id != null ? psa_value.subnet_id : psa_value.subnet_key != null ? try(local.aux_provisioned_subnets[psa_value.subnet_key].id, try(var.network_dependency.subnets[psa_value.subnet_key].id, null)) : null
       subnet_key          = psa_value.subnet_key
-      defined_tags        = merge(local.private_service_access_defaults.default_defined_tags, psa_value.defined_tags != null ? psa_value.defined_tags : {})
-      freeform_tags       = merge(local.private_service_access_defaults.default_freeform_tags, psa_value.freeform_tags != null ? psa_value.freeform_tags : {})
+      defined_tags        = merge(local.private_service_access_defaults.default_defined_tags != null ? local.private_service_access_defaults.default_defined_tags : {}, psa_value.defined_tags != null ? psa_value.defined_tags : {})
+      freeform_tags       = merge(local.private_service_access_defaults.default_freeform_tags != null ? local.private_service_access_defaults.default_freeform_tags : {}, psa_value.freeform_tags != null ? psa_value.freeform_tags : {})
       ipv4_address        = try(psa_value.ipv4_address, null)
       nsg_ids             = try(psa_value.nsg_ids, null)
       nsg_keys            = try(psa_value.nsg_keys, null)
-      security_attributes = try(psa_value.zpr_attributes, null)
+      security_attributes = try(psa_value.zpr_attributes, null) != null ? (
+        length([
+          for v in values(try(tomap(psa_value.zpr_attributes), {})) :
+          1 if can(tomap(v))
+        ]) == length(keys(try(tomap(psa_value.zpr_attributes), {}))) ? {
+          for attr in flatten([
+            for namespace, attrs in try(tomap(psa_value.zpr_attributes), {}) : [
+              for attr_name, attr_vals in try(tomap(attrs), {}) : [
+                {
+                  key   = "${namespace}.${attr_name}.value"
+                  value = lookup(try(tomap(attr_vals), {}), "value", null)
+                },
+                {
+                  key   = "${namespace}.${attr_name}.mode"
+                  value = lookup(try(tomap(attr_vals), {}), "mode", "enforce")
+                }
+              ]
+            ]
+          ]) : attr.key => attr.value if attr.value != null
+        } : {
+          for k, v in try(tomap(psa_value.zpr_attributes), {}) : k => tostring(v) if v != null
+        }
+      ) : {}
       network_configuration_category = try(psa_value.network_configuration_category, null)
       display_name        = replace(coalesce(try(psa_value.display_name, null), try(psa_value.target_service_id, null)), "/\\s+/", "-")
       description         = coalesce(try(psa_value.description, null), try(psa_value.display_name, null), try(psa_value.target_service_id, null))
@@ -82,15 +104,14 @@ resource "oci_psa_private_service_access" "these" {
   ipv4ip = each.value.ipv4_address
 
   nsg_ids = each.value.nsg_ids != null ? [
-    for nsg_id in (can(tolist(each.value.nsg_ids)) ? tolist(each.value.nsg_ids) : [each.value.nsg_ids]) :
+    for nsg_id in each.value.nsg_ids :
     length(regexall("^ocid1.*$", nsg_id)) > 0 ? nsg_id : lookup(local.network_dependency_network_security_group_ids, nsg_id, nsg_id)
-  ] : each.value.nsg_keys != null ? [
-    for nsg_key in (can(tolist(each.value.nsg_keys)) ? tolist(each.value.nsg_keys) : [each.value.nsg_keys]) :
-    try(
-      oci_core_network_security_group.these[nsg_key].id,
-      local.network_dependency_network_security_group_ids[nsg_key]
-    )
-  ] : null
+  ] : each.value.nsg_keys != null ? flatten([
+    for nsg_key in each.value.nsg_keys :
+    can(oci_core_network_security_group.these[nsg_key].id) ? [oci_core_network_security_group.these[nsg_key].id] :
+    can(local.network_dependency_network_security_group_ids[nsg_key]) ? [local.network_dependency_network_security_group_ids[nsg_key]] :
+    []
+  ]) : null
 
-  security_attributes = each.value.security_attributes
+  security_attributes = length(each.value.security_attributes) > 0 ? each.value.security_attributes : null
 }
