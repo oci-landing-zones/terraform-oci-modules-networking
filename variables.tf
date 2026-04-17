@@ -756,8 +756,6 @@ variable "network_configuration" {
         })))
       }))
 
-
-
       non_vcn_specific_gateways = optional(object({
 
         dynamic_routing_gateways = optional(map(object({
@@ -1293,6 +1291,27 @@ variable "network_configuration" {
           }))
         })))
       }))
+      private_service_access = optional(map(object({
+        target_service_id = string,
+        display_name      = optional(string),
+        description       = optional(string),
+        compartment_id    = optional(string),
+        subnet_id         = optional(string),
+        subnet_key        = optional(string),
+        nsg_ids           = optional(list(string)),
+        nsg_keys          = optional(list(string)),
+        zpr_attributes = optional(
+          list(object({
+            namespace  = optional(string, "oracle-zpr")
+            attr_name  = string
+            attr_value = string
+            mode       = optional(string, "enforce")
+          }))
+        ),
+        ipv4_address      = optional(string),
+        defined_tags      = optional(map(string)),
+        freeform_tags     = optional(map(string))
+      })))
       }
     )))
   })
