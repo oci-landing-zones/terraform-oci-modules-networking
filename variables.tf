@@ -756,8 +756,6 @@ variable "network_configuration" {
         })))
       }))
 
-
-
       non_vcn_specific_gateways = optional(object({
 
         dynamic_routing_gateways = optional(map(object({
