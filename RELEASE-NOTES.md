@@ -7,6 +7,7 @@
 4. [Issue 78](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/78): Network Firewall Policy now utilizes correct decrypt profile attribute.
 
 ## Updates
+1. Supported added for Private Service Access. Check [*private_service_access* in variables.tf](./variables.tf) and [PSA deployment example](./examples/private-service-access/).
 1. [Issue 75](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/75): Network Load Balancer module now supports health checks for DNS protocol. See [NLB module variables.tf](./modules/nlb/variables.tf).
 
 # February 20, 2026 Release Notes - 0.8.1
