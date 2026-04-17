@@ -322,7 +322,7 @@ resource "oci_network_firewall_network_firewall_policy_decryption_rule" "these" 
   network_firewall_policy_id = oci_network_firewall_network_firewall_policy.these[each.value.policy_key].id
   action                     = each.value.action
   name                       = each.value.name
-  decryption_profile         = each.value.decryption_profile_id != null ? oci_network_firewall_network_firewall_policy_decryption_profile.these["${each.value.policy_key}.${each.value.decryption_profile_id}"].id : null
+  decryption_profile         = each.value.decryption_profile_id != null ? oci_network_firewall_network_firewall_policy_decryption_profile.these["${each.value.policy_key}.${each.value.decryption_profile_id}"].name : null
   secret                     = each.value.secret
 
   condition {
