@@ -90,6 +90,7 @@ locals {
       timeouts                       = rpc_value.timeouts
       network_configuration_category = local.one_dimension_remote_peering_connections[rpc_key].network_configuration_category
       rpc_key                        = rpc_key
+      region_name                    = regex("^ocid1\\.[^.]+\\.[^.]+\\.([^.]+)\\.", rpc_value.id)[0]
     }
   }
 }
@@ -122,7 +123,7 @@ resource "oci_core_remote_peering_connection" "oci_requestor_remote_peering_conn
   display_name  = each.value.display_name
   freeform_tags = merge(local.cislz_module_tag, each.value.freeform_tags)
 
-  peer_region_name = contains(keys(try(var.network_dependency["remote_peering_connections"], {})), each.value.peer_key) ? var.network_dependency["remote_peering_connections"][each.value.peer_key].region_name : each.value.peer_region_name
+  peer_region_name = contains(keys(try(var.network_dependency["remote_peering_connections"], {})), each.value.peer_key) ? try(var.network_dependency["remote_peering_connections"][each.value.peer_key].region_name,null) : each.value.peer_region_name
 
   peer_id = each.value.peer_id != null ? each.value.peer_id : (each.value.peer_key != null ? merge(oci_core_remote_peering_connection.oci_acceptor_remote_peering_connections, try(var.network_dependency["remote_peering_connections"], {}))[each.value.peer_key].id : null)
 }
