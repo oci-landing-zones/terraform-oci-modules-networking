@@ -1,3 +1,14 @@
+# April 17, 2026 Release Notes - 0.8.2
+
+## Fixes
+1. [Issue 69](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/69): Load Balancer backend sets can now be created with mixed SSL configurations.
+2. [Issue 76](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/76): Module now outputs RPC region under *provisioned_remote_peering_connections's* *region_name* output attribute.
+3. [Issue 77](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/77): Default route tables now support resolving compartments from *compartments_dependency* variable.
+4. [Issue 78](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/78): Network Firewall Policy now utilizes correct decrypt profile attribute.
+
+## Updates
+1. [Issue 75](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/75): Network Load Balancer module now supports health checks for DNS protocol. See [NLB module variables.tf](./modules/nlb/variables.tf).
+
 # February 20, 2026 Release Notes - 0.8.1
 
 ## Updates
