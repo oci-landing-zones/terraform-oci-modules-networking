@@ -94,7 +94,7 @@ output "flat_map_of_provisioned_networking_resources" {
     local.provisioned_drga_specific_route_tables != null ? { for key, value in local.provisioned_drga_specific_route_tables : key => { id = value.id } } : null,
     local.provisioned_non_gw_specific_remaining_route_tables != null ? { for key, value in local.provisioned_non_gw_specific_remaining_route_tables : key => { id = value.id } } : null,
     local.provisioned_route_tables_attachments != null ? { for key, value in local.provisioned_route_tables_attachments : key => { id = value.id } } : null,
-    local.provisioned_remote_peering_connections != null ? { for key, value in local.provisioned_remote_peering_connections : key => { id = value.id } } : null,
+    local.provisioned_remote_peering_connections != null ? { for key, value in local.provisioned_remote_peering_connections : key => { id = value.id, region_name = value.region_name } } : null,
     local.provisioned_network_security_groups != null ? { for key, value in local.provisioned_network_security_groups : key => { id = value.id } } : null,
     //local.provisioned_network_security_groups_ingress_rules != null ? { for key, value in local.provisioned_network_security_groups_ingress_rules : key => { id = value.id} } : null,
     //local.provisioned_network_security_groups_egress_rules != null ? { for key, value in local.provisioned_network_security_groups_egress_rules : key => { id = value.id} } : null,

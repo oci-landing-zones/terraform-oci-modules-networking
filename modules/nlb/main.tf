@@ -66,26 +66,33 @@ resource "oci_network_load_balancer_listener" "these" {
 # Create backend set for each listener
 resource "oci_network_load_balancer_backend_set" "these" {
   for_each = { for l in local.listeners : "${l.nlb_key}.${l.listener_key}.BACKENDSET" => {
-    nlb_key                = l.nlb_key
-    name                   = l.backend_set.name
-    policy                 = l.backend_set.policy
-    hc_protocol            = l.backend_set.health_checker.protocol
-    hc_interval            = l.backend_set.health_checker.interval_in_millis
-    hc_port                = l.backend_set.health_checker.port
-    hc_request_data        = l.backend_set.health_checker.request_data
-    hc_response_body_regex = l.backend_set.health_checker.response_body_regex
-    hc_response_data       = l.backend_set.health_checker.response_data
-    hc_retries             = l.backend_set.health_checker.retries
-    hc_return_code         = l.backend_set.health_checker.return_code
-    hc_timeout             = l.backend_set.health_checker.timeout_in_millis
-    hc_url_path            = l.backend_set.health_checker.url_path
-    is_preserve_source     = l.backend_set.is_preserve_source
+    nlb_key                               = l.nlb_key
+    name                                  = l.backend_set.name
+    policy                                = l.backend_set.policy
+    hc_protocol                           = l.backend_set.health_checker.protocol
+    hc_interval                           = l.backend_set.health_checker.interval_in_millis
+    hc_port                               = l.backend_set.health_checker.port
+    hc_request_data                       = l.backend_set.health_checker.request_data
+    hc_response_body_regex                = l.backend_set.health_checker.response_body_regex
+    hc_response_data                      = l.backend_set.health_checker.response_data
+    hc_retries                            = l.backend_set.health_checker.retries
+    hc_return_code                        = l.backend_set.health_checker.return_code
+    hc_timeout                            = l.backend_set.health_checker.timeout_in_millis
+    hc_url_path                           = l.backend_set.health_checker.url_path
+    hc_dns                                = l.backend_set.health_checker.dns
+    is_preserve_source                    = l.backend_set.is_preserve_source
+    is_fail_open                          = l.backend_set.is_fail_open
+    is_instant_failover_enabled           = l.backend_set.is_instant_failover_enabled
+    is_instant_failover_tcp_reset_enabled = l.backend_set.is_instant_failover_tcp_reset_enabled
   } }
 
-  network_load_balancer_id = oci_network_load_balancer_network_load_balancer.these[each.value.nlb_key].id
-  name                     = each.value.name
-  policy                   = each.value.policy
-  is_preserve_source       = each.value.is_preserve_source
+  network_load_balancer_id              = oci_network_load_balancer_network_load_balancer.these[each.value.nlb_key].id
+  name                                  = each.value.name
+  policy                                = each.value.policy
+  is_preserve_source                    = each.value.is_preserve_source
+  is_fail_open                          = each.value.is_fail_open
+  is_instant_failover_enabled           = upper(trimspace(each.value.hc_protocol)) == "DNS" ? true : each.value.is_instant_failover_enabled # For DNS health checks, instant failover is always enabled regardless of user input, as the health check status can change rapidly based on DNS responses.
+  is_instant_failover_tcp_reset_enabled = each.value.is_instant_failover_tcp_reset_enabled
   health_checker {
     protocol            = each.value.hc_protocol
     interval_in_millis  = each.value.hc_interval
@@ -97,6 +104,16 @@ resource "oci_network_load_balancer_backend_set" "these" {
     return_code         = each.value.hc_return_code
     timeout_in_millis   = each.value.hc_timeout
     url_path            = each.value.hc_url_path
+    dynamic "dns" {
+      for_each = upper(trimspace(each.value.hc_protocol)) == "DNS" && each.value.hc_dns != null ? [each.value.hc_dns] : []
+      content {
+        domain_name        = dns.value.domain_name
+        query_class        = dns.value.query_class
+        query_type         = dns.value.query_type
+        rcodes             = dns.value.rcodes
+        transport_protocol = dns.value.transport_protocol
+      }
+    }
   }
 }
 
