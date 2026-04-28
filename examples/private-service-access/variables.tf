@@ -13,3 +13,7 @@ variable "network_configuration" {
   type = any
 }
 
+variable "network_dependency" {
+  type = any
+}
+

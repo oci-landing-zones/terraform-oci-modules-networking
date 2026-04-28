@@ -5,3 +5,8 @@ output "provisioned_networking_resources" {
   description = "Provisioned networking resources"
   value       = module.terraform_oci_networking.provisioned_networking_resources
 }
+
+output "flat_map_of_provisioned_networking_resources" {
+  description = "Flat map of provisioned networking resources"
+  value       = module.terraform_oci_networking.flat_map_of_provisioned_networking_resources
+}  
