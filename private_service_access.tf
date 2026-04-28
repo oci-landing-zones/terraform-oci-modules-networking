@@ -6,8 +6,7 @@
 locals {
   category_level_private_service_access = var.network_configuration != null && try(var.network_configuration.network_configuration_categories, null) != null ? {
     for flat_psa in flatten([
-      for category_key, category_value in var.network_configuration.network_configuration_categories :
-      category_value.private_service_access != null && length(category_value.private_service_access) > 0 ? [
+      for category_key, category_value in var.network_configuration.network_configuration_categories : length(try(coalesce(category_value.private_service_access,{}),{})) > 0 ? [
         for psa_key, psa_value in category_value.private_service_access : {
           key                     = psa_key
           category_key            = category_key
@@ -47,7 +46,7 @@ locals {
       ipv4_address        = try(psa_value.ipv4_address, null)
       nsg_ids             = try(psa_value.nsg_ids, null)
       nsg_keys            = try(psa_value.nsg_keys, null)
-      security_attributes = try(psa_value.zpr_attributes, null) != null && length(psa_value.zpr_attributes) > 0 ? merge([
+      security_attributes = length(try(coalesce(psa_value.zpr_attributes,[]),[])) > 0 ? merge([
         for attr in psa_value.zpr_attributes : merge(
           try(attr.attr_name, null) != null && try(attr.attr_value, null) != null ? {
             format(
