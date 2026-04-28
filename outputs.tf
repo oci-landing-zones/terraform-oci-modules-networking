@@ -69,9 +69,11 @@ output "provisioned_networking_resources" {
         k => v if local.one_dimension_fast_connect_virtual_circuits[v.fcvc_key].show_available_fc_virtual_circuit_providers == true
       } : {} : {}
     }
-    cross_connect_groups  = oci_core_cross_connect_group.these,
+    cross_connect_groups  = oci_core_cross_connect_group.these
     cross_connects        = oci_core_cross_connect.these
     fc_vc_drg_attachments = local.fc_vc_drg_attachments
+    private_service_access = oci_psa_private_service_access.these
+
   }
 }
 
@@ -115,6 +117,7 @@ output "flat_map_of_provisioned_networking_resources" {
     local.provisioned_oci_core_public_ip_pools != null ? { for key, value in local.provisioned_oci_core_public_ip_pools : key => { id = value.id } } : null,
     local.provisioned_oci_core_public_ips != null ? { for key, value in local.provisioned_oci_core_public_ips : key => { id = value.id } } : null,
     local.provisioned_customer_premises_equipments != null ? { for key, value in local.provisioned_customer_premises_equipments : key => { id = value.id } } : null,
+    { for key, value in oci_psa_private_service_access.these : key => { id = value.id } } # PSA
   )
 }
 
