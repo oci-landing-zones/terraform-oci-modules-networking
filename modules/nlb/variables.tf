@@ -27,7 +27,7 @@ variable "nlb_configuration" {
           name   = string
           policy = optional(string, "FIVE_TUPLE") # The network load balancer policy for the backend set. Valid values: "TWO_TUPLE", "THREE_TUPLE", and "FIVE_TUPLE". Default is "FIVE_TUPLE".
           health_checker = object({
-            protocol            = string           # The protocol the health check must use. Valid values: "HTTP", "HTTPS", "UDP", "TCP".
+            protocol            = string           # The protocol the health check must use. Valid values: "HTTP", "HTTPS", "UDP", "TCP", "DNS".
             interval_in_millis  = optional(number) # The interval between health checks, in milliseconds. The default value is 10000 (10 seconds)
             port                = optional(number) # The backend server port against which to run the health check. If the port is not specified, then the network load balancer uses the port information from the Backend object.
             request_data        = optional(string) # Base64 encoded pattern to be sent as UDP or TCP health check probe.
@@ -37,9 +37,19 @@ variable "nlb_configuration" {
             return_code         = optional(number) # The status code a healthy backend server should return. If you configure the health check policy to use the HTTP protocol, then you can use common HTTP status codes such as "200".
             timeout_in_millis   = optional(number) # The maximum time, in milliseconds, to wait for a reply to a health check. A health check is successful only if a reply returns within this timeout period. The default value is 3000 (3 seconds)
             url_path            = optional(string) # The path against which to run the health check. Required only if protocol is "HTTP" or "HTTPS".
+            dns = optional(object({ # DNS health check configuration. Only applicable if health_checker protocol is set to "DNS".
+              domain_name        = string # The absolute fully-qualified domain name to perform periodic DNS queries.
+              query_class        = optional(string) # The class of the DNS query. Either "IN" or "CH".
+              query_type         = optional(string)  # The type of the DNS query. Examples: "A", "AAAA", "TXT".
+              rcodes             = optional(list(string)) # The expected DNS response codes for a healthy backend server. Examples: ["NOERROR", "NXDOMAIN"].
+              transport_protocol = optional(string, "UDP") # The transport protocol to use when performing the DNS query. Either "TCP" or "UDP". The default value is "UDP".
+            }))
           })
-          ip_version         = optional(string)
-          is_preserve_source = optional(bool)
+          ip_version                            = optional(string)
+          is_preserve_source                    = optional(bool) # Whether the network load balancer preserves the source IP of the incoming traffic when it sends the traffic to backend servers. If false, the network load balancer replaces the source IP with the IP address of the network load balancer. The default value is false.
+          is_fail_open                          = optional(bool, false) # Whether the network load balancer continues to forward traffic to a backend server that is marked as "unhealthy".
+          is_instant_failover_enabled           = optional(bool, true) # Whether existing flows are rehashed to a healthy backend server when a backend server is marked "unhealthy", except in cases where fail open is enabled and all backend servers are unhealthy. If health_checker protocol is "DNS", this attribute is always true regardless of user input.
+          is_instant_failover_tcp_reset_enabled = optional(bool) # If enabled, the network load balancer will send TCP RST to clients when a backend becomes unhealthy and the traffic is moved to a healthy backend. If disabled, the network load balancer will not send TCP RST before moving traffic to a healthy backend. By default, TCP RST is enabled in OCI NLB service. 
           backends = map(object({
             name       = string
             port       = number

@@ -69,9 +69,11 @@ output "provisioned_networking_resources" {
         k => v if local.one_dimension_fast_connect_virtual_circuits[v.fcvc_key].show_available_fc_virtual_circuit_providers == true
       } : {} : {}
     }
-    cross_connect_groups  = oci_core_cross_connect_group.these,
+    cross_connect_groups  = oci_core_cross_connect_group.these
     cross_connects        = oci_core_cross_connect.these
     fc_vc_drg_attachments = local.fc_vc_drg_attachments
+    private_service_access = oci_psa_private_service_access.these
+
   }
 }
 
@@ -94,7 +96,7 @@ output "flat_map_of_provisioned_networking_resources" {
     local.provisioned_drga_specific_route_tables != null ? { for key, value in local.provisioned_drga_specific_route_tables : key => { id = value.id } } : null,
     local.provisioned_non_gw_specific_remaining_route_tables != null ? { for key, value in local.provisioned_non_gw_specific_remaining_route_tables : key => { id = value.id } } : null,
     local.provisioned_route_tables_attachments != null ? { for key, value in local.provisioned_route_tables_attachments : key => { id = value.id } } : null,
-    local.provisioned_remote_peering_connections != null ? { for key, value in local.provisioned_remote_peering_connections : key => { id = value.id } } : null,
+    local.provisioned_remote_peering_connections != null ? { for key, value in local.provisioned_remote_peering_connections : key => { id = value.id, region_name = value.region_name } } : null,
     local.provisioned_network_security_groups != null ? { for key, value in local.provisioned_network_security_groups : key => { id = value.id } } : null,
     //local.provisioned_network_security_groups_ingress_rules != null ? { for key, value in local.provisioned_network_security_groups_ingress_rules : key => { id = value.id} } : null,
     //local.provisioned_network_security_groups_egress_rules != null ? { for key, value in local.provisioned_network_security_groups_egress_rules : key => { id = value.id} } : null,
@@ -115,6 +117,7 @@ output "flat_map_of_provisioned_networking_resources" {
     local.provisioned_oci_core_public_ip_pools != null ? { for key, value in local.provisioned_oci_core_public_ip_pools : key => { id = value.id } } : null,
     local.provisioned_oci_core_public_ips != null ? { for key, value in local.provisioned_oci_core_public_ips : key => { id = value.id } } : null,
     local.provisioned_customer_premises_equipments != null ? { for key, value in local.provisioned_customer_premises_equipments : key => { id = value.id } } : null,
+    { for key, value in oci_psa_private_service_access.these : key => { id = value.id } } # PSA
   )
 }
 

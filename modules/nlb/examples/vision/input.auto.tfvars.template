@@ -42,7 +42,18 @@ nlb_configuration = {
             #is_preserve_source = false  # To Disable NLB preserves the source IP of the packet when it is forwarded to backend
             health_checker = {
               protocol = "TCP"
+              dns = { # This block is ignored for any protocol other than "DNS". For enabling DNS health check, assign protocol = "DNS" right above. 
+                domain_name        = "my.domain"
+                query_class        = "IN"
+                query_type         = "A"
+                rcodes             = ["NOERROR"]
+                transport_protocol = "UDP"
+              }
             }
+            #is_preserve_source = true  # preserving the source IP of the packet as it is forwarded to backend
+            #is_fail_open = false
+            #is_instant_failover_enabled = true
+            #is_instant_failover_tcp_reset_enabled = true
             backends = {
               BACKEND-1 = {
                 name = "backend-1"

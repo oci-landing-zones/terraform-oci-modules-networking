@@ -29,7 +29,18 @@ locals {
             trusted_certificate_authority_keys = l7lb_be_value.ssl_configuration.trusted_certificate_authority_keys
             verify_depth                       = l7lb_be_value.ssl_configuration.verify_depth
             verify_peer_certificate            = l7lb_be_value.ssl_configuration.verify_peer_certificate
-          } : null
+          } : {
+            certificate_ids                    = []
+            certificate_keys                   = []
+            certificate_name                   = "__NULL__SSL__CONFIGURATION__"
+            cipher_suite_name                  = null
+            protocols                          = []
+            server_order_preference            = null
+            trusted_certificate_authority_ids  = []
+            trusted_certificate_authority_keys = []
+            verify_depth                       = null
+            verify_peer_certificate            = false
+          }
           backends                       = l7lb_be_value.backends
           l7lb_be_key                    = l7lb_be_key
           l7lb_name                      = l7lb_value.display_name
@@ -109,7 +120,7 @@ resource "oci_load_balancer_backend_set" "these" {
     }
   }
   dynamic "ssl_configuration" {
-    for_each = each.value.ssl_configuration != null ? [1] : []
+    for_each = each.value.ssl_configuration != null ? (each.value.ssl_configuration.certificate_name == "__NULL__SSL__CONFIGURATION__" ? [] : [1]) : []
     content {
       certificate_ids                   = each.value.ssl_configuration.certificate_ids
       certificate_name                  = each.value.ssl_configuration.certificate_name
