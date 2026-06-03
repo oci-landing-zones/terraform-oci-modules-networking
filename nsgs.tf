@@ -235,7 +235,7 @@ resource "oci_core_network_security_group_security_rule" "ingress" {
   protocol                  = each.value.protocol
 
   description = each.value.description
-  source      = each.value.src_type != "NETWORK_SECURITY_GROUP" ? each.value.src : oci_core_network_security_group.these[each.value.src].id
+  source      = each.value.src_type != "NETWORK_SECURITY_GROUP" ? (each.value.src_type != "SERVICE_CIDR_BLOCK" ? each.value.src : local.oci_services_details[each.value.src].cidr_block) : oci_core_network_security_group.these[each.value.src].id
   source_type = each.value.src_type != "NETWORK_SECURITY_GROUP" ? each.value.src_type : "NETWORK_SECURITY_GROUP"
   stateless   = each.value.stateless
 
