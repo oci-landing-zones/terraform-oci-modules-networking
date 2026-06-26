@@ -163,6 +163,7 @@ locals {
       for network_configuration_category_key, network_configuration_category_value in var.network_configuration.network_configuration_categories : {
         public_ips_pools               = network_configuration_category_value.IPs.public_ips_pools
         public_ips                     = network_configuration_category_value.IPs.public_ips
+        private_ips                    = network_configuration_category_value.IPs.private_ips
         network_configuration_category = network_configuration_category_key
         default_compartment_id         = var.network_configuration.default_compartment_id
         category_compartment_id        = network_configuration_category_value.category_compartment_id
