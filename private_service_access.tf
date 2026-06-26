@@ -6,9 +6,8 @@
 locals {
   category_level_private_service_access = var.network_configuration != null && try(var.network_configuration.network_configuration_categories, null) != null ? {
     for flat_psa in flatten([
-      for category_key, category_value in var.network_configuration.network_configuration_categories :
-      category_value.private_service_access != null && length(category_value.private_service_access) > 0 ? [
-        for psa_key, psa_value in category_value.private_service_access : {
+      for category_key, category_value in var.network_configuration.network_configuration_categories : [
+        for psa_key, psa_value in try(coalesce(category_value.private_service_access, {}), {}) : {
           key                     = psa_key
           category_key            = category_key
           value                   = psa_value
@@ -16,7 +15,7 @@ locals {
           category_defined_tags   = try(category_value.category_defined_tags, {})
           category_freeform_tags  = try(category_value.category_freeform_tags, {})
         }
-      ] : []
+      ]
     ]) : flat_psa.key => merge(flat_psa.value, {
       compartment_id                 = try(flat_psa.value.compartment_id, null) != null ? flat_psa.value.compartment_id : flat_psa.category_compartment_id
       defined_tags                   = merge(flat_psa.category_defined_tags, try(flat_psa.value.defined_tags, {}))
