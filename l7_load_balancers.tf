@@ -46,7 +46,7 @@ locals {
           reserved_ips_ids = concat(
             l7lb_value.reserved_ips_ids != null ? length(l7lb_value.reserved_ips_ids) > 0 ? l7lb_value.reserved_ips_ids : [] : [],
             l7lb_value.reserved_ips_keys != null ? length(l7lb_value.reserved_ips_keys) > 0 ? [
-              for reserver_ip_key in l7lb_value.reserved_ips_keys : local.provisioned_oci_core_public_ips[reserver_ip_key].id
+              for reserver_ip_key in l7lb_value.reserved_ips_keys : l7lb_value.is_private == true ? var.private_ips_dependency[reserver_ip_key].id : local.provisioned_oci_core_public_ips[reserver_ip_key].id
             ] : [] : []
           )
           reserved_ips_keys = l7lb_value.reserved_ips_keys
