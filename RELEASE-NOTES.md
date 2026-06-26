@@ -1,3 +1,8 @@
+# Unreleased
+
+## Fixes
+1. [Issue 84](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/84): Private Load Balancers can now use reserved private IPs through *reserved_ips_keys* resolved from *private_ips_dependency*.
+
 # April 17, 2026 Release Notes - 0.8.2
 
 ## Fixes
