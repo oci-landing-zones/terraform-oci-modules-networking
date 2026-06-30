@@ -1,10 +1,11 @@
-# Unreleased
+# June 30, 2026 Release Notes - 0.8.3
 
 ## Fixes
 1. [Issue 84](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/84): Private Load Balancers can now use reserved private IPs through *reserved_ips_keys* resolved from *private_ips_dependency*.
+2. NSG ingress and egress now both support `objectstorage`, `all-services` if these two are not matched, value is passed verbatim to OCI API as before
 
 ## Updates
-1. [Issue 84](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/84): Reserved private IPs can now be created directly through ```network_configuration_categories.*.IPs.private_ips``` and referenced by private Load Balancers with *reserved_ips_keys*.
+1. [Issue 84](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/84): Reserved private IPs can now be created directly through ```network_configuration_categories.*.IPs.private_ips``` 
 2. Changing a reserved IP on an existing Load Balancer remains subject to OCI/provider update behavior and may require Load Balancer replacement.
 
 # April 17, 2026 Release Notes - 0.8.2
