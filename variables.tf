@@ -1318,9 +1318,9 @@ variable "network_configuration" {
             mode       = optional(string, "enforce")
           }))
         ),
-        ipv4_address      = optional(string),
-        defined_tags      = optional(map(string)),
-        freeform_tags     = optional(map(string))
+        ipv4_address  = optional(string),
+        defined_tags  = optional(map(string)),
+        freeform_tags = optional(map(string))
       })))
       }
     )))

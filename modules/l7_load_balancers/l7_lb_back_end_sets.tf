@@ -29,7 +29,7 @@ locals {
             trusted_certificate_authority_keys = l7lb_be_value.ssl_configuration.trusted_certificate_authority_keys
             verify_depth                       = l7lb_be_value.ssl_configuration.verify_depth
             verify_peer_certificate            = l7lb_be_value.ssl_configuration.verify_peer_certificate
-          } : {
+            } : {
             certificate_ids                    = []
             certificate_keys                   = []
             certificate_name                   = "__NULL__SSL__CONFIGURATION__"
