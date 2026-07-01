@@ -46,7 +46,7 @@ locals {
       ipv4_address      = try(psa_value.ipv4_address, null)
       nsg_ids           = try(psa_value.nsg_ids, null)
       nsg_keys          = try(psa_value.nsg_keys, null)
-      security_attributes = try(psa_value.zpr_attributes, null) != null && length(psa_value.zpr_attributes) > 0 ? merge([
+      security_attributes = length(try(coalesce(psa_value.zpr_attributes, []), [])) > 0 ? merge([
         for attr in psa_value.zpr_attributes : merge(
           try(attr.attr_name, null) != null && try(attr.attr_value, null) != null ? {
             format(
