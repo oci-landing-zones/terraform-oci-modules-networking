@@ -754,6 +754,16 @@ variable "network_configuration" {
           public_ip_pool_id  = optional(string),
           public_ip_pool_key = optional(string)
         })))
+
+        private_ips = optional(map(object({
+          defined_tags   = optional(map(string)),
+          display_name   = optional(string),
+          freeform_tags  = optional(map(string)),
+          hostname_label = optional(string),
+          ip_address     = optional(string),
+          subnet_id      = optional(string),
+          subnet_key     = optional(string)
+        })))
       }))
 
       non_vcn_specific_gateways = optional(object({
@@ -1308,9 +1318,9 @@ variable "network_configuration" {
             mode       = optional(string, "enforce")
           }))
         ),
-        ipv4_address      = optional(string),
-        defined_tags      = optional(map(string)),
-        freeform_tags     = optional(map(string))
+        ipv4_address  = optional(string),
+        defined_tags  = optional(map(string)),
+        freeform_tags = optional(map(string))
       })))
       }
     )))
