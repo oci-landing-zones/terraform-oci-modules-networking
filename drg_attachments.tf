@@ -87,7 +87,13 @@ locals {
       drg_name                         = local.one_dimension_processed_drg_attachments[drga_key].drg_name
       drg_route_table_id               = drga_value.drg_route_table_id
       drg_route_table_key              = local.one_dimension_processed_drg_attachments[drga_key].drg_route_table_key != null ? local.one_dimension_processed_drg_attachments[drga_key].drg_route_table_key : "CANNOT BE DETERMINED - ROUTE TABLE CREATED OUTSIDE THIS AUTOMATION"
-      drg_route_table_name             = local.one_dimension_processed_drg_attachments[drga_key].drg_route_table_key != null ? local.provisioned_drg_route_tables[local.one_dimension_processed_drg_attachments[drga_key].drg_route_table_key].display_name : "CANNOT BE DETERMINED - ROUTE TABLE CREATED OUTSIDE THIS AUTOMATION"
+      # External dependency entries contain an ID only, so their display name cannot be determined here.
+      drg_route_table_name             = local.one_dimension_processed_drg_attachments[drga_key].drg_route_table_key != null ? try(
+        local.provisioned_drg_route_tables[
+          local.one_dimension_processed_drg_attachments[drga_key].drg_route_table_key
+        ].display_name,
+        "CANNOT BE DETERMINED - ROUTE TABLE CREATED OUTSIDE THIS AUTOMATION"
+      ) : "CANNOT BE DETERMINED - ROUTE TABLE CREATED OUTSIDE THIS AUTOMATION"
       export_drg_route_distribution_id = drga_value.export_drg_route_distribution_id
       freeform_tags                    = drga_value.freeform_tags
       id                               = drga_value.id
@@ -142,7 +148,13 @@ resource "oci_core_drg_attachment" "these" {
   #Optional
   defined_tags       = each.value.defined_tags
   display_name       = each.value.display_name
-  drg_route_table_id = each.value.drg_route_table_id != null ? each.value.drg_route_table_id : each.value.drg_route_table_key != null ? oci_core_drg_route_table.these[each.value.drg_route_table_key].id : null
+  # Resolve a route-table key from either this execution or an external network dependency.
+  drg_route_table_id = each.value.drg_route_table_id != null ? each.value.drg_route_table_id : (
+    each.value.drg_route_table_key != null ? merge(
+      oci_core_drg_route_table.these,
+      try(var.network_dependency["drg_route_tables"], {})
+    )[each.value.drg_route_table_key].id : null
+  )
   freeform_tags      = merge(local.cislz_module_tag, each.value.freeform_tags)
   dynamic "network_details" {
     iterator = net_det

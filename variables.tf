@@ -1369,6 +1369,10 @@ variable "network_dependency" {
     subnets = optional(map(object({
       id = string # The OCID of the subnets
     })))
+    # Allows attachments to use a DRG route table created by a separate stack.
+    drg_route_tables = optional(map(object({
+      id = string # the DRG route table OCID
+    })))    
   })
   default = null
 }
