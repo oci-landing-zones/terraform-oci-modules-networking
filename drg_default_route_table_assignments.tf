@@ -23,7 +23,7 @@ locals {
               for tunnel_index in range(2) : {
                 assignment_key     = format("%s.%s.TUNNEL-%d", attachment_type, ipsec_key, tunnel_index + 1)
                 attachment_type    = attachment_type
-                compartment_id     = local.one_dimension_dynamic_routing_gateways[drg_key].compartment_id
+                compartment_id     = ipsec_value.compartment_id
                 drg_id             = oci_core_drg.these[drg_key].id
                 drg_route_table_id = selector.drg_route_table_id
                 network_id         = data.oci_core_ipsec_connection_tunnels.these[ipsec_key].ip_sec_connection_tunnels[tunnel_index].id

@@ -1342,11 +1342,17 @@ variable "network_configuration" {
           for selector in [
             try(drg.default_drg_route_tables.ipsec_tunnel, null),
             try(drg.default_drg_route_tables.virtual_circuit, null)
-          ] : selector == null ? true : selector.drg_route_table_id != null
+            ] : selector == null ? true : try(
+            selector.drg_route_table_id != "" && (
+              length(regexall("^ocid1\\.drgroutetable\\.", selector.drg_route_table_id)) > 0 ||
+              contains(keys(coalesce(drg.drg_route_tables, {})), selector.drg_route_table_id)
+            ),
+            false
+          )
         ])
       ]
     ]))
-    error_message = "Each default_drg_route_tables.ipsec_tunnel or default_drg_route_tables.virtual_circuit selector must specify drg_route_table_id."
+    error_message = "Each default_drg_route_tables selector must specify a non-empty drg_route_table_id containing either a DRG route table OCID or a route table key declared under the same DRG."
   }
 }
 
