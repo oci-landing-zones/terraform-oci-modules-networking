@@ -1,4 +1,4 @@
-# August 19, 2026 Release Notes - 0.8.4
+# Release Notes - 0.8.4
 
 ## Updates
 1. Dynamic routing gateways can now assign a custom DRG route table to generated IPSec tunnel attachments and provisioned private FastConnect virtual circuit attachments through the optional `default_drg_route_tables` configuration, including when an IPSec connection and its DRG are in different compartments.
