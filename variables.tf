@@ -1344,7 +1344,7 @@ variable "network_configuration" {
             try(drg.default_drg_route_tables.virtual_circuit, null)
             ] : selector == null ? true : try(
             selector.drg_route_table_id != "" && (
-              length(regexall("^ocid1\\.drgroutetable\\.", selector.drg_route_table_id)) > 0 ||
+              length(regexall("^ocid1\\.drgroutetable\\.[^[:space:]]+$", selector.drg_route_table_id)) > 0 ||
               contains(keys(coalesce(drg.drg_route_tables, {})), selector.drg_route_table_id)
             ),
             false
@@ -1352,7 +1352,7 @@ variable "network_configuration" {
         ])
       ]
     ]))
-    error_message = "Each default_drg_route_tables selector must specify a non-empty drg_route_table_id containing either a DRG route table OCID or a route table key declared under the same DRG."
+    error_message = "Each default_drg_route_tables selector must specify a non-empty drg_route_table_id containing either a valid DRG route table OCID or a route table key declared under the same DRG."
   }
 }
 
