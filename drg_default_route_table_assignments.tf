@@ -10,7 +10,7 @@ locals {
         IPSEC_TUNNEL    = try(drg_value.default_drg_route_tables.ipsec_tunnel, null)
         VIRTUAL_CIRCUIT = try(drg_value.default_drg_route_tables.virtual_circuit, null)
       } : attachment_type => selector
-      if selector != null && selector.drg_route_table_id != null
+      if try(selector.drg_route_table_id, null) != null
     }
   }
 
