@@ -1,3 +1,8 @@
+# Release Notes - 0.8.4
+
+## Fixes
+1. [Issue 94](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/94): VCN and non-VCN DRG attachments can now resolve *drg_route_table_key* from externally managed route tables supplied through *network_dependency.drg_route_tables*. Locally managed route tables take precedence when the same key is present in both sources.
+
 # June 30, 2026 Release Notes - 0.8.3
 
 ## Fixes

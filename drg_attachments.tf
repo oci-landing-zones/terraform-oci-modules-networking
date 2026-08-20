@@ -79,19 +79,16 @@ locals {
 
   provisioned_drg_attachments = {
     for drga_key, drga_value in oci_core_drg_attachment.these : drga_key => {
-      compartment_id                   = drga_value.compartment_id
-      defined_tags                     = drga_value.defined_tags
-      display_name                     = drga_value.display_name
-      drg_id                           = drga_value.drg_id
-      drg_key                          = local.one_dimension_processed_drg_attachments[drga_key].drg_key
-      drg_name                         = local.one_dimension_processed_drg_attachments[drga_key].drg_name
-      drg_route_table_id               = drga_value.drg_route_table_id
-      drg_route_table_key              = local.one_dimension_processed_drg_attachments[drga_key].drg_route_table_key != null ? local.one_dimension_processed_drg_attachments[drga_key].drg_route_table_key : "CANNOT BE DETERMINED - ROUTE TABLE CREATED OUTSIDE THIS AUTOMATION"
-      # External dependency entries contain an ID only, so their display name cannot be determined here.
-      drg_route_table_name             = local.one_dimension_processed_drg_attachments[drga_key].drg_route_table_key != null ? try(
-        local.provisioned_drg_route_tables[
-          local.one_dimension_processed_drg_attachments[drga_key].drg_route_table_key
-        ].display_name,
+      compartment_id      = drga_value.compartment_id
+      defined_tags        = drga_value.defined_tags
+      display_name        = drga_value.display_name
+      drg_id              = drga_value.drg_id
+      drg_key             = local.one_dimension_processed_drg_attachments[drga_key].drg_key
+      drg_name            = local.one_dimension_processed_drg_attachments[drga_key].drg_name
+      drg_route_table_id  = drga_value.drg_route_table_id
+      drg_route_table_key = local.one_dimension_processed_drg_attachments[drga_key].drg_route_table_key != null ? local.one_dimension_processed_drg_attachments[drga_key].drg_route_table_key : "CANNOT BE DETERMINED - ROUTE TABLE CREATED OUTSIDE THIS AUTOMATION"
+      drg_route_table_name = local.one_dimension_processed_drg_attachments[drga_key].drg_route_table_key != null ? coalesce(
+        try(local.drg_route_table_targets[local.one_dimension_processed_drg_attachments[drga_key].drg_route_table_key].display_name, null),
         "CANNOT BE DETERMINED - ROUTE TABLE CREATED OUTSIDE THIS AUTOMATION"
       ) : "CANNOT BE DETERMINED - ROUTE TABLE CREATED OUTSIDE THIS AUTOMATION"
       export_drg_route_distribution_id = drga_value.export_drg_route_distribution_id
@@ -146,16 +143,12 @@ resource "oci_core_drg_attachment" "these" {
   drg_id = each.value.drg_id
 
   #Optional
-  defined_tags       = each.value.defined_tags
-  display_name       = each.value.display_name
-  # Resolve a route-table key from either this execution or an external network dependency.
+  defined_tags = each.value.defined_tags
+  display_name = each.value.display_name
   drg_route_table_id = each.value.drg_route_table_id != null ? each.value.drg_route_table_id : (
-    each.value.drg_route_table_key != null ? merge(
-      oci_core_drg_route_table.these,
-      try(var.network_dependency["drg_route_tables"], {})
-    )[each.value.drg_route_table_key].id : null
+    each.value.drg_route_table_key != null ? try(local.drg_route_table_targets[each.value.drg_route_table_key].id, null) : null
   )
-  freeform_tags      = merge(local.cislz_module_tag, each.value.freeform_tags)
+  freeform_tags = merge(local.cislz_module_tag, each.value.freeform_tags)
   dynamic "network_details" {
     iterator = net_det
     for_each = each.value.network_details != null ? [each.value.network_details] : []
@@ -186,6 +179,17 @@ resource "oci_core_drg_attachment" "these" {
       )[net_det.value.route_table_key].id : null
 
       vcn_route_type = net_det.value.vcn_route_type
+    }
+  }
+
+  lifecycle {
+    precondition {
+      condition = (
+        each.value.drg_route_table_id != null ||
+        each.value.drg_route_table_key == null ||
+        try(local.drg_route_table_targets[each.value.drg_route_table_key].id != null, false)
+      )
+      error_message = "DRG attachment \"${each.key}\" references unknown drg_route_table_key \"${each.value.drg_route_table_key != null ? each.value.drg_route_table_key : "<null>"}\". Declare the key under the current configuration's drg_route_tables or provide it in network_dependency.drg_route_tables."
     }
   }
 }

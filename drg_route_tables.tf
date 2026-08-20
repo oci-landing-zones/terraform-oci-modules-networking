@@ -9,6 +9,26 @@
 
 
 locals {
+  # Normalize local and external DRG route tables once so every attachment type
+  # resolves drg_route_table_key with the same precedence and null handling.
+  # Local resources intentionally win on duplicate keys to preserve the module's
+  # established key resolution behavior.
+  external_drg_route_tables = try(coalesce(var.network_dependency.drg_route_tables, {}), {})
+  drg_route_table_targets = merge(
+    {
+      for drgrt_key, drgrt_value in local.external_drg_route_tables : drgrt_key => {
+        id           = drgrt_value.id
+        display_name = null
+      }
+    },
+    {
+      for drgrt_key, drgrt_value in oci_core_drg_route_table.these : drgrt_key => {
+        id           = drgrt_value.id
+        display_name = drgrt_value.display_name
+      }
+    }
+  )
+
   one_dimension_processed_drg_route_tables_1 = local.one_dimension_dynamic_routing_gateways != null ? length(local.one_dimension_dynamic_routing_gateways) > 0 ? {
     for flat_drgrts in flatten([
       for drg_key, drg_value in local.one_dimension_dynamic_routing_gateways :

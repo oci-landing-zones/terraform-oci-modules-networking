@@ -5,7 +5,7 @@
 # 1. Rename this file to <project-name>.auto.tfvars, where <project-name> is a name of your choice.
 # 2. Provide values for "Tenancy Connectivity Variables".
 # 3. Make sure ./dependencies/vision-compartments.json has the NETWORK-CMP key defined with the id attribute set with a valid compartment OCID.
-# 4. Make sure ./dependencies/vision-network.json has the VISION-VCN key defined with the id attribute set with a valid VCN OCID.
+# 4. Make sure ./dependencies/vision-network.json defines VISION-VCN, VISION-DRG, and VISION-DRG-ROUTE-TABLE with valid OCIDs.
 #-------------------------------------------------------------------------------------------------------------------------------------------------
 
 #---------------------------------------
@@ -65,6 +65,37 @@ network_configuration = {
             }
           }
         }  
+      }
+      non_vcn_specific_gateways = {
+        inject_into_existing_drgs = {
+          VISION-DRG-INJECTED = {
+            drg_id = "VISION-DRG" # This key is defined in ./dependencies/vision-network.json
+            remote_peering_connections = {
+              VISION-RPC = {
+                compartment_id = "NETWORK-CMP"
+                display_name   = "vision-rpc"
+              }
+            }
+            drg_attachments = {
+              VISION-VCN-ATTACHMENT = {
+                display_name        = "vision-vcn-attachment"
+                drg_route_table_key = "VISION-DRG-ROUTE-TABLE" # This key is defined in ./dependencies/vision-network.json
+                network_details = {
+                  attached_resource_key = "VISION-VCN"
+                  type                  = "VCN"
+                }
+              }
+              VISION-RPC-ATTACHMENT = {
+                display_name        = "vision-rpc-attachment"
+                drg_route_table_key = "VISION-DRG-ROUTE-TABLE" # This key is defined in ./dependencies/vision-network.json
+                network_details = {
+                  attached_resource_key = "VISION-RPC"
+                  type                  = "REMOTE_PEERING_CONNECTION"
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
