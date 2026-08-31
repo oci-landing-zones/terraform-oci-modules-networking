@@ -25,6 +25,7 @@ This example leverages the fully dynamic characteristics of the complex networki
         - next hop to on-premises(10.0.0.0/16) is the DRG.
     - No NSG.
  - One fast connect virtual circuit having Equinix as a fast connect provider.
+ - One custom DRG route table assigned by default to the generated private virtual circuit attachment.
 
 __NOTE 1:__ Please note that the entire configuration is a single complex input parameter and you're able to edit it and change the resources names and any of their configuration (like VCN and subnet CIDR blocks, dns labels...) and, also, you're able to change the input configuration topology/structure like adding more categories, more VCNs inside a category, more subnets inside a VCN or inject new resources into existing VCNs and this will reflect into the topology that terraform will provision.
 
@@ -126,7 +127,13 @@ provisioned_networking_resources = {
   "drg_route_distributions" = {}
   "drg_route_distributions_statements" = {}
   "drg_route_table_route_rules" = {}
-  "drg_route_tables" = {}
+  "drg_route_tables" = {
+    "DRG-FASTCONNECT-RT-KEY" = {
+      "display_name" = "drg-fastconnect-route-table"
+      "drg_name" = "drg-vision"
+      "drgrt_key" = "DRG-FASTCONNECT-RT-KEY"
+    }
+  }
   "dynamic_routing_gateways" = {
     "DRG-VISION-KEY" = {
       "compartment_id" = "ocid1.compartment.oc1...."
