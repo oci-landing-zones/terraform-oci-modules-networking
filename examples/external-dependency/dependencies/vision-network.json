@@ -1,5 +1,14 @@
 {
-  "dynamic_routing_gateways": {},
+  "dynamic_routing_gateways": {
+    "VISION-DRG": {
+      "id": "ocid1.drg.oc1.phx.aaaaaaaa...drg"
+    }
+  },
+  "drg_route_tables": {
+    "VISION-DRG-ROUTE-TABLE": {
+      "id": "ocid1.drgroutetable.oc1.phx.aaaaaaaa...drt"
+    }
+  },
   "network_security_groups": {
     "APP-NSG": {
       "id": "ocid1.networksecuritygroup.oc1.phx.aaaaaaaa...oua"

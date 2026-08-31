@@ -774,6 +774,15 @@ variable "network_configuration" {
           display_name   = optional(string),
           freeform_tags  = optional(map(string)),
 
+          default_drg_route_tables = optional(object({
+            ipsec_tunnel = optional(object({
+              drg_route_table_id = optional(string)
+            }))
+            virtual_circuit = optional(object({
+              drg_route_table_id = optional(string)
+            }))
+          }), null)
+
           remote_peering_connections = optional(map(object({
             compartment_id   = optional(string),
             defined_tags     = optional(map(string)),
@@ -1325,6 +1334,26 @@ variable "network_configuration" {
       }
     )))
   })
+
+  validation {
+    condition = var.network_configuration == null ? true : alltrue(flatten([
+      for category in coalesce(var.network_configuration.network_configuration_categories, {}) : [
+        for drg in coalesce(try(category.non_vcn_specific_gateways.dynamic_routing_gateways, null), {}) : alltrue([
+          for selector in [
+            try(drg.default_drg_route_tables.ipsec_tunnel, null),
+            try(drg.default_drg_route_tables.virtual_circuit, null)
+            ] : selector == null ? true : try(
+            selector.drg_route_table_id != "" && (
+              length(regexall("^ocid1\\.drgroutetable\\.[^[:space:]]+$", selector.drg_route_table_id)) > 0 ||
+              contains(keys(coalesce(drg.drg_route_tables, {})), selector.drg_route_table_id)
+            ),
+            false
+          )
+        ])
+      ]
+    ]))
+    error_message = "Each default_drg_route_tables selector must specify a non-empty drg_route_table_id containing either a valid DRG route table OCID or a route table key declared under the same DRG."
+  }
 }
 
 variable "module_name" {
@@ -1342,7 +1371,7 @@ variable "compartments_dependency" {
 }
 
 variable "network_dependency" {
-  description = "An object containing the externally managed network resources this module may depend on. Supported resources are 'vcns', 'dynamic_routing_gateways', 'drg_attachments', 'local_peering_gateways', 'remote_peering_connections',  'dns_private_views', and 'subnets' represented as map of objects. Each object, when defined, must have an 'id' attribute of string type set with the VCN, DRG OCID, DRG Attachment OCID, Local Peering Gateway OCID or Remote Peering Connection OCID. 'remote_peering_connections' must also pass the peer region name in the region_name attribute. See External Dependencies section in README.md (https://github.com/oci-landing-zones/terraform-oci-modules-networking#ext-dep) for details."
+  description = "An object containing the externally managed network resources this module may depend on. Supported resources are 'vcns', 'dynamic_routing_gateways', 'drg_attachments', 'drg_route_tables', 'local_peering_gateways', 'remote_peering_connections', 'dns_private_views', 'public_ips', and 'subnets', represented as maps of objects. Each object must have an 'id' attribute containing the resource OCID. 'remote_peering_connections' must also provide the peer region in the 'region_name' attribute. See External Dependencies in README.md (https://github.com/oci-landing-zones/terraform-oci-modules-networking#ext-dep) for details."
   type = object({
     vcns = optional(map(object({
       id = string # the VCN OCID
@@ -1368,6 +1397,9 @@ variable "network_dependency" {
     })))
     subnets = optional(map(object({
       id = string # The OCID of the subnets
+    })))
+    drg_route_tables = optional(map(object({
+      id = string # the DRG route table OCID
     })))
   })
   default = null
