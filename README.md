@@ -219,11 +219,12 @@ The ```network_configuration``` is a multidimensional complex object:
    
           See the comments above for ```local_peering_gateways``` and extrapolate to other similar models like adding security lists and route tables to subnets, specifying gateways as next hops in route rules, etc.
     - ```non_vcn_specific_gateways``` allows the configuration of any number of dynamic routing gateways (DRGs), Network Firewalls (NFWs) and inject resources into any number of existing DRGs.
-      - The ```dynamic_routing_gateways``` attribute can have any number of DRGs to be created. Each entry can have any number of
+      - The ```dynamic_routing_gateways``` attribute can have any number of DRGs to be created. Each entry can configure:
         - ```remote_peering_connections```,
         - ```drg_attachments```, 
-        - ```drg_route_tables``` and
-        - ```drg_route_distributions```.
+        - ```drg_route_tables```,
+        - ```drg_route_distributions``` and
+        - ```default_drg_route_tables``` to assign a route table to generated ```ipsec_tunnel``` and private ```virtual_circuit``` attachments. ```drg_route_table_id``` accepts a DRG route table OCID or a route table key declared under the same DRG. Do not also declare the generated attachment in ```drg_attachments```.
       - The ```inject_into_existing_drgs``` attribute can inject resources in any number of existing drgs. Any number of the following attributes are supported:
         - ```remote_peering_connections```,
         - ```drg_attachments```,

@@ -1,7 +1,12 @@
-# Release Notes - 0.8.4
+# August 31, Release Notes - 0.8.4
 
 ## Fixes
 1. [Issue 94](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/94): VCN and non-VCN DRG attachments can now resolve *drg_route_table_key* from externally managed route tables supplied through *network_dependency.drg_route_tables*. Locally managed route tables take precedence when the same key is present in both sources.
+
+## Updates
+1. Dynamic routing gateways can now assign a custom DRG route table to generated IPSec tunnel attachments and provisioned private FastConnect virtual circuit attachments through the optional `default_drg_route_tables` configuration, including when an IPSec connection and its DRG are in different compartments.
+2. A default DRG route table selector accepts either the key of a route table declared under the same DRG or a valid DRG route table OCID, and rejects null, empty, malformed, or unresolved references before provisioning.
+3. The [IPSec](./examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/) and [FastConnect](./examples/edge-connectivity/fast-connect-examples/generic-oci-fastconnect-partner/) examples now demonstrate default DRG route table assignments.
 
 # June 30, 2026 Release Notes - 0.8.3
 

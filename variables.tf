@@ -774,6 +774,15 @@ variable "network_configuration" {
           display_name   = optional(string),
           freeform_tags  = optional(map(string)),
 
+          default_drg_route_tables = optional(object({
+            ipsec_tunnel = optional(object({
+              drg_route_table_id = optional(string)
+            }))
+            virtual_circuit = optional(object({
+              drg_route_table_id = optional(string)
+            }))
+          }), null)
+
           remote_peering_connections = optional(map(object({
             compartment_id   = optional(string),
             defined_tags     = optional(map(string)),
@@ -1325,6 +1334,26 @@ variable "network_configuration" {
       }
     )))
   })
+
+  validation {
+    condition = var.network_configuration == null ? true : alltrue(flatten([
+      for category in coalesce(var.network_configuration.network_configuration_categories, {}) : [
+        for drg in coalesce(try(category.non_vcn_specific_gateways.dynamic_routing_gateways, null), {}) : alltrue([
+          for selector in [
+            try(drg.default_drg_route_tables.ipsec_tunnel, null),
+            try(drg.default_drg_route_tables.virtual_circuit, null)
+            ] : selector == null ? true : try(
+            selector.drg_route_table_id != "" && (
+              length(regexall("^ocid1\\.drgroutetable\\.[^[:space:]]+$", selector.drg_route_table_id)) > 0 ||
+              contains(keys(coalesce(drg.drg_route_tables, {})), selector.drg_route_table_id)
+            ),
+            false
+          )
+        ])
+      ]
+    ]))
+    error_message = "Each default_drg_route_tables selector must specify a non-empty drg_route_table_id containing either a valid DRG route table OCID or a route table key declared under the same DRG."
+  }
 }
 
 variable "module_name" {

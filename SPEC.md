@@ -9,8 +9,8 @@
 
 | Name | Version |
 |------|---------|
-| <a name="provider_oci"></a> [oci](#provider\_oci) | n/a |
-| <a name="provider_time"></a> [time](#provider\_time) | n/a |
+| <a name="provider_oci"></a> [oci](#provider\_oci) | 8.27.0 |
+| <a name="provider_time"></a> [time](#provider\_time) | 0.14.1 |
 
 ## Modules
 
@@ -35,6 +35,7 @@
 | [oci_core_dhcp_options.these](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_dhcp_options) | resource |
 | [oci_core_drg.these](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_drg) | resource |
 | [oci_core_drg_attachment.these](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_drg_attachment) | resource |
+| [oci_core_drg_attachment_management.default_route_table_assignments](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_drg_attachment_management) | resource |
 | [oci_core_drg_attachment_management.these](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_drg_attachment_management) | resource |
 | [oci_core_drg_route_distribution.these](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_drg_route_distribution) | resource |
 | [oci_core_drg_route_distribution_statement.these](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_drg_route_distribution_statement) | resource |
