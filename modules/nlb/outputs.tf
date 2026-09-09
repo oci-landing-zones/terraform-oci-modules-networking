@@ -26,6 +26,20 @@ output "nlbs_primary_private_ips" {
   value       = data.oci_core_private_ips.these
 }
 
+output "route_target_private_ips" {
+  description = "The NLBs primary private IP addresses, available after their listeners, backend sets, and configured backends are created."
+  value = {
+    for nlb_key, private_ips in data.oci_core_private_ips.these : nlb_key => {
+      id = one(private_ips.private_ips).id
+    }
+  }
+
+  depends_on = [
+    oci_network_load_balancer_listener.these,
+    oci_network_load_balancer_backend.these,
+  ]
+}
+
 output "nlbs_public_ips" {
   description = "The NLBs public IP addresses."
   value       = data.oci_core_public_ip.these

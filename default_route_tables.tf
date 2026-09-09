@@ -30,24 +30,27 @@ locals {
           default_route_table_key        = "CUSTOM-DEFAULT-ROUTE-TABLE-${vcn_key}"
           route_rules = vcn_value.default_route_table.route_rules != null ? {
             for rr_key, rr_value in vcn_value.default_route_table.route_rules : rr_key => {
-              destination        = rr_value.destination_type != "SERVICE_CIDR_BLOCK" ? rr_value.destination : local.oci_services_details[rr_value.destination].cidr_block
-              destination_type   = rr_value.destination_type
-              network_entity_id  = rr_value.network_entity_id
-              network_entity_key = rr_value.network_entity_key
-              description        = rr_value.description
+              destination      = rr_value.destination_type != "SERVICE_CIDR_BLOCK" ? rr_value.destination : local.oci_services_details[rr_value.destination].cidr_block
+              destination_type = rr_value.destination_type
+              network_entity_id = rr_value.network_entity_id != null ? (
+                startswith(rr_value.network_entity_id, "ocid1.") ? rr_value.network_entity_id : null
+              ) : null
+              network_entity_key = rr_value.network_entity_id != null ? (
+                startswith(rr_value.network_entity_id, "ocid1.") ? rr_value.network_entity_key : rr_value.network_entity_id
+              ) : rr_value.network_entity_key
+              description = rr_value.description
             }
           } : {}
-          route_tables_route_rules_targets = vcn_value.default_route_table.route_rules != null ? length(vcn_value.default_route_table.route_rules) > 0 ? distinct(flatten([
-            [for rr_key, rr_value in vcn_value.default_route_table.route_rules : local.route_tables_route_rules_targets.igw if contains(keys(local.merged_one_dimension_processed_internet_gateways), coalesce(rr_value.network_entity_key, " "))],
-            [for rr_key, rr_value in vcn_value.default_route_table.route_rules : local.route_tables_route_rules_targets.natgw if contains(keys(local.merged_one_dimension_processed_nat_gateways), coalesce(rr_value.network_entity_key, " "))],
-            [for rr_key, rr_value in vcn_value.default_route_table.route_rules : local.route_tables_route_rules_targets.sgw if contains(keys(local.merged_one_dimension_processed_service_gateways), coalesce(rr_value.network_entity_key, " "))],
-            [for rr_key, rr_value in vcn_value.default_route_table.route_rules : local.route_tables_route_rules_targets.drg if contains(keys(merge(local.one_dimension_dynamic_routing_gateways, local.one_dimension_inject_into_existing_drgs, coalesce(try(var.network_dependency["dynamic_routing_gateways"], null), {}))), coalesce(rr_value.network_entity_key, " "))],
-            [for rr_key, rr_value in vcn_value.default_route_table.route_rules : local.route_tables_route_rules_targets.lpg if contains(keys(local.merged_one_dimension_processed_local_peering_gateways), coalesce(rr_value.network_entity_key, " "))],
-            [for rr_key, rr_value in vcn_value.default_route_table.route_rules : local.route_tables_route_rules_targets.private_ip if length(regexall("ocid1.privateip", coalesce(rr_value.network_entity_id, " "))) > 0 || contains(keys(local.private_ip_dependency_targets), coalesce(rr_value.network_entity_key, " "))],
-            [for rr_key, rr_value in vcn_value.default_route_table.route_rules : local.route_tables_route_rules_targets.null_target if rr_value.network_entity_id == null && rr_value.network_entity_key == null],
-            [for rr_key, rr_value in vcn_value.default_route_table.route_rules : local.route_tables_route_rules_targets.ocid_non_private_ip_target if rr_value.network_entity_key == null && rr_value.network_entity_id != null && length(regexall("ocid1.privateip", coalesce(rr_value.network_entity_id, " "))) <= 0],
-            [for rr_key, rr_value in vcn_value.default_route_table.route_rules : local.route_tables_route_rules_targets.target_not_found if !contains(keys(local.merged_one_dimension_processed_internet_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.merged_one_dimension_processed_nat_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.merged_one_dimension_processed_service_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(merge(local.one_dimension_dynamic_routing_gateways, local.one_dimension_inject_into_existing_drgs, coalesce(try(var.network_dependency["dynamic_routing_gateways"], null), {}))), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.merged_one_dimension_processed_local_peering_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.private_ip_dependency_targets), coalesce(rr_value.network_entity_key, " ")) && rr_value.network_entity_id == null && rr_value.network_entity_key != null]
-          ])) : [local.route_tables_route_rules_targets.no_route_rules] : [local.route_tables_route_rules_targets.no_route_rules]
+          route_tables_route_rules_targets = vcn_value.default_route_table.route_rules != null ? length(vcn_value.default_route_table.route_rules) > 0 ? distinct([
+            for rr_value in values(vcn_value.default_route_table.route_rules) :
+            rr_value.network_entity_id != null ? (
+              startswith(rr_value.network_entity_id, "ocid1.privateip") ? local.route_tables_route_rules_targets.private_ip :
+              startswith(rr_value.network_entity_id, "ocid1.") ? local.route_tables_route_rules_targets.ocid_non_private_ip_target :
+              lookup(local.route_rule_target_types_by_key, rr_value.network_entity_id, local.route_tables_route_rules_targets.target_not_found)
+              ) : rr_value.network_entity_key != null ? (
+              lookup(local.route_rule_target_types_by_key, rr_value.network_entity_key, local.route_tables_route_rules_targets.target_not_found)
+            ) : local.route_tables_route_rules_targets.null_target
+          ]) : [local.route_tables_route_rules_targets.no_route_rules] : [local.route_tables_route_rules_targets.no_route_rules]
         }
       ] if vcn_value.default_route_table != null
     ]) : flat_default_route_tables.default_route_table_key => flat_default_route_tables
@@ -74,24 +77,27 @@ locals {
           default_route_table_key        = "CUSTOM-DEFAULT-ROUTE-TABLE-${vcn_key}"
           route_rules = vcn_value.default_route_table.route_rules != null ? {
             for rr_key, rr_value in vcn_value.default_route_table.route_rules : rr_key => {
-              destination        = rr_value.destination_type != "SERVICE_CIDR_BLOCK" ? rr_value.destination : local.oci_services_details[rr_value.destination].cidr_block
-              destination_type   = rr_value.destination_type
-              network_entity_id  = rr_value.network_entity_id
-              network_entity_key = rr_value.network_entity_key
-              description        = rr_value.description
+              destination      = rr_value.destination_type != "SERVICE_CIDR_BLOCK" ? rr_value.destination : local.oci_services_details[rr_value.destination].cidr_block
+              destination_type = rr_value.destination_type
+              network_entity_id = rr_value.network_entity_id != null ? (
+                startswith(rr_value.network_entity_id, "ocid1.") ? rr_value.network_entity_id : null
+              ) : null
+              network_entity_key = rr_value.network_entity_id != null ? (
+                startswith(rr_value.network_entity_id, "ocid1.") ? rr_value.network_entity_key : rr_value.network_entity_id
+              ) : rr_value.network_entity_key
+              description = rr_value.description
             }
           } : {}
-          route_tables_route_rules_targets = vcn_value.default_route_table.route_rules != null ? length(vcn_value.default_route_table.route_rules) > 0 ? distinct(flatten([
-            [for rr_key, rr_value in vcn_value.default_route_table.route_rules : local.route_tables_route_rules_targets.igw if contains(keys(local.merged_one_dimension_processed_internet_gateways), coalesce(rr_value.network_entity_key, " "))],
-            [for rr_key, rr_value in vcn_value.default_route_table.route_rules : local.route_tables_route_rules_targets.natgw if contains(keys(local.merged_one_dimension_processed_nat_gateways), coalesce(rr_value.network_entity_key, " "))],
-            [for rr_key, rr_value in vcn_value.default_route_table.route_rules : local.route_tables_route_rules_targets.sgw if contains(keys(local.merged_one_dimension_processed_service_gateways), coalesce(rr_value.network_entity_key, " "))],
-            [for rr_key, rr_value in vcn_value.default_route_table.route_rules : local.route_tables_route_rules_targets.drg if contains(keys(merge(local.one_dimension_dynamic_routing_gateways, local.one_dimension_inject_into_existing_drgs, coalesce(try(var.network_dependency["dynamic_routing_gateways"], null), {}))), coalesce(rr_value.network_entity_key, " "))],
-            [for rr_key, rr_value in vcn_value.default_route_table.route_rules : local.route_tables_route_rules_targets.lpg if contains(keys(local.merged_one_dimension_processed_local_peering_gateways), coalesce(rr_value.network_entity_key, " "))],
-            [for rr_key, rr_value in vcn_value.default_route_table.route_rules : local.route_tables_route_rules_targets.private_ip if length(regexall("ocid1.privateip", coalesce(rr_value.network_entity_id, " "))) > 0 || contains(keys(local.private_ip_dependency_targets), coalesce(rr_value.network_entity_key, " "))],
-            [for rr_key, rr_value in vcn_value.default_route_table.route_rules : local.route_tables_route_rules_targets.null_target if rr_value.network_entity_id == null && rr_value.network_entity_key == null],
-            [for rr_key, rr_value in vcn_value.default_route_table.route_rules : local.route_tables_route_rules_targets.ocid_non_private_ip_target if rr_value.network_entity_key == null && rr_value.network_entity_id != null && length(regexall("ocid1.privateip", coalesce(rr_value.network_entity_id, " "))) <= 0],
-            [for rr_key, rr_value in vcn_value.default_route_table.route_rules : local.route_tables_route_rules_targets.target_not_found if !contains(keys(local.merged_one_dimension_processed_internet_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.merged_one_dimension_processed_nat_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.merged_one_dimension_processed_service_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(merge(local.one_dimension_dynamic_routing_gateways, local.one_dimension_inject_into_existing_drgs, coalesce(try(var.network_dependency["dynamic_routing_gateways"], null), {}))), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.merged_one_dimension_processed_local_peering_gateways), coalesce(rr_value.network_entity_key, " ")) && !contains(keys(local.private_ip_dependency_targets), coalesce(rr_value.network_entity_key, " ")) && rr_value.network_entity_id == null && rr_value.network_entity_key != null]
-          ])) : [local.route_tables_route_rules_targets.no_route_rules] : [local.route_tables_route_rules_targets.no_route_rules]
+          route_tables_route_rules_targets = vcn_value.default_route_table.route_rules != null ? length(vcn_value.default_route_table.route_rules) > 0 ? distinct([
+            for rr_value in values(vcn_value.default_route_table.route_rules) :
+            rr_value.network_entity_id != null ? (
+              startswith(rr_value.network_entity_id, "ocid1.privateip") ? local.route_tables_route_rules_targets.private_ip :
+              startswith(rr_value.network_entity_id, "ocid1.") ? local.route_tables_route_rules_targets.ocid_non_private_ip_target :
+              lookup(local.route_rule_target_types_by_key, rr_value.network_entity_id, local.route_tables_route_rules_targets.target_not_found)
+              ) : rr_value.network_entity_key != null ? (
+              lookup(local.route_rule_target_types_by_key, rr_value.network_entity_key, local.route_tables_route_rules_targets.target_not_found)
+            ) : local.route_tables_route_rules_targets.null_target
+          ]) : [local.route_tables_route_rules_targets.no_route_rules] : [local.route_tables_route_rules_targets.no_route_rules]
         }
       ] if vcn_value.default_route_table != null
     ]) : flat_default_route_tables.default_route_table_key => flat_default_route_tables
@@ -111,24 +117,7 @@ locals {
     for route_table_key, route_table_value in local.merged_one_dimension_processed_default_route_tables : route_table_key => route_table_value if length(setsubtract(route_table_value.route_tables_route_rules_targets, local.natgw_igw_attachable_specific_route_tables_route_rules_targets)) == 0
   } : null : null
 
-  provisioned_igw_natgw_specific_default_route_tables = {
-    for route_table_key, route_value in oci_core_default_route_table.igw_natgw_specific_default_route_tables : route_table_key => {
-      compartment_id                 = route_value.compartment_id
-      defined_tags                   = route_value.defined_tags
-      display_name                   = route_value.display_name
-      freeform_tags                  = route_value.freeform_tags
-      id                             = route_value.id
-      route_rules                    = route_value.route_rules
-      state                          = route_value.state
-      time_created                   = route_value.time_created
-      timeouts                       = route_value.timeouts
-      vcn_id                         = local.igw_natgw_attachable_specific_default_route_tables[route_table_key].vcn_id
-      vcn_key                        = local.igw_natgw_attachable_specific_default_route_tables[route_table_key].vcn_key
-      vcn_name                       = local.igw_natgw_attachable_specific_default_route_tables[route_table_key].vcn_name
-      network_configuration_category = local.igw_natgw_attachable_specific_default_route_tables[route_table_key].network_configuration_category
-      route_table_key                = route_table_key
-    }
-  }
+  provisioned_igw_natgw_specific_default_route_tables = module.network_completion.provisioned_igw_natgw_specific_default_route_tables
 
 
   //------------------------------------------------------------------------------------------------------------------
@@ -163,24 +152,7 @@ locals {
     )
   } : null : null
 
-  provisioned_sgw_specific_default_route_tables = {
-    for route_table_key, route_value in oci_core_default_route_table.sgw_specific_default_route_tables : route_table_key => {
-      compartment_id                 = route_value.compartment_id
-      defined_tags                   = route_value.defined_tags
-      display_name                   = route_value.display_name
-      freeform_tags                  = route_value.freeform_tags
-      id                             = route_value.id
-      route_rules                    = route_value.route_rules
-      state                          = route_value.state
-      time_created                   = route_value.time_created
-      timeouts                       = route_value.timeouts
-      vcn_id                         = local.sgw_attachable_specific_default_route_tables[route_table_key].vcn_id
-      vcn_key                        = local.sgw_attachable_specific_default_route_tables[route_table_key].vcn_key
-      vcn_name                       = local.sgw_attachable_specific_default_route_tables[route_table_key].vcn_name
-      network_configuration_category = local.sgw_attachable_specific_default_route_tables[route_table_key].network_configuration_category
-      route_table_key                = route_table_key
-    }
-  }
+  provisioned_sgw_specific_default_route_tables = module.network_completion.provisioned_sgw_specific_default_route_tables
 
   //------------------------------------------------------------------------------------------------------------------
 
@@ -214,24 +186,7 @@ locals {
     )
   } : null : null
 
-  provisioned_lpg_specific_default_route_tables = {
-    for route_table_key, route_value in oci_core_default_route_table.lpg_specific_default_route_tables : route_table_key => {
-      compartment_id                 = route_value.compartment_id
-      defined_tags                   = route_value.defined_tags
-      display_name                   = route_value.display_name
-      freeform_tags                  = route_value.freeform_tags
-      id                             = route_value.id
-      route_rules                    = route_value.route_rules
-      state                          = route_value.state
-      time_created                   = route_value.time_created
-      timeouts                       = route_value.timeouts
-      vcn_id                         = local.lpg_attachable_specific_default_route_tables[route_table_key].vcn_id
-      vcn_key                        = local.lpg_attachable_specific_default_route_tables[route_table_key].vcn_key
-      vcn_name                       = local.lpg_attachable_specific_default_route_tables[route_table_key].vcn_name
-      network_configuration_category = local.lpg_attachable_specific_default_route_tables[route_table_key].network_configuration_category
-      route_table_key                = route_table_key
-    }
-  }
+  provisioned_lpg_specific_default_route_tables = module.network_completion.provisioned_lpg_specific_default_route_tables
 
   //------------------------------------------------------------------------------------------------------------------
 
@@ -265,24 +220,7 @@ locals {
     )
   } : null : null
 
-  provisioned_drga_specific_default_route_tables = {
-    for route_table_key, route_value in oci_core_default_route_table.drga_specific_default_route_tables : route_table_key => {
-      compartment_id                 = route_value.compartment_id
-      defined_tags                   = route_value.defined_tags
-      display_name                   = route_value.display_name
-      freeform_tags                  = route_value.freeform_tags
-      id                             = route_value.id
-      route_rules                    = route_value.route_rules
-      state                          = route_value.state
-      time_created                   = route_value.time_created
-      timeouts                       = route_value.timeouts
-      vcn_id                         = local.drga_attachable_specific_default_route_tables[route_table_key].vcn_id
-      vcn_key                        = local.drga_attachable_specific_default_route_tables[route_table_key].vcn_key
-      vcn_name                       = local.drga_attachable_specific_default_route_tables[route_table_key].vcn_name
-      network_configuration_category = local.drga_attachable_specific_default_route_tables[route_table_key].network_configuration_category
-      route_table_key                = route_table_key
-    }
-  }
+  provisioned_drga_specific_default_route_tables = module.network_completion.provisioned_drga_specific_default_route_tables
 
   //------------------------------------------------------------------------------------------------------------------
 
@@ -305,24 +243,7 @@ locals {
   } : null : null
 
 
-  provisioned_non_gw_specific_remaining_default_route_tables = {
-    for route_table_key, route_value in oci_core_default_route_table.non_gw_specific_remaining_default_route_tables : route_table_key => {
-      compartment_id                 = route_value.compartment_id
-      defined_tags                   = route_value.defined_tags
-      display_name                   = route_value.display_name
-      freeform_tags                  = route_value.freeform_tags
-      id                             = route_value.id
-      route_rules                    = route_value.route_rules
-      state                          = route_value.state
-      time_created                   = route_value.time_created
-      timeouts                       = route_value.timeouts
-      vcn_id                         = local.non_gw_specific_remaining_default_route_tables[route_table_key].vcn_id
-      vcn_key                        = local.non_gw_specific_remaining_default_route_tables[route_table_key].vcn_key
-      vcn_name                       = local.non_gw_specific_remaining_default_route_tables[route_table_key].vcn_name
-      network_configuration_category = local.non_gw_specific_remaining_default_route_tables[route_table_key].network_configuration_category
-      route_table_key                = route_table_key
-    }
-  }
+  provisioned_non_gw_specific_remaining_default_route_tables = module.network_completion.provisioned_non_gw_specific_remaining_default_route_tables
 
   //------------------------------------------------------------------------------------------------------------------
 
@@ -349,146 +270,4 @@ locals {
       network_configuration_category = local.merged_one_dimension_processed_subnets[rta_key].network_configuration_category
     }
   }*/
-}
-
-
-### Specific IGW/NAT GW Route tables
-resource "oci_core_default_route_table" "igw_natgw_specific_default_route_tables" {
-  for_each = local.igw_natgw_attachable_specific_default_route_tables != null ? local.igw_natgw_attachable_specific_default_route_tables : {}
-
-  display_name               = each.value.display_name
-  manage_default_resource_id = merge(local.provisioned_vcns, local.one_dimension_processed_existing_vcns)[each.value.vcn_key].default_route_table_id
-  compartment_id             = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
-  defined_tags               = each.value.defined_tags
-  freeform_tags              = each.value.freeform_tags
-  dynamic "route_rules" {
-    iterator = rule
-    for_each = each.value.route_rules != null ? [
-      for route_rule in each.value.route_rules : {
-        destination : route_rule.destination
-        destination_type : route_rule.destination_type
-        network_entity_id : route_rule.network_entity_id
-        network_entity_key : route_rule.network_entity_key
-        description : route_rule.description
-    }] : []
-    content {
-      destination       = rule.value.destination
-      destination_type  = rule.value.destination_type
-      network_entity_id = rule.value.network_entity_id != null ? rule.value.network_entity_id : rule.value.network_entity_key != null ? local.route_rules_targets_for_IGW_NATGW_specific_RTs[rule.value.network_entity_key].id : null
-      description       = rule.value.description
-    }
-  }
-}
-
-### Specific SGW Route tables
-resource "oci_core_default_route_table" "sgw_specific_default_route_tables" {
-  for_each = local.sgw_attachable_specific_default_route_tables != null ? local.sgw_attachable_specific_default_route_tables : {}
-
-  display_name               = each.value.display_name
-  manage_default_resource_id = merge(local.provisioned_vcns, local.one_dimension_processed_existing_vcns)[each.value.vcn_key].default_route_table_id
-  compartment_id             = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
-  defined_tags               = each.value.defined_tags
-  freeform_tags              = each.value.freeform_tags
-  dynamic "route_rules" {
-    iterator = rule
-    for_each = each.value.route_rules != null ? [
-      for route_rule in each.value.route_rules : {
-        destination : route_rule.destination
-        destination_type : route_rule.destination_type
-        network_entity_id : route_rule.network_entity_id
-        network_entity_key : route_rule.network_entity_key
-        description : route_rule.description
-    }] : []
-    content {
-      destination       = rule.value.destination
-      destination_type  = rule.value.destination_type
-      network_entity_id = rule.value.network_entity_id != null ? rule.value.network_entity_id : rule.value.network_entity_key != null ? local.route_rules_targets_for_SGW_specific_RTs[rule.value.network_entity_key].id : null
-      description       = rule.value.description
-    }
-  }
-}
-
-### Specific LPG Route tables
-resource "oci_core_default_route_table" "lpg_specific_default_route_tables" {
-  for_each = local.lpg_attachable_specific_default_route_tables != null ? local.lpg_attachable_specific_default_route_tables : {}
-
-  display_name               = each.value.display_name
-  manage_default_resource_id = merge(local.provisioned_vcns, local.one_dimension_processed_existing_vcns)[each.value.vcn_key].default_route_table_id
-  compartment_id             = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
-  defined_tags               = each.value.defined_tags
-  freeform_tags              = each.value.freeform_tags
-  dynamic "route_rules" {
-    iterator = rule
-    for_each = each.value.route_rules != null ? [
-      for route_rule in each.value.route_rules : {
-        destination : route_rule.destination
-        destination_type : route_rule.destination_type
-        network_entity_id : route_rule.network_entity_id
-        network_entity_key : route_rule.network_entity_key
-        description : route_rule.description
-    }] : []
-    content {
-      destination       = rule.value.destination
-      destination_type  = rule.value.destination_type
-      network_entity_id = rule.value.network_entity_id != null ? rule.value.network_entity_id : rule.value.network_entity_key != null ? local.route_rules_targets_for_LPG_specific_RTs[rule.value.network_entity_key].id : null
-      description       = rule.value.description
-    }
-  }
-}
-
-### Specific DRGA Route tables
-resource "oci_core_default_route_table" "drga_specific_default_route_tables" {
-  for_each = local.drga_attachable_specific_default_route_tables != null ? local.drga_attachable_specific_default_route_tables : {}
-
-  display_name               = each.value.display_name
-  manage_default_resource_id = merge(local.provisioned_vcns, local.one_dimension_processed_existing_vcns)[each.value.vcn_key].default_route_table_id
-  compartment_id             = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
-  defined_tags               = each.value.defined_tags
-  freeform_tags              = each.value.freeform_tags
-  dynamic "route_rules" {
-    iterator = rule
-    for_each = each.value.route_rules != null ? [
-      for route_rule in each.value.route_rules : {
-        destination : route_rule.destination
-        destination_type : route_rule.destination_type
-        network_entity_id : route_rule.network_entity_id
-        network_entity_key : route_rule.network_entity_key
-        description : route_rule.description
-    }] : []
-    content {
-      destination       = rule.value.destination
-      destination_type  = rule.value.destination_type
-      network_entity_id = rule.value.network_entity_id != null ? rule.value.network_entity_id : rule.value.network_entity_key != null ? local.route_rules_targets_for_DRGA_specific_RTs[rule.value.network_entity_key].id : null
-      description       = rule.value.description
-    }
-  }
-}
-
-### non_gw_specific_remaining Route tables
-resource "oci_core_default_route_table" "non_gw_specific_remaining_default_route_tables" {
-
-  for_each = local.non_gw_specific_remaining_default_route_tables != null ? local.non_gw_specific_remaining_default_route_tables : {}
-
-  display_name               = each.value.display_name
-  manage_default_resource_id = merge(local.provisioned_vcns, local.one_dimension_processed_existing_vcns)[each.value.vcn_key].default_route_table_id
-  compartment_id             = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null
-  defined_tags               = each.value.defined_tags
-  freeform_tags              = merge(local.cislz_module_tag, each.value.freeform_tags)
-  dynamic "route_rules" {
-    iterator = rule
-    for_each = each.value.route_rules != null ? [
-      for route_rule in each.value.route_rules : {
-        destination : route_rule.destination
-        destination_type : route_rule.destination_type
-        network_entity_id : route_rule.network_entity_id
-        network_entity_key : route_rule.network_entity_key
-        description : route_rule.description
-    }] : []
-    content {
-      destination       = rule.value.destination
-      destination_type  = rule.value.destination_type
-      network_entity_id = rule.value.network_entity_id != null ? rule.value.network_entity_id : rule.value.network_entity_key != null ? local.all_route_rules_targets[rule.value.network_entity_key].id : null
-      description       = rule.value.description
-    }
-  }
 }
