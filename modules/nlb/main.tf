@@ -137,6 +137,7 @@ locals {
       ]
     ]
   ])
+
 }
 # Create backends for each backend set
 resource "oci_network_load_balancer_backend" "these" {
@@ -162,7 +163,33 @@ resource "oci_network_load_balancer_backend" "these" {
   is_backup                = coalesce(each.value.is_backup, false)
   is_drain                 = coalesce(each.value.is_drain, false)
   is_offline               = coalesce(each.value.is_offline, false)
-  target_id                = each.value.target_id != null ? (length(regexall("^ocid1.*$", each.value.target_id)) > 0 ? each.value.target_id : var.instances_dependency[each.value.target_id].id) : null
+  target_id = each.value.target_id != null ? (
+    length(regexall("^ocid1\\.", each.value.target_id)) > 0 ? each.value.target_id :
+    contains(keys(coalesce(var.private_ips_dependency, {})), each.value.target_id) ? var.private_ips_dependency[each.value.target_id].id :
+    try(var.instances_dependency[each.value.target_id].id, var.private_ips_dependency[each.value.target_id].id)
+  ) : null
+
+  lifecycle {
+    precondition {
+      condition     = (each.value.ip_address == null) != (each.value.target_id == null)
+      error_message = "Each NLB backend must set exactly one of ip_address or target_id. Keep ip_address for an unchanged legacy backend, or migrate that backend explicitly to target_id."
+    }
+    precondition {
+      condition = each.value.target_id == null ? true : (
+        length(regexall("^ocid1\\.", each.value.target_id)) > 0 ? true :
+        contains([1, 2], length(split(".", each.value.target_id)))
+      )
+      error_message = "Symbolic backend target_id must use <instance-key> or <instance-key>.<vnic-key>. Explicit private-IP keys are not supported yet."
+    }
+    precondition {
+      condition = each.value.target_id == null ? true : (
+        length(regexall("^ocid1\\.", each.value.target_id)) > 0 ? (
+          length(regexall("^ocid1\\.(instance|privateip)\\.", each.value.target_id)) > 0
+        ) : true
+      )
+      error_message = "Literal backend target_id must be an instance or private-IP OCID; VNIC OCIDs are not accepted by the NLB backend API."
+    }
+  }
 }
 
 data "oci_core_private_ips" "these" {

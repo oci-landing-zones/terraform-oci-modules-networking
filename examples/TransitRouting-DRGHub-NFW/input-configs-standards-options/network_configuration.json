@@ -304,7 +304,32 @@
               },
               "VCN-H-INGRESS-RT-KEY": {
                 "display_name": "vcn-h-ingress-rt",
-                "route_rules": {}
+                "route_rules": {
+                  "ON-PREMISES-TO-NFW-PrivateIP-KEY": {
+                    "description": "Route for fwd-ing traffic that has as destination the on-premises through the NFW",
+                    "destination": "172.16.0.0/16",
+                    "destination_type": "CIDR_BLOCK",
+                    "network_entity_id": "HUB-NFW-KEY"
+                  },
+                  "VCN-A-TO-NFW-PrivateIP-KEY": {
+                    "description": "Route for fwd-ing traffic that has as destination the VCN-A through the NFW",
+                    "destination": "192.168.10.0/24",
+                    "destination_type": "CIDR_BLOCK",
+                    "network_entity_id": "HUB-NFW-KEY"
+                  },
+                  "VCN-B-TO-NFW-PrivateIP-KEY": {
+                    "description": "Route for fwd-ing traffic that has as destination the VCN-B through the NFW",
+                    "destination": "192.168.20.0/24",
+                    "destination_type": "CIDR_BLOCK",
+                    "network_entity_id": "HUB-NFW-KEY"
+                  },
+                  "VCN-C-TO-NFW-PrivateIP-KEY": {
+                    "description": "Route for fwd-ing traffic that has as destination the VCN-C through the NFW",
+                    "destination": "192.168.30.0/24",
+                    "destination_type": "CIDR_BLOCK",
+                    "network_entity_id": "HUB-NFW-KEY"
+                  }
+                }
               }
             },
             "subnets": {

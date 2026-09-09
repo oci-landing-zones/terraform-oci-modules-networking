@@ -103,6 +103,12 @@ locals {
       nfw_key                        = nfw_key
     }
   }
+
+  network_firewall_route_targets = {
+    for nfw_key, private_ips in data.oci_core_private_ips.these-nfws-private-ips : nfw_key => {
+      id = one(private_ips.private_ips).id
+    }
+  }
 }
 
 resource "oci_network_firewall_network_firewall" "these" {
