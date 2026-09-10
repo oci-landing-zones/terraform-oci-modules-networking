@@ -43,23 +43,11 @@ locals {
           prohibit_internet_ingress  = subnet_value.prohibit_internet_ingress
           prohibit_public_ip_on_vnic = subnet_value.prohibit_public_ip_on_vnic
           route_table_key            = subnet_value.route_table_key
-          route_table_id = subnet_value.route_table_key != null ? merge(
-            {
-              for rt_key, rt_value in merge(
-                local.provisioned_non_gw_specific_remaining_route_tables,
-                local.provisioned_drga_specific_route_tables,
-                local.provisioned_lpg_specific_route_tables,
-                local.provisioned_sgw_specific_route_tables,
-                local.provisioned_igw_natgw_specific_route_tables) : rt_key => {
-                id = rt_value.id
-              }
-            },
-            {
-              "default_route_table" = {
-                id = oci_core_vcn.these[vcn_key].default_route_table_id
-              }
-            }
-          )[subnet_value.route_table_key].id : null
+          # Store the requested association for the network-completion module.
+          # Subnets are created with the VCN default route table so subnet creation
+          # does not depend on route-rule targets. route_table_key takes precedence
+          # when both a key and an OCID are provided.
+          route_table_id     = subnet_value.route_table_key == null ? subnet_value.route_table_id : null
           security_list_keys = subnet_value.security_list_keys
           security_list_ids = subnet_value.security_list_keys != null ? length(subnet_value.security_list_keys) > 0 ? [
             for seclistname in subnet_value.security_list_keys : merge(
@@ -124,23 +112,11 @@ locals {
           prohibit_internet_ingress  = subnet_value.prohibit_internet_ingress
           prohibit_public_ip_on_vnic = subnet_value.prohibit_public_ip_on_vnic
           route_table_key            = subnet_value.route_table_key
-          route_table_id = subnet_value.route_table_key != null ? merge(
-            {
-              for rt_key, rt_value in merge(
-                local.provisioned_non_gw_specific_remaining_route_tables,
-                local.provisioned_drga_specific_route_tables,
-                local.provisioned_lpg_specific_route_tables,
-                local.provisioned_sgw_specific_route_tables,
-                local.provisioned_igw_natgw_specific_route_tables) : rt_key => {
-                id = rt_value.id
-              }
-            },
-            {
-              "default_route_table" = {
-                id = vcn_value.default_route_table_id
-              }
-            }
-          )[subnet_value.route_table_key].id : null
+          # Store the requested association for the network-completion module.
+          # Subnets are created with the VCN default route table so subnet creation
+          # does not depend on route-rule targets. route_table_key takes precedence
+          # when both a key and an OCID are provided.
+          route_table_id     = subnet_value.route_table_key == null ? subnet_value.route_table_id : null
           security_list_keys = subnet_value.security_list_keys
           security_list_ids = concat(
             subnet_value.security_list_keys != null ? [
@@ -322,28 +298,14 @@ locals {
       ipv6virtual_router_ip      = subnet_value.ipv6virtual_router_ip
       prohibit_internet_ingress  = subnet_value.prohibit_internet_ingress
       prohibit_public_ip_on_vnic = subnet_value.prohibit_public_ip_on_vnic
-      route_table_id             = subnet_value.route_table_id
-      route_table_key = subnet_value.route_table_id == merge(
-        local.provisioned_vcns,
-        local.one_dimension_processed_existing_vcns
-      )[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_route_table_id ? "default_route_table" : local.merged_one_dimension_processed_subnets[subnet_key].route_table_key == null ? local.merged_one_dimension_processed_subnets[subnet_key].route_table_id != null ? "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null : local.merged_one_dimension_processed_subnets[subnet_key].route_table_key
-      route_table_name = subnet_value.route_table_id == merge(
-        local.provisioned_vcns,
-        local.one_dimension_processed_existing_vcns
-        )[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key].default_route_table_id ? "default_route_table" : local.merged_one_dimension_processed_subnets[subnet_key].route_table_key == null ? local.merged_one_dimension_processed_subnets[subnet_key].route_table_id != null ? "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null : can(
-        merge(
-          local.provisioned_non_gw_specific_remaining_route_tables,
-          local.provisioned_drga_specific_route_tables,
-          local.provisioned_lpg_specific_route_tables,
-          local.provisioned_sgw_specific_route_tables,
-          local.provisioned_igw_natgw_specific_route_tables
-        )[local.merged_one_dimension_processed_subnets[subnet_key].route_table_key].display_name) ? merge(
-        local.provisioned_non_gw_specific_remaining_route_tables,
-        local.provisioned_drga_specific_route_tables,
-        local.provisioned_lpg_specific_route_tables,
-        local.provisioned_sgw_specific_route_tables,
-        local.provisioned_igw_natgw_specific_route_tables
-      )[local.merged_one_dimension_processed_subnets[subnet_key].route_table_key].display_name : "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION"
+      # Add the completed association to the existing provisioned_subnets output.
+      route_table_id = local.provisioned_route_tables_attachments[subnet_key].route_table_id
+      route_table_key = local.provisioned_route_tables_attachments[subnet_key].route_table_id == local.default_route_table_ids_by_vcn[local.merged_one_dimension_processed_subnets[subnet_key].vcn_key] ? "default_route_table" : (
+        local.merged_one_dimension_processed_subnets[subnet_key].route_table_key == null
+        ? local.merged_one_dimension_processed_subnets[subnet_key].route_table_id != null ? "CANNOT BE DETERMINED AS NOT CREATED BY THIS AUTOMATION" : null
+        : local.merged_one_dimension_processed_subnets[subnet_key].route_table_key
+      )
+      route_table_name = local.provisioned_route_tables_attachments[subnet_key].route_table_name
       security_lists = {
         for sec_list in subnet_value.security_lists : sec_list.sec_list_id => {
           display_name = sec_list.display_name
@@ -383,12 +345,5 @@ resource "oci_core_subnet" "these" {
   ipv6cidr_blocks            = each.value.ipv6cidr_blocks
   prohibit_internet_ingress  = each.value.prohibit_internet_ingress
   prohibit_public_ip_on_vnic = each.value.prohibit_public_ip_on_vnic
-  route_table_id = each.value.route_table_id != null ? each.value.route_table_id : each.value.route_table_key != null ? merge(
-    local.provisioned_non_gw_specific_remaining_route_tables,
-    local.provisioned_drga_specific_route_tables,
-    local.provisioned_lpg_specific_route_tables,
-    local.provisioned_sgw_specific_route_tables,
-    local.provisioned_igw_natgw_specific_route_tables
-  )[each.value.route_table_key].id : null
-  security_list_ids = each.value.security_list_ids
+  security_list_ids          = each.value.security_list_ids
 }
