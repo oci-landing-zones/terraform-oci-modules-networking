@@ -10,6 +10,11 @@
 
 locals {
 
+  available_private_reserved_ips = merge(
+    var.private_ips_dependency != null ? { for private_ip_key, private_ip_value in var.private_ips_dependency : private_ip_key => { id = private_ip_value.id } } : {},
+    { for private_ip_key, private_ip_value in local.provisioned_oci_core_private_ips : private_ip_key => { id = private_ip_value.id } }
+  )
+
   # PROCESSED INPUT
   one_dimension_processed_l7_load_balancers = local.one_dimension_processed_non_vcn_specific_gateways != null ? {
     for flat_l7lb in flatten([
@@ -46,7 +51,7 @@ locals {
           reserved_ips_ids = concat(
             l7lb_value.reserved_ips_ids != null ? length(l7lb_value.reserved_ips_ids) > 0 ? l7lb_value.reserved_ips_ids : [] : [],
             l7lb_value.reserved_ips_keys != null ? length(l7lb_value.reserved_ips_keys) > 0 ? [
-              for reserver_ip_key in l7lb_value.reserved_ips_keys : local.provisioned_oci_core_public_ips[reserver_ip_key].id
+              for reserver_ip_key in l7lb_value.reserved_ips_keys : l7lb_value.is_private == true ? local.available_private_reserved_ips[reserver_ip_key].id : local.provisioned_oci_core_public_ips[reserver_ip_key].id
             ] : [] : []
           )
           reserved_ips_keys = l7lb_value.reserved_ips_keys

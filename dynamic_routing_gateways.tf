@@ -23,6 +23,7 @@ locals {
           category_freeform_tags         = vcn_non_specific_gw_value.category_freeform_tags
           default_freeform_tags          = vcn_non_specific_gw_value.default_freeform_tags
           display_name                   = drg_value.display_name
+          default_drg_route_tables       = drg_value.default_drg_route_tables
           network_configuration_category = vcn_non_specific_gw_value.network_configuration_category
           remote_peering_connections     = drg_value.remote_peering_connections
           drg_attachments                = drg_value.drg_attachments

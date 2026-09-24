@@ -91,6 +91,16 @@ network_configuration = {
         dynamic_routing_gateways = {
           DRG-VISION-KEY = {
             display_name = "drg-vision"
+            default_drg_route_tables = {
+              ipsec_tunnel = {
+                drg_route_table_id = "DRG-IPSEC-RT-KEY"
+              }
+            }
+            drg_route_tables = {
+              DRG-IPSEC-RT-KEY = {
+                display_name = "drg-ipsec-route-table"
+              }
+            }
             drg_attachments = {
               DRG-VCN-ATTACH-VISION-KEY = {
                 display_name = "drg-vcn-attach-vision"

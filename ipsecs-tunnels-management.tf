@@ -84,7 +84,7 @@ locals {
   secret_ocid_regex = "^ocid1\\.vaultsecret\\."
 
   # Identify which tunnels need a lookup
-  tunnels_requiring_vault = {for k, v in local.one_dimension_ipsec_tunnels_management : k => v if try(can(regex(local.secret_ocid_regex, v.shared_secret)), false)
+  tunnels_requiring_vault = { for k, v in local.one_dimension_ipsec_tunnels_management : k => v if try(can(regex(local.secret_ocid_regex, v.shared_secret)), false)
   }
 
   raw_tunnel_secret_contents = {
@@ -101,12 +101,12 @@ locals {
 
 data "oci_secrets_secretbundle" "bundle" {
   for_each  = local.tunnels_requiring_vault
-    secret_id = each.value.shared_secret
+  secret_id = each.value.shared_secret
 }
 
 resource "oci_core_ipsec_connection_tunnel_management" "these" {
   for_each = local.one_dimension_ipsec_tunnels_management
-  
+
   #Required
   ipsec_id  = each.value.ipsec_id
   tunnel_id = each.value.tunnel_id
