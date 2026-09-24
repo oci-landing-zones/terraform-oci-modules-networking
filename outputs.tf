@@ -124,7 +124,7 @@ output "flat_map_of_provisioned_networking_resources" {
 
 output "provisioned_subnets" {
   description = "Provisioned subnets"
-  value       = local.provisioned_subnets != null ? { for key, value in local.provisioned_subnets : key => { id = value.id } } : null
+  value       = { for key, value in oci_core_subnet.these : key => { id = value.id } }
 }
 
 
