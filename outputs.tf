@@ -122,6 +122,108 @@ output "flat_map_of_provisioned_networking_resources" {
   )
 }
 
+output "provisioned_vcn_ids" {
+  description = "A map with the OCIDs of provisioned VCNs"
+  value       = { for key, value in oci_core_vcn.these : key => { id = value.id } }
+}
+output "provisioned_subnet_ids" {
+  description = "A map with the OCIDs of provisioned subnets"
+  value       = { for key, value in oci_core_subnet.these : key => { id = value.id } }
+}
+output "provisioned_security_list_ids" {
+  description = "A map with the OCIDs of provisioned security lists"
+  value       = { for key, value in oci_core_security_list.these : key => { id = value.id } }
+}
+output "provisioned_default_security_list_ids" {
+  description = "A map with the OCIDs of provisioned default security lists"
+  value       = { for key, value in oci_core_default_security_list.these : key => { id = value.id } }
+}
+output "provisioned_route_table_ids" {
+  description = "A map with the OCIDs of provisioned route tables"
+  value       = { for key, value in merge(oci_core_route_table.igw_natgw_specific_route_tables, oci_core_route_table.sgw_specific_route_tables, oci_core_route_table.lpg_specific_route_tables, oci_core_route_table.drga_specific_route_tables, oci_core_route_table.non_gw_specific_remaining_route_tables) : key => { id = value.id } }
+}
+output "provisioned_network_security_group_ids" {
+  description = "A map with the OCIDs of provisioned network security groups"
+  value       = { for key, value in oci_core_network_security_group.these : key => { id = value.id } }
+}
+output "provisioned_nat_gateway_ids" {
+  description = "A map with the OCIDs of provisioned NAT gateways"
+  value       = { for key, value in oci_core_nat_gateway.these : key => { id = value.id } }
+}
+output "provisioned_local_peering_gateway_ids" {
+  description = "A map with the OCIDs of provisioned local peering gateways"
+  value       = { for key, value in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : key => { id = value.id } }
+}
+output "provisioned_internet_gateway_ids" {
+  description = "A map with the OCIDs of provisioned internet gateways"
+  value       = { for key, value in oci_core_internet_gateway.these : key => { id = value.id } }
+}
+output "provisioned_service_gateway_ids" {
+  description = "A map with the OCIDs of provisioned service gateways"
+  value       = { for key, value in oci_core_service_gateway.these : key => { id = value.id } }
+}
+output "provisioned_dynamic_routing_gateway_ids" {
+  description = "A map with the OCIDs of provisioned dynamic routing gateways"
+  value       = { for key, value in oci_core_drg.these : key => { id = value.id } }
+}
+output "provisioned_drg_route_table_ids" {
+  description = "A map with the OCIDs of provisioned DRG route tables"
+  value       = { for key, value in oci_core_drg_route_table.these : key => { id = value.id } }
+}
+output "provisioned_drg_route_distribution_ids" {
+  description = "A map with the OCIDs of provisioned DRG route distributions"
+  value       = { for key, value in oci_core_drg_route_distribution.these : key => { id = value.id } }
+}
+output "provisioned_drg_attachment_ids" {
+  description = "A map with the OCIDs of provisioned DRG attachments"
+  value       = { for key, value in oci_core_drg_attachment.these : key => { id = value.id } }
+}
+output "provisioned_dhcp_option_ids" {
+  description = "A map with the OCIDs of provisioned DHCP options"
+  value       = { for key, value in oci_core_dhcp_options.these : key => { id = value.id } }
+}
+output "provisioned_public_ip_ids" {
+  description = "A map with the OCIDs of provisioned public IPs"
+  value       = { for key, value in oci_core_public_ip.these : key => { id = value.id } }
+}
+output "provisioned_public_ip_pool_ids" {
+  description = "A map with the OCIDs of provisioned public IP pools"
+  value       = { for key, value in oci_core_public_ip_pool.these : key => { id = value.id } }
+}
+output "provisioned_private_ip_ids" {
+  description = "A map with the OCIDs of provisioned private IPs"
+  value       = { for key, value in oci_core_private_ip.these : key => { id = value.id } }
+}
+output "provisioned_cpe_ids" {
+  description = "A map with the OCIDs of provisioned customer premises equipments"
+  value       = { for key, value in oci_core_cpe.these : key => { id = value.id } }
+}
+output "provisioned_ipsec_ids" {
+  description = "A map with the OCIDs of provisioned IPSec connections"
+  value       = { for key, value in oci_core_ipsec.these : key => { id = value.id } }
+}
+output "provisioned_virtual_circuit_ids" {
+  description = "A map with the OCIDs of provisioned FastConnect virtual circuits"
+  value       = { for key, value in oci_core_virtual_circuit.these : key => { id = value.id } }
+}
+output "provisioned_remote_peering_connection_ids" {
+  description = "A map with the OCIDs of provisioned remote peering connections"
+  value       = { for key, value in merge(oci_core_remote_peering_connection.oci_acceptor_remote_peering_connections, oci_core_remote_peering_connection.oci_requestor_remote_peering_connections) : key => { id = value.id } }
+}
+output "provisioned_network_firewall_ids" {
+  description = "A map with the OCIDs of provisioned network firewalls"
+  value       = { for key, value in oci_network_firewall_network_firewall.these : key => { id = value.id } }
+}
+output "provisioned_network_firewall_policy_ids" {
+  description = "A map with the OCIDs of provisioned network firewall policies"
+  value       = { for key, value in oci_network_firewall_network_firewall_policy.these : key => { id = value.id } }
+}
+output "provisioned_private_service_access_ids" {
+  description = "A map with the OCIDs of provisioned private service access"
+  value       = { for key, value in oci_psa_private_service_access.these : key => { id = value.id } }
+}
+
+
 
 
 
