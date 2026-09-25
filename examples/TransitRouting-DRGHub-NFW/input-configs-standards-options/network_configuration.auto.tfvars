@@ -101,37 +101,31 @@ network_configuration = {
             // You need this Route table only if you have a FW(Native or 3rd party) in the HUB-VCN for N-S and E-W traffic inspection
             VCN-H-INGRESS-RT-KEY = {
               display_name = "vcn-h-ingress-rt"
-              // The route rules bellow will be provisioned in 2 steps:
-              //    - STEP 1: Run the configuration with no route rules in this route table
-              //    - STEP 2: After STEP 1 run succesfully, copy the private_ip OCID of the NFW from the STEP 1 output, and use that to replace the content 
-              //              of network_entity_id for all the 4 route rules bellow.   
               route_rules = {
-                /*
                 ON-PREMISES-TO-NFW-PrivateIP-KEY = {
-                  network_entity_id = "ocid1.privateip.oc1.eu-frankfurt-1.abtheljsvivbkzts7cim5cjttqlw2dv24h6l75naqc7sgp4oegod32odiqwa"
+                  network_entity_id = "HUB-NFW-KEY"
                   description       = "Route for fwd-ing traffic that has as destination the on-premises through the NFW"
-                  destination       = "172.16.0.0/16"
-                  destination_type  = "CIDR_BLOCK"
+                  destination        = "172.16.0.0/16"
+                  destination_type   = "CIDR_BLOCK"
                 }
                 VCN-A-TO-NFW-PrivateIP-KEY = {
-                  network_entity_id = "ocid1.privateip.oc1.eu-frankfurt-1.abtheljsvivbkzts7cim5cjttqlw2dv24h6l75naqc7sgp4oegod32odiqwa"
+                  network_entity_id = "HUB-NFW-KEY"
                   description       = "Route for fwd-ing traffic that has as destination the VCN-A through the NFW"
-                  destination       = "192.168.10.0/24"
-                  destination_type  = "CIDR_BLOCK"
+                  destination        = "192.168.10.0/24"
+                  destination_type   = "CIDR_BLOCK"
                 }
                 VCN-B-TO-NFW-PrivateIP-KEY = {
-                  network_entity_id = "ocid1.privateip.oc1.eu-frankfurt-1.abtheljsvivbkzts7cim5cjttqlw2dv24h6l75naqc7sgp4oegod32odiqwa"
+                  network_entity_id = "HUB-NFW-KEY"
                   description       = "Route for fwd-ing traffic that has as destination the VCN-B through the NFW"
-                  destination       = "192.168.20.0/24"
-                  destination_type  = "CIDR_BLOCK"
+                  destination        = "192.168.20.0/24"
+                  destination_type   = "CIDR_BLOCK"
                 }
                 VCN-C-TO-NFW-PrivateIP-KEY = {
-                  network_entity_id = "ocid1.privateip.oc1.eu-frankfurt-1.abtheljsvivbkzts7cim5cjttqlw2dv24h6l75naqc7sgp4oegod32odiqwa"
+                  network_entity_id = "HUB-NFW-KEY"
                   description       = "Route for fwd-ing traffic that has as destination the VCN-C through the NFW"
-                  destination       = "192.168.30.0/24"
-                  destination_type  = "CIDR_BLOCK"
+                  destination        = "192.168.30.0/24"
+                  destination_type   = "CIDR_BLOCK"
                 }
-                */
               }
             }
           }

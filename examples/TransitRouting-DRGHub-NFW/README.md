@@ -31,50 +31,19 @@ For an ad-hoc use where you can select your resources, follow these guidelines:
 2. Accept terms,  wait for the configuration to load. 
 3. Set the working directory to “orm-facade”. 
 4. Set the stack name you prefer.
-5. Set the terraform version to 1.2.x. Click Next. 
+5. Set the Terraform version to 1.3.x or later. Click Next.
 6. Add your json/yaml configuration files. Click Next.
 8. Un-check run apply. Click Create.
 
-## Know Issues
+## Network firewall route completion
 
-### Limitations
+`VCN-H-INGRESS-RT-KEY` refers to the same-stack firewall with
+`network_entity_id: HUB-NFW-KEY`. `network_entity_id` accepts either a literal OCID or
+a resource key. The module creates the subnet on its VCN default
+route table, creates the firewall and its private IP, creates the route rules, and then
+attaches the configured route table. The full example is therefore deployable in one
+Terraform apply without copying a private IP OCID into a second configuration file.
 
-#### Provisioning of the Private IP Route Rules in 2 steps
-
-In order to avoid a cycle in the Terraform dependency graph, cycle created in between the folloiwng nodes: [```oci_core_subnet.these```, ```oci_core_route_table.*all*``` and ```oci_network_firewall_network_firewall.these```], the provisioning of route tables route rules that target private IPs need to be performed in 2 steps.
-
-For our specific use-case, covered in this example, those stepts will be:
-
-- STEP 1: Run this automation with ```VCN-H-INGRESS-RT-KEY``` VCN Route Table containing no route rules. 
-- STEP 2: After STEP 1 is performed succesfully perform the following:
-    - Add the following ```route_rules``` to the ```VCN-H-INGRESS-RT-KEY``` VCN Route Table:
-      ```
-      ON-PREMISES-TO-NFW-PrivateIP-KEY = {
-                  network_entity_id = "ocid1.privateip....." 
-                  description       = "Route for fwd-ing traffic that has as destination the on-premises through the NFW"
-                  destination       = "172.16.0.0/16"
-                  destination_type  = "CIDR_BLOCK"
-                }
-        VCN-A-TO-NFW-PrivateIP-KEY = {
-                  network_entity_id = "ocid1.privateip....."
-                  description       = "Route for fwd-ing traffic that has as destination the VCN-A through the NFW"
-                  destination       = "192.168.10.0/24"
-                  destination_type  = "CIDR_BLOCK"
-                }
-        VCN-B-TO-NFW-PrivateIP-KEY = {
-                  network_entity_id = "ocid1.privateip....."
-                  description       = "Route for fwd-ing traffic that has as destination the VCN-B through the NFW"
-                  destination       = "192.168.20.0/24"
-                  destination_type  = "CIDR_BLOCK"
-                }
-        VCN-C-TO-NFW-PrivateIP-KEY = {
-                  network_entity_id = "ocid1.privateip....."
-                  description       = "Route for fwd-ing traffic that has as destination the VCN-C through the NFW"
-                  destination       = "192.168.30.0/24"
-                  destination_type  = "CIDR_BLOCK"
-                }
-      ```
-    - copy the NFW private IP OCID: ```ipv4address_ocid``` from the output of the terraform apply you run in STEP 1 and replace the ```"ocid1.privateip....."``` in the above route rules with the new private ip OCID.
-    - Run ```terraform apply``` against the updated configuration.
-
-
+During a fresh deployment the subnet can briefly use the VCN default route table. A
+firewall replacement or route-table reassignment can interrupt traffic, and initial
+traffic convergence still depends on the firewall becoming operational.

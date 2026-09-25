@@ -30,7 +30,7 @@ locals {
           subnet_ids = concat(
             l7lb_value.subnet_ids != null ? l7lb_value.subnet_ids : [],
             l7lb_value.subnet_keys != null ? length(l7lb_value.subnet_keys) > 0 ? [
-              for subnet_key in l7lb_value.subnet_keys : local.provisioned_subnets[subnet_key].id
+              for subnet_key in l7lb_value.subnet_keys : local.l7_subnet_dependencies[subnet_key].id
             ] : [] : []
           )
           defined_tags                = merge(l7lb_value.defined_tags, vcn_non_specific_gw_value.category_defined_tags, vcn_non_specific_gw_value.default_defined_tags)
@@ -74,6 +74,19 @@ locals {
       ] : [] : []
     ]) : flat_l7lb.l7lb_key => flat_l7lb
   } : null
+
+  # L7 load balancers use the subnet attributes available before route-table
+  # completion. Passing completed subnet objects here would add a dependency from
+  # L7 resources to the route-table attachment phase.
+  l7_subnet_dependencies = {
+    for subnet_key, subnet_value in local.aux_provisioned_subnets : subnet_key => {
+      display_name = subnet_value.display_name
+      id           = subnet_value.id
+      vcn_id       = subnet_value.vcn_id
+      vcn_key      = subnet_value.vcn_key
+      vcn_name     = subnet_value.vcn_name
+    }
+  }
 }
 
 module "l7_load_balancers" {
@@ -81,7 +94,7 @@ module "l7_load_balancers" {
   l7_load_balancers_configuration = {
     dependencies = {
       public_ips              = local.provisioned_oci_core_public_ips
-      subnets                 = local.provisioned_subnets
+      subnets                 = local.l7_subnet_dependencies
       network_security_groups = local.provisioned_network_security_groups
     },
     l7_load_balancers = local.one_dimension_processed_l7_load_balancers

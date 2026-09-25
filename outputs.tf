@@ -7,6 +7,21 @@
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
+output "provisioned_networking_foundation_resources" {
+  description = "Provisioned VCNs, subnets, and network security groups that are available before final route table creation and attachment."
+  value = {
+    vcns = {
+      for key, value in oci_core_vcn.these : key => { id = value.id }
+    }
+    subnets = {
+      for key, value in oci_core_subnet.these : key => { id = value.id }
+    }
+    network_security_groups = {
+      for key, value in oci_core_network_security_group.these : key => { id = value.id }
+    }
+  }
+}
+
 output "provisioned_networking_resources" {
   description = "Provisioned networking resources"
   value = {
@@ -70,9 +85,9 @@ output "provisioned_networking_resources" {
         k => v if local.one_dimension_fast_connect_virtual_circuits[v.fcvc_key].show_available_fc_virtual_circuit_providers == true
       } : {} : {}
     }
-    cross_connect_groups  = oci_core_cross_connect_group.these
-    cross_connects        = oci_core_cross_connect.these
-    fc_vc_drg_attachments = local.fc_vc_drg_attachments
+    cross_connect_groups   = oci_core_cross_connect_group.these
+    cross_connects         = oci_core_cross_connect.these
+    fc_vc_drg_attachments  = local.fc_vc_drg_attachments
     private_service_access = oci_psa_private_service_access.these
 
   }

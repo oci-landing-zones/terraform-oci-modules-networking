@@ -82,16 +82,26 @@ a move from one RT-NODE to another one.
 
 ### 3.2. Route Tables targeting Private IPs
 
-Route tables that contain route rules that target private IPs need the target private IP OCID to be known when the route table is planned. Creating RTs with route rules targeting private IPs may
-require multiple terraform applies when the private IP is created in the same workflow. When the private IP OCID comes from another configuration, pass it through the module dependency input.
+Route rules can reference a private IP by setting `network_entity_id` to either a
+literal private IP OCID or a key present in `private_ips_dependency`. The target key is
+known from configuration even when its OCID remains unknown until apply.
 
-### 3.3. Fix Status
+Subnets are initially created with their VCN default route table. After the private IP
+target and configured route table are available, `oci_core_route_table_attachment`
+applies the final subnet association. This separates subnet creation from route-rule
+target creation and allows both to be managed in one Terraform graph.
 
-The fix normalizes `private_ips_dependency` once, classifies dependency keys as
-`PRIVATE IP`, excludes them from `TARGET NOT FOUND`, and includes them in the
-SGW-specific target map. Default DRGA-specific route tables now resolve keyed
-route rules through the DRGA-specific target map.
+`network_entity_key` remains available for backward compatibility but is deprecated.
+Use `network_entity_id`; `network_entity_key` will be removed in the next major release.
 
+### 3.3. Route Table Partitions
+
+Route tables are assigned to five partitions according to the types of resources they
+reference and the resources to which they can be attached. Each partition is an
+instance of the shared `modules/network-completion/modules/route-table-partition` child
+module. Separate inputs and outputs keep gateway dependencies isolated while the shared
+implementation avoids duplicating the custom and default route-table resource
+definitions.
 
 ## 4. Default Route Tables
 
