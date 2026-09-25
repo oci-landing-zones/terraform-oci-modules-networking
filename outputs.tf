@@ -152,7 +152,7 @@ output "provisioned_nat_gateway_ids" {
 }
 output "provisioned_local_peering_gateway_ids" {
   description = "A map with the OCIDs of provisioned local peering gateways"
-  value       = { for key, value in oci_core_local_peering_gateway.these : key => { id = value.id } }
+  value       = { for key, value in merge(oci_core_local_peering_gateway.oci_acceptor_local_peering_gateways, oci_core_local_peering_gateway.oci_requestor_local_peering_gateways) : key => { id = value.id } }
 }
 output "provisioned_internet_gateway_ids" {
   description = "A map with the OCIDs of provisioned internet gateways"
@@ -180,7 +180,7 @@ output "provisioned_drg_attachment_ids" {
 }
 output "provisioned_dhcp_option_ids" {
   description = "A map with the OCIDs of provisioned DHCP options"
-  value       = { for key, value in oci_core_default_dhcp_options.these : key => { id = value.id } }
+  value       = { for key, value in oci_core_dhcp_options.these : key => { id = value.id } }
 }
 output "provisioned_public_ip_ids" {
   description = "A map with the OCIDs of provisioned public IPs"
@@ -208,7 +208,7 @@ output "provisioned_virtual_circuit_ids" {
 }
 output "provisioned_remote_peering_connection_ids" {
   description = "A map with the OCIDs of provisioned remote peering connections"
-  value       = { for key, value in merge(oci_core_remote_peering_connection.oci_acceptor_remote_peering_connections, oci_core_remote_peering_connection.oci_requester_remote_peering_connections) : key => { id = value.id } }
+  value       = { for key, value in merge(oci_core_remote_peering_connection.oci_acceptor_remote_peering_connections, oci_core_remote_peering_connection.oci_requestor_remote_peering_connections) : key => { id = value.id } }
 }
 output "provisioned_network_firewall_ids" {
   description = "A map with the OCIDs of provisioned network firewalls"
