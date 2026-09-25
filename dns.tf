@@ -188,9 +188,11 @@ locals {
 
   provisioned_dns_resolver = {
     for resolver_key, resolver_value in oci_dns_resolver.these : resolver_key => {
-      resolver_id    = resolver_value.resolver_id
-      ocid           = resolver_value.id
-      scope          = resolver_value.scope
+      resolver_id = resolver_value.resolver_id
+      ocid        = resolver_value.id
+      # A plain-OCID import does not populate scope because the provider does not return it on read.
+      # VCN resolvers remain private, so preserve the existing output contract for imported resolvers.
+      scope          = coalesce(resolver_value.scope, "PRIVATE")
       display_name   = resolver_value.display_name
       attached_views = resolver_value.attached_views
       defined_tags   = resolver_value.defined_tags
@@ -366,6 +368,12 @@ resource "oci_dns_resolver" "these" {
   }
   defined_tags  = each.value.defined_tags
   freeform_tags = each.value.freeform_tags
+
+  # The OCI provider marks scope as ForceNew but leaves it absent after a plain-OCID import.
+  # Ignore only that drift to avoid replacement while continuing to send PRIVATE on creation.
+  lifecycle {
+    ignore_changes = [scope]
+  }
 
   dynamic "rules" {
     for_each = each.value.rules
