@@ -190,7 +190,7 @@ locals {
     for resolver_key, resolver_value in oci_dns_resolver.these : resolver_key => {
       resolver_id    = resolver_value.resolver_id
       ocid           = resolver_value.id
-      scope          = resolver_value.scope
+      scope          = coalesce(resolver_value.scope, "PRIVATE")
       display_name   = resolver_value.display_name
       attached_views = resolver_value.attached_views
       defined_tags   = resolver_value.defined_tags
@@ -366,6 +366,10 @@ resource "oci_dns_resolver" "these" {
   }
   defined_tags  = each.value.defined_tags
   freeform_tags = each.value.freeform_tags
+
+  lifecycle {
+    ignore_changes = [scope]
+  }
 
   dynamic "rules" {
     for_each = each.value.rules
