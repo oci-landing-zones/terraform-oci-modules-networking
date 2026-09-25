@@ -697,7 +697,8 @@ resource "oci_core_route_table" "non_gw_specific_remaining_route_tables" {
 
 ### Route Table Attachments
 resource "oci_core_route_table_attachment" "these" {
-  for_each       = local.provisioned_subnets
+  #for_each       = local.provisioned_subnets
+  for_each       = oci_core_subnet.these
   subnet_id      = each.value.id
   route_table_id = each.value.route_table_id
 
