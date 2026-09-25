@@ -29,7 +29,7 @@ output "provisioned_networking_resources" {
       drga_specific_rts_attachable_to_drga_subnet                        = local.provisioned_drga_specific_route_tables,
       non_gw_specific_remaining_rts_attachable_to_drga_subnet            = local.provisioned_non_gw_specific_remaining_route_tables
     }
-    route_tables_attachments                       = local.provisioned_route_tables_attachments
+    #route_tables_attachments                       = local.provisioned_route_tables_attachments
     remote_peering_connections                     = local.provisioned_remote_peering_connections
     network_security_groups                        = local.provisioned_network_security_groups
     network_security_groups_ingress_rules          = local.provisioned_network_security_groups_ingress_rules
@@ -96,7 +96,7 @@ output "flat_map_of_provisioned_networking_resources" {
     local.provisioned_lpg_specific_route_tables != null ? { for key, value in local.provisioned_lpg_specific_route_tables : key => { id = value.id } } : null,
     local.provisioned_drga_specific_route_tables != null ? { for key, value in local.provisioned_drga_specific_route_tables : key => { id = value.id } } : null,
     local.provisioned_non_gw_specific_remaining_route_tables != null ? { for key, value in local.provisioned_non_gw_specific_remaining_route_tables : key => { id = value.id } } : null,
-    local.provisioned_route_tables_attachments != null ? { for key, value in local.provisioned_route_tables_attachments : key => { id = value.id } } : null,
+    #local.provisioned_route_tables_attachments != null ? { for key, value in local.provisioned_route_tables_attachments : key => { id = value.id } } : null,
     local.provisioned_remote_peering_connections != null ? { for key, value in local.provisioned_remote_peering_connections : key => { id = value.id, region_name = value.region_name } } : null,
     local.provisioned_network_security_groups != null ? { for key, value in local.provisioned_network_security_groups : key => { id = value.id } } : null,
     //local.provisioned_network_security_groups_ingress_rules != null ? { for key, value in local.provisioned_network_security_groups_ingress_rules : key => { id = value.id} } : null,

@@ -534,22 +534,22 @@ locals {
   //------------------------------------------------------------------------------------------------------------------
 
 
-  provisioned_route_tables_attachments = {
-    for rta_key, rta_value in oci_core_route_table_attachment.these : rta_key => {
-      id                             = rta_value.id
-      route_table_id                 = rta_value.route_table_id
-      route_table_key                = local.merged_one_dimension_processed_subnets[rta_key].route_table_key
-      route_table_name               = local.provisioned_subnets[rta_key].route_table_name
-      subnet_id                      = rta_value.subnet_id
-      subnet_key                     = rta_key
-      subnet_name                    = can(local.provisioned_subnets[rta_key].display_name) ? local.provisioned_subnets[rta_key].display_name : null
-      timeouts                       = rta_value.timeouts
-      rta_key                        = rta_key
-      vcn_key                        = local.merged_one_dimension_processed_subnets[rta_key].vcn_key
-      vcn_name                       = local.merged_one_dimension_processed_subnets[rta_key].vcn_name
-      network_configuration_category = local.merged_one_dimension_processed_subnets[rta_key].network_configuration_category
-    }
-  }
+  # provisioned_route_tables_attachments = {
+  #   for rta_key, rta_value in oci_core_route_table_attachment.these : rta_key => {
+  #     id                             = rta_value.id
+  #     route_table_id                 = rta_value.route_table_id
+  #     route_table_key                = local.merged_one_dimension_processed_subnets[rta_key].route_table_key
+  #     route_table_name               = local.provisioned_subnets[rta_key].route_table_name
+  #     subnet_id                      = rta_value.subnet_id
+  #     subnet_key                     = rta_key
+  #     subnet_name                    = can(local.provisioned_subnets[rta_key].display_name) ? local.provisioned_subnets[rta_key].display_name : null
+  #     timeouts                       = rta_value.timeouts
+  #     rta_key                        = rta_key
+  #     vcn_key                        = local.merged_one_dimension_processed_subnets[rta_key].vcn_key
+  #     vcn_name                       = local.merged_one_dimension_processed_subnets[rta_key].vcn_name
+  #     network_configuration_category = local.merged_one_dimension_processed_subnets[rta_key].network_configuration_category
+  #   }
+  # }
 }
 
 
@@ -695,11 +695,10 @@ resource "oci_core_route_table" "non_gw_specific_remaining_route_tables" {
 }
 
 
-### Route Table Attachments
-resource "oci_core_route_table_attachment" "these" {
-  #for_each       = local.provisioned_subnets
-  for_each       = oci_core_subnet.these
-  subnet_id      = each.value.id
-  route_table_id = each.value.route_table_id
-
-}
+### Route Table Attachments - Not needed, as attachments are managed in the oci_core_subnet resource, but leaving here for reference in case needed in the future. This can cause terraform cycles. (changed in v0.8.5).
+# resource "oci_core_route_table_attachment" "these" {
+#   #for_each       = local.provisioned_subnets
+#   for_each       = oci_core_subnet.these
+#   subnet_id      = each.value.id
+#   route_table_id = each.value.route_table_id
+# }
