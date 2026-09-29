@@ -392,7 +392,7 @@ resource "oci_core_subnet" "these" {
   # )[each.value.route_table_key].id : null
   security_list_ids = each.value.security_list_ids
   # Existing subnets therefore retain their current route tables during migration to oci_core_route_table_attachment ownership, while new subnets initially use the VCN default route table until the attachment is created.
-  lifecycle {
-    ignore_changes = [route_table_id]
-  }
+  # lifecycle {
+  #   ignore_changes = [route_table_id]
+  # }
 }
