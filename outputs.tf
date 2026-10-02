@@ -122,6 +122,7 @@ output "flat_map_of_provisioned_networking_resources" {
   )
 }
 
+# The following outputs are recommended in downstream consuming modules to avoid any potential cycles in Terraform, as they do not depend on any other resources.
 output "provisioned_vcn_ids" {
   description = "A map with the OCIDs of provisioned VCNs"
   value       = { for key, value in oci_core_vcn.these : key => { id = value.id } }
