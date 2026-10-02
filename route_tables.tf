@@ -694,11 +694,13 @@ resource "oci_core_route_table" "non_gw_specific_remaining_route_tables" {
   }
 }
 
-
-### Route Table Attachments
+##########
+# BUG FIX: the for_each iterable is changed from local.provisioned_subnets to local.merged_one_dimension_processed_subnets to prevent Terraform cycles in some scenarios where subnets are destroyed and route tables updated.
+# local.merged_one_dimension_processed_subnets is a map of subnets passed as inputs to the module. Previously, the resource iterated over local.provisioned_subnets, which is a map of subnets created by the module. 
+##########
 resource "oci_core_route_table_attachment" "these" {
-  for_each       = local.provisioned_subnets
-  subnet_id      = each.value.id
+  ### Route Table Attachments
+  for_each = local.merged_one_dimension_processed_subnets
+  subnet_id      = oci_core_subnet.these[each.key].id
   route_table_id = each.value.route_table_id
-
 }
