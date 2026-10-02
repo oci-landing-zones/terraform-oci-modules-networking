@@ -1,3 +1,8 @@
+# September 25, 2026 Release Notes - 0.8.5
+
+## Fixes
+1. [Issue 101](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/101): Importing a VCN DNS resolver by its OCID no longer proposes replacement solely because the OCI provider leaves the optional, replacement-triggering *scope* attribute absent from imported state. The module continues to configure resolvers with `scope = "PRIVATE"`, preserves the existing `PRIVATE` output value, and produces no infrastructure change for existing managed resolvers.
+
 # August 31, Release Notes - 0.8.4
 
 ## Fixes
