@@ -1,7 +1,10 @@
-# September 25, 2026 Release Notes - 0.8.5
+# October 06, 2026 Release Notes - 0.8.5
 
 ## Fixes
-1. [Issue 101](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/101): Importing a VCN DNS resolver by its OCID no longer proposes replacement solely because the OCI provider leaves the optional, replacement-triggering *scope* attribute absent from imported state. The module continues to configure resolvers with `scope = "PRIVATE"`, preserves the existing `PRIVATE` output value, and produces no infrastructure change for existing managed resolvers.
+1. [Issue 99](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/99): Reserved public IPs now receive only customer-provided freeform tags instead of automatically inheriting the module tag. This avoids an attempted tag update when importing an existing reserved public IP attached to a NAT gateway, which OCI rejects because public IPs assigned to NAT gateways cannot be updated.
+2. [Issue 101](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/101): Importing a VCN DNS resolver by its OCID no longer proposes replacement solely because the OCI provider leaves the optional, replacement-triggering *scope* attribute absent from imported state. The module continues to configure resolvers with `scope = "PRIVATE"`, preserves the existing `PRIVATE` output value, and produces no infrastructure change for existing managed resolvers.
+3. Subnet route table attachments are now exclusively managed via oci_core_route_table_attachment resource (see [route_tables.tf](./route_tables.tf)), that iterates over local.merged_one_dimension_processed_subnets. This is to avoid Terraform cycles in some scenarios where subnets are destroyed and route tables updated. 
+4. New outputs for provisioned resources. The outputs refer to individual resource types separately and should be used as much as possible for avoiding Terraform cycles in downstream consuming modules.
 
 # August 31, Release Notes - 0.8.4
 
