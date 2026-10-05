@@ -125,15 +125,24 @@ locals {
   ))
 
   # Route-rule target keys share one namespace across gateway and private-IP
-  # resources. This lookup identifies the target type without reading its OCID.
-  route_rule_target_types_by_key = merge(
-    { for key in keys(local.merged_one_dimension_processed_internet_gateways) : key => local.route_tables_route_rules_targets.igw },
-    { for key in keys(local.merged_one_dimension_processed_nat_gateways) : key => local.route_tables_route_rules_targets.natgw },
-    { for key in keys(local.merged_one_dimension_processed_service_gateways) : key => local.route_tables_route_rules_targets.sgw },
-    { for key in keys(merge(local.one_dimension_dynamic_routing_gateways, local.one_dimension_inject_into_existing_drgs, coalesce(try(var.network_dependency["dynamic_routing_gateways"], null), {}))) : key => local.route_tables_route_rules_targets.drg },
-    { for key in keys(local.merged_one_dimension_processed_local_peering_gateways) : key => local.route_tables_route_rules_targets.lpg },
-    { for key in local.private_ip_dependency_target_keys : key => local.route_tables_route_rules_targets.private_ip }
-  )
+  # resources. Retain all matching types for existing keys without reading OCIDs.
+  # With a literal OCID and network_entity_key, the key retains the route-table
+  # partition while the OCID remains the actual next hop.
+  route_rule_target_types_by_key = {
+    for target in concat(
+      [for key in keys(local.merged_one_dimension_processed_internet_gateways) : { key = key, type = local.route_tables_route_rules_targets.igw }],
+      [for key in keys(local.merged_one_dimension_processed_nat_gateways) : { key = key, type = local.route_tables_route_rules_targets.natgw }],
+      [for key in keys(local.merged_one_dimension_processed_service_gateways) : { key = key, type = local.route_tables_route_rules_targets.sgw }],
+      [for key in keys(merge(local.one_dimension_dynamic_routing_gateways, local.one_dimension_inject_into_existing_drgs, coalesce(try(var.network_dependency["dynamic_routing_gateways"], null), {}))) : { key = key, type = local.route_tables_route_rules_targets.drg }],
+      [for key in keys(local.merged_one_dimension_processed_local_peering_gateways) : { key = key, type = local.route_tables_route_rules_targets.lpg }],
+      [for key in local.private_ip_dependency_target_keys : { key = key, type = local.route_tables_route_rules_targets.private_ip }]
+    ) : target.key => target.type...
+  }
+
+  # Symbolic IDs use the same last-match precedence as target resolution.
+  route_rule_effective_target_types_by_key = {
+    for key, types in local.route_rule_target_types_by_key : key => [types[length(types) - 1]]
+  }
 
   // Define What are the entities to which a route table can be attached
   route_tables_attachable_to = {
@@ -177,16 +186,19 @@ locals {
               description = rr_value.description
             }
           } : {}
-          route_tables_route_rules_targets = route_table_value.route_rules != null ? length(route_table_value.route_rules) > 0 ? distinct([
+          route_tables_route_rules_targets = route_table_value.route_rules != null ? length(route_table_value.route_rules) > 0 ? distinct(flatten([
             for rr_value in values(route_table_value.route_rules) :
             rr_value.network_entity_id != null ? (
-              startswith(rr_value.network_entity_id, "ocid1.privateip") ? local.route_tables_route_rules_targets.private_ip :
-              startswith(rr_value.network_entity_id, "ocid1.") ? local.route_tables_route_rules_targets.ocid_non_private_ip_target :
-              lookup(local.route_rule_target_types_by_key, rr_value.network_entity_id, local.route_tables_route_rules_targets.target_not_found)
-              ) : rr_value.network_entity_key != null ? (
-              lookup(local.route_rule_target_types_by_key, rr_value.network_entity_key, local.route_tables_route_rules_targets.target_not_found)
-            ) : local.route_tables_route_rules_targets.null_target
-          ]) : [local.route_tables_route_rules_targets.no_route_rules] : [local.route_tables_route_rules_targets.no_route_rules]
+              startswith(rr_value.network_entity_id, "ocid1.") && rr_value.network_entity_key != null ? concat(
+                lookup(local.route_rule_target_types_by_key, rr_value.network_entity_key, []),
+                startswith(rr_value.network_entity_id, "ocid1.privateip") ? [local.route_tables_route_rules_targets.private_ip] : []
+              ) : startswith(rr_value.network_entity_id, "ocid1.privateip") ? [local.route_tables_route_rules_targets.private_ip] :
+              startswith(rr_value.network_entity_id, "ocid1.") ? [local.route_tables_route_rules_targets.ocid_non_private_ip_target] :
+              lookup(local.route_rule_effective_target_types_by_key, rr_value.network_entity_id, [local.route_tables_route_rules_targets.target_not_found])
+              ) : rr_value.network_entity_key != null ? lookup(
+              local.route_rule_target_types_by_key, rr_value.network_entity_key, [local.route_tables_route_rules_targets.target_not_found]
+            ) : [local.route_tables_route_rules_targets.null_target]
+          ])) : [local.route_tables_route_rules_targets.no_route_rules] : [local.route_tables_route_rules_targets.no_route_rules]
           network_configuration_category = vcn_value.network_configuration_category
           vcn_key                        = vcn_key
           vcn_name                       = vcn_value.display_name
@@ -227,16 +239,19 @@ locals {
               description = rr_value.description
             }
           } : {}
-          route_tables_route_rules_targets = route_table_value.route_rules != null ? length(route_table_value.route_rules) > 0 ? distinct([
+          route_tables_route_rules_targets = route_table_value.route_rules != null ? length(route_table_value.route_rules) > 0 ? distinct(flatten([
             for rr_value in values(route_table_value.route_rules) :
             rr_value.network_entity_id != null ? (
-              startswith(rr_value.network_entity_id, "ocid1.privateip") ? local.route_tables_route_rules_targets.private_ip :
-              startswith(rr_value.network_entity_id, "ocid1.") ? local.route_tables_route_rules_targets.ocid_non_private_ip_target :
-              lookup(local.route_rule_target_types_by_key, rr_value.network_entity_id, local.route_tables_route_rules_targets.target_not_found)
-              ) : rr_value.network_entity_key != null ? (
-              lookup(local.route_rule_target_types_by_key, rr_value.network_entity_key, local.route_tables_route_rules_targets.target_not_found)
-            ) : local.route_tables_route_rules_targets.null_target
-          ]) : [local.route_tables_route_rules_targets.no_route_rules] : [local.route_tables_route_rules_targets.no_route_rules]
+              startswith(rr_value.network_entity_id, "ocid1.") && rr_value.network_entity_key != null ? concat(
+                lookup(local.route_rule_target_types_by_key, rr_value.network_entity_key, []),
+                startswith(rr_value.network_entity_id, "ocid1.privateip") ? [local.route_tables_route_rules_targets.private_ip] : []
+              ) : startswith(rr_value.network_entity_id, "ocid1.privateip") ? [local.route_tables_route_rules_targets.private_ip] :
+              startswith(rr_value.network_entity_id, "ocid1.") ? [local.route_tables_route_rules_targets.ocid_non_private_ip_target] :
+              lookup(local.route_rule_effective_target_types_by_key, rr_value.network_entity_id, [local.route_tables_route_rules_targets.target_not_found])
+              ) : rr_value.network_entity_key != null ? lookup(
+              local.route_rule_target_types_by_key, rr_value.network_entity_key, [local.route_tables_route_rules_targets.target_not_found]
+            ) : [local.route_tables_route_rules_targets.null_target]
+          ])) : [local.route_tables_route_rules_targets.no_route_rules] : [local.route_tables_route_rules_targets.no_route_rules]
           network_configuration_category = vcn_value.network_configuration_category
           vcn_key                        = vcn_key
           vcn_name                       = vcn_value.vcn_name

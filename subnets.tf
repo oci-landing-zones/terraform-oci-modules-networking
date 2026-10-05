@@ -45,9 +45,9 @@ locals {
           route_table_key            = subnet_value.route_table_key
           # Store the requested association for the network-completion module.
           # Subnets are created with the VCN default route table so subnet creation
-          # does not depend on route-rule targets. route_table_key takes precedence
-          # when both a key and an OCID are provided.
-          route_table_id     = subnet_value.route_table_key == null ? subnet_value.route_table_id : null
+          # does not depend on route-rule targets. Associations use route_table_key;
+          # without a key, the subnet retains the VCN default route table.
+          route_table_id     = null
           security_list_keys = subnet_value.security_list_keys
           security_list_ids = subnet_value.security_list_keys != null ? length(subnet_value.security_list_keys) > 0 ? [
             for seclistname in subnet_value.security_list_keys : merge(
@@ -114,9 +114,9 @@ locals {
           route_table_key            = subnet_value.route_table_key
           # Store the requested association for the network-completion module.
           # Subnets are created with the VCN default route table so subnet creation
-          # does not depend on route-rule targets. route_table_key takes precedence
-          # when both a key and an OCID are provided.
-          route_table_id     = subnet_value.route_table_key == null ? subnet_value.route_table_id : null
+          # does not depend on route-rule targets. Associations use route_table_key;
+          # without a key, the subnet retains the VCN default route table.
+          route_table_id     = null
           security_list_keys = subnet_value.security_list_keys
           security_list_ids = concat(
             subnet_value.security_list_keys != null ? [

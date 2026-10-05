@@ -58,7 +58,7 @@ variable "nlb_configuration" {
             is_backup  = optional(bool)
             is_drain   = optional(bool)
             is_offline = optional(bool)
-            target_id  = optional(string) # A private-IP/instance OCID, <instance-key>, or <instance-key>.<vnic-key>. Mutually exclusive with ip_address.
+            target_id  = optional(string) # An instance/private-IP OCID or dependency key. Mutually exclusive with ip_address.
           }))
         })
       }))
@@ -110,9 +110,9 @@ variable "network_dependency" {
 }
 
 variable "instances_dependency" {
-  description = "A map of objects containing the externally managed Compute instances this module may depend on. All map objects must have the same type and must contain at least an 'id' attribute (representing the instance OCID) of string type. The optional private_ip attribute supports the legacy ip_address key lookup."
+  description = "A map of instance or private-IP backend targets. Each object must contain its OCID in id. Keys in this map take precedence over private_ips_dependency. The optional private_ip attribute supports ip_address key lookup."
   type = map(object({
-    id         = string           # the instance OCID
+    id         = string           # the instance or private-IP OCID
     private_ip = optional(string) # the instance private IP address
   }))
   default = null

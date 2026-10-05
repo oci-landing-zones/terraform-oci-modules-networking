@@ -41,16 +41,19 @@ locals {
               description = rr_value.description
             }
           } : {}
-          route_tables_route_rules_targets = vcn_value.default_route_table.route_rules != null ? length(vcn_value.default_route_table.route_rules) > 0 ? distinct([
+          route_tables_route_rules_targets = vcn_value.default_route_table.route_rules != null ? length(vcn_value.default_route_table.route_rules) > 0 ? distinct(flatten([
             for rr_value in values(vcn_value.default_route_table.route_rules) :
             rr_value.network_entity_id != null ? (
-              startswith(rr_value.network_entity_id, "ocid1.privateip") ? local.route_tables_route_rules_targets.private_ip :
-              startswith(rr_value.network_entity_id, "ocid1.") ? local.route_tables_route_rules_targets.ocid_non_private_ip_target :
-              lookup(local.route_rule_target_types_by_key, rr_value.network_entity_id, local.route_tables_route_rules_targets.target_not_found)
-              ) : rr_value.network_entity_key != null ? (
-              lookup(local.route_rule_target_types_by_key, rr_value.network_entity_key, local.route_tables_route_rules_targets.target_not_found)
-            ) : local.route_tables_route_rules_targets.null_target
-          ]) : [local.route_tables_route_rules_targets.no_route_rules] : [local.route_tables_route_rules_targets.no_route_rules]
+              startswith(rr_value.network_entity_id, "ocid1.") && rr_value.network_entity_key != null ? concat(
+                lookup(local.route_rule_target_types_by_key, rr_value.network_entity_key, []),
+                startswith(rr_value.network_entity_id, "ocid1.privateip") ? [local.route_tables_route_rules_targets.private_ip] : []
+              ) : startswith(rr_value.network_entity_id, "ocid1.privateip") ? [local.route_tables_route_rules_targets.private_ip] :
+              startswith(rr_value.network_entity_id, "ocid1.") ? [local.route_tables_route_rules_targets.ocid_non_private_ip_target] :
+              lookup(local.route_rule_effective_target_types_by_key, rr_value.network_entity_id, [local.route_tables_route_rules_targets.target_not_found])
+              ) : rr_value.network_entity_key != null ? lookup(
+              local.route_rule_target_types_by_key, rr_value.network_entity_key, [local.route_tables_route_rules_targets.target_not_found]
+            ) : [local.route_tables_route_rules_targets.null_target]
+          ])) : [local.route_tables_route_rules_targets.no_route_rules] : [local.route_tables_route_rules_targets.no_route_rules]
         }
       ] if vcn_value.default_route_table != null
     ]) : flat_default_route_tables.default_route_table_key => flat_default_route_tables
@@ -88,16 +91,19 @@ locals {
               description = rr_value.description
             }
           } : {}
-          route_tables_route_rules_targets = vcn_value.default_route_table.route_rules != null ? length(vcn_value.default_route_table.route_rules) > 0 ? distinct([
+          route_tables_route_rules_targets = vcn_value.default_route_table.route_rules != null ? length(vcn_value.default_route_table.route_rules) > 0 ? distinct(flatten([
             for rr_value in values(vcn_value.default_route_table.route_rules) :
             rr_value.network_entity_id != null ? (
-              startswith(rr_value.network_entity_id, "ocid1.privateip") ? local.route_tables_route_rules_targets.private_ip :
-              startswith(rr_value.network_entity_id, "ocid1.") ? local.route_tables_route_rules_targets.ocid_non_private_ip_target :
-              lookup(local.route_rule_target_types_by_key, rr_value.network_entity_id, local.route_tables_route_rules_targets.target_not_found)
-              ) : rr_value.network_entity_key != null ? (
-              lookup(local.route_rule_target_types_by_key, rr_value.network_entity_key, local.route_tables_route_rules_targets.target_not_found)
-            ) : local.route_tables_route_rules_targets.null_target
-          ]) : [local.route_tables_route_rules_targets.no_route_rules] : [local.route_tables_route_rules_targets.no_route_rules]
+              startswith(rr_value.network_entity_id, "ocid1.") && rr_value.network_entity_key != null ? concat(
+                lookup(local.route_rule_target_types_by_key, rr_value.network_entity_key, []),
+                startswith(rr_value.network_entity_id, "ocid1.privateip") ? [local.route_tables_route_rules_targets.private_ip] : []
+              ) : startswith(rr_value.network_entity_id, "ocid1.privateip") ? [local.route_tables_route_rules_targets.private_ip] :
+              startswith(rr_value.network_entity_id, "ocid1.") ? [local.route_tables_route_rules_targets.ocid_non_private_ip_target] :
+              lookup(local.route_rule_effective_target_types_by_key, rr_value.network_entity_id, [local.route_tables_route_rules_targets.target_not_found])
+              ) : rr_value.network_entity_key != null ? lookup(
+              local.route_rule_target_types_by_key, rr_value.network_entity_key, [local.route_tables_route_rules_targets.target_not_found]
+            ) : [local.route_tables_route_rules_targets.null_target]
+          ])) : [local.route_tables_route_rules_targets.no_route_rules] : [local.route_tables_route_rules_targets.no_route_rules]
         }
       ] if vcn_value.default_route_table != null
     ]) : flat_default_route_tables.default_route_table_key => flat_default_route_tables

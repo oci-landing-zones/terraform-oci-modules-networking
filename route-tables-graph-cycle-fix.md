@@ -119,7 +119,10 @@ as dependencies for those targets can create a Terraform cycle.
 Pass the NLB module's `route_target_private_ips` output to the networking module's
 `private_ips_dependency` input. Symbolic NLB backend `target_id` values also require
 the workload private-IP OCIDs in the NLB module's separate `private_ips_dependency`
-input. This creates the dependency order: foundation networking, firewall workloads,
+input. Existing aliases in `instances_dependency` retain precedence. When supplying
+secondary VNICs through that map, use their canonical private-IP OCIDs in `id` and
+retain their addresses in `private_ip`. This creates the
+dependency order: foundation networking, firewall workloads,
 NLBs, then route completion.
 
 Use `provisioned_networking_resources` for final reporting and dependency artifacts.
