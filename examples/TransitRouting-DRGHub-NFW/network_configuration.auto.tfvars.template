@@ -69,28 +69,28 @@ network_configuration = {
               display_name = "subnet-h-rt"
               route_rules = {
                 TO-ON-PREMISES-KEY = {
-                  network_entity_key = "DRG-HUB-KEY"
-                  description        = "Route for accessing the on-premises environment through the DRG"
-                  destination        = "172.16.0.0/16"
-                  destination_type   = "CIDR_BLOCK"
+                  network_entity_id = "DRG-HUB-KEY"
+                  description       = "Route for accessing the on-premises environment through the DRG"
+                  destination       = "172.16.0.0/16"
+                  destination_type  = "CIDR_BLOCK"
                 }
                 TO-VCN-A-KEY = {
-                  network_entity_key = "DRG-HUB-KEY"
-                  description        = "Route for accessing VCN-A through the DRG"
-                  destination        = "192.168.10.0/24"
-                  destination_type   = "CIDR_BLOCK"
+                  network_entity_id = "DRG-HUB-KEY"
+                  description       = "Route for accessing VCN-A through the DRG"
+                  destination       = "192.168.10.0/24"
+                  destination_type  = "CIDR_BLOCK"
                 }
                 TO-VCN-B-KEY = {
-                  network_entity_key = "DRG-HUB-KEY"
-                  description        = "Route for accessing VCN-B through the DRG"
-                  destination        = "192.168.20.0/24"
-                  destination_type   = "CIDR_BLOCK"
+                  network_entity_id = "DRG-HUB-KEY"
+                  description       = "Route for accessing VCN-B through the DRG"
+                  destination       = "192.168.20.0/24"
+                  destination_type  = "CIDR_BLOCK"
                 }
                 TO-VCN-C-KEY = {
-                  network_entity_key = "DRG-HUB-KEY"
-                  description        = "Route for accessing VCN-c through the DRG"
-                  destination        = "192.168.30.0/24"
-                  destination_type   = "CIDR_BLOCK"
+                  network_entity_id = "DRG-HUB-KEY"
+                  description       = "Route for accessing VCN-c through the DRG"
+                  destination       = "192.168.30.0/24"
+                  destination_type  = "CIDR_BLOCK"
                 }
               }
             }
@@ -104,26 +104,26 @@ network_configuration = {
                 ON-PREMISES-TO-NFW-PrivateIP-KEY = {
                   network_entity_id = "HUB-NFW-KEY"
                   description       = "Route for fwd-ing traffic that has as destination the on-premises through the NFW"
-                  destination        = "172.16.0.0/16"
-                  destination_type   = "CIDR_BLOCK"
+                  destination       = "172.16.0.0/16"
+                  destination_type  = "CIDR_BLOCK"
                 }
                 VCN-A-TO-NFW-PrivateIP-KEY = {
                   network_entity_id = "HUB-NFW-KEY"
                   description       = "Route for fwd-ing traffic that has as destination the VCN-A through the NFW"
-                  destination        = "192.168.10.0/24"
-                  destination_type   = "CIDR_BLOCK"
+                  destination       = "192.168.10.0/24"
+                  destination_type  = "CIDR_BLOCK"
                 }
                 VCN-B-TO-NFW-PrivateIP-KEY = {
                   network_entity_id = "HUB-NFW-KEY"
                   description       = "Route for fwd-ing traffic that has as destination the VCN-B through the NFW"
-                  destination        = "192.168.20.0/24"
-                  destination_type   = "CIDR_BLOCK"
+                  destination       = "192.168.20.0/24"
+                  destination_type  = "CIDR_BLOCK"
                 }
                 VCN-C-TO-NFW-PrivateIP-KEY = {
                   network_entity_id = "HUB-NFW-KEY"
                   description       = "Route for fwd-ing traffic that has as destination the VCN-C through the NFW"
-                  destination        = "192.168.30.0/24"
-                  destination_type   = "CIDR_BLOCK"
+                  destination       = "192.168.30.0/24"
+                  destination_type  = "CIDR_BLOCK"
                 }
               }
             }
@@ -409,22 +409,22 @@ network_configuration = {
               display_name = "subnet-1-rt"
               route_rules = {
                 TO-ON-PREMISES-KEY = {
-                  network_entity_key = "DRG-HUB-KEY"
-                  description        = "Route for accessing the on-premises environment through the DRG"
-                  destination        = "172.16.0.0/16"
-                  destination_type   = "CIDR_BLOCK"
+                  network_entity_id = "DRG-HUB-KEY"
+                  description       = "Route for accessing the on-premises environment through the DRG"
+                  destination       = "172.16.0.0/16"
+                  destination_type  = "CIDR_BLOCK"
                 }
                 TO-VCN-B-KEY = {
-                  network_entity_key = "DRG-HUB-KEY"
-                  description        = "Route for accessing VCN-B through the DRG"
-                  destination        = "192.168.20.0/24"
-                  destination_type   = "CIDR_BLOCK"
+                  network_entity_id = "DRG-HUB-KEY"
+                  description       = "Route for accessing VCN-B through the DRG"
+                  destination       = "192.168.20.0/24"
+                  destination_type  = "CIDR_BLOCK"
                 }
                 TO-VCN-C-KEY = {
-                  network_entity_key = "DRG-HUB-KEY"
-                  description        = "Route for accessing VCN-c through the DRG"
-                  destination        = "192.168.30.0/24"
-                  destination_type   = "CIDR_BLOCK"
+                  network_entity_id = "DRG-HUB-KEY"
+                  description       = "Route for accessing VCN-c through the DRG"
+                  destination       = "192.168.30.0/24"
+                  destination_type  = "CIDR_BLOCK"
                 }
               }
             }
@@ -494,22 +494,22 @@ network_configuration = {
               display_name = "subnet-2-rt"
               route_rules = {
                 TO-ON-PREMISES-KEY = {
-                  network_entity_key = "DRG-HUB-KEY"
-                  description        = "Route for accessing the on-premises environment through the DRG"
-                  destination        = "172.16.0.0/16"
-                  destination_type   = "CIDR_BLOCK"
+                  network_entity_id = "DRG-HUB-KEY"
+                  description       = "Route for accessing the on-premises environment through the DRG"
+                  destination       = "172.16.0.0/16"
+                  destination_type  = "CIDR_BLOCK"
                 }
                 TO-VCN-A-KEY = {
-                  network_entity_key = "DRG-HUB-KEY"
-                  description        = "Route for accessing VCN-A through the DRG"
-                  destination        = "192.168.10.0/24"
-                  destination_type   = "CIDR_BLOCK"
+                  network_entity_id = "DRG-HUB-KEY"
+                  description       = "Route for accessing VCN-A through the DRG"
+                  destination       = "192.168.10.0/24"
+                  destination_type  = "CIDR_BLOCK"
                 }
                 TO-VCN-C-KEY = {
-                  network_entity_key = "DRG-HUB-KEY"
-                  description        = "Route for accessing VCN-c through the DRG"
-                  destination        = "192.168.30.0/24"
-                  destination_type   = "CIDR_BLOCK"
+                  network_entity_id = "DRG-HUB-KEY"
+                  description       = "Route for accessing VCN-c through the DRG"
+                  destination       = "192.168.30.0/24"
+                  destination_type  = "CIDR_BLOCK"
                 }
               }
             }
@@ -579,22 +579,22 @@ network_configuration = {
               display_name = "subnet-3-rt"
               route_rules = {
                 TO-ON-PREMISES-KEY = {
-                  network_entity_key = "DRG-HUB-KEY"
-                  description        = "Route for accessing the on-premises environment through the DRG"
-                  destination        = "172.16.0.0/16"
-                  destination_type   = "CIDR_BLOCK"
+                  network_entity_id = "DRG-HUB-KEY"
+                  description       = "Route for accessing the on-premises environment through the DRG"
+                  destination       = "172.16.0.0/16"
+                  destination_type  = "CIDR_BLOCK"
                 }
                 TO-VCN-A-KEY = {
-                  network_entity_key = "DRG-HUB-KEY"
-                  description        = "Route for accessing VCN-A through the DRG"
-                  destination        = "192.168.10.0/24"
-                  destination_type   = "CIDR_BLOCK"
+                  network_entity_id = "DRG-HUB-KEY"
+                  description       = "Route for accessing VCN-A through the DRG"
+                  destination       = "192.168.10.0/24"
+                  destination_type  = "CIDR_BLOCK"
                 }
                 TO-VCN-C-KEY = {
-                  network_entity_key = "DRG-HUB-KEY"
-                  description        = "Route for accessing VCN-B through the DRG"
-                  destination        = "192.168.20.0/24"
-                  destination_type   = "CIDR_BLOCK"
+                  network_entity_id = "DRG-HUB-KEY"
+                  description       = "Route for accessing VCN-B through the DRG"
+                  destination       = "192.168.20.0/24"
+                  destination_type  = "CIDR_BLOCK"
                 }
               }
             }
