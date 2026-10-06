@@ -383,12 +383,16 @@ resource "oci_core_subnet" "these" {
   ipv6cidr_blocks            = each.value.ipv6cidr_blocks
   prohibit_internet_ingress  = each.value.prohibit_internet_ingress
   prohibit_public_ip_on_vnic = each.value.prohibit_public_ip_on_vnic
-  route_table_id = each.value.route_table_id != null ? each.value.route_table_id : each.value.route_table_key != null ? merge(
-    local.provisioned_non_gw_specific_remaining_route_tables,
-    local.provisioned_drga_specific_route_tables,
-    local.provisioned_lpg_specific_route_tables,
-    local.provisioned_sgw_specific_route_tables,
-    local.provisioned_igw_natgw_specific_route_tables
-  )[each.value.route_table_key].id : null
+  ##########
+  # BUG FIX: below lines are commented out because route table attachments are managed by oci_core_route_table_attachment resources, not by the oci_core_subnet resource. The route_table_id attribute is therefore removed from the oci_core_subnet resource to avoid conflicts and ensure proper management of route table attachments.
+  # This change is necessary to prevent Terraform cycles in some scenarios where subnets are destroyed and route tables updated.
+  ##########
+  # route_table_id = each.value.route_table_id != null ? each.value.route_table_id : each.value.route_table_key != null ? merge(
+  #   local.provisioned_non_gw_specific_remaining_route_tables,
+  #   local.provisioned_drga_specific_route_tables,
+  #   local.provisioned_lpg_specific_route_tables,
+  #   local.provisioned_sgw_specific_route_tables,
+  #   local.provisioned_igw_natgw_specific_route_tables
+  # )[each.value.route_table_key].id : null
   security_list_ids = each.value.security_list_ids
 }
