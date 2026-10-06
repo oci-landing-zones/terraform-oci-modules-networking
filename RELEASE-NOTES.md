@@ -1,11 +1,7 @@
-# October 06, 2026 Release Notes - 0.8.5
+# Unreleased - 0.9.0
 
 ## Fixes
-1. [Issue 99](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/99): Reserved public IPs now receive only customer-provided freeform tags instead of automatically inheriting the module tag. This avoids an attempted tag update when importing an existing reserved public IP attached to a NAT gateway, which OCI rejects because public IPs assigned to NAT gateways cannot be updated.
-2. [Issue 101](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/101): Importing a VCN DNS resolver by its OCID no longer proposes replacement solely because the OCI provider leaves the optional, replacement-triggering *scope* attribute absent from imported state. The module continues to configure resolvers with `scope = "PRIVATE"`, preserves the existing `PRIVATE` output value, and produces no infrastructure change for existing managed resolvers.
-3. Subnet route-table attachments are managed separately from subnet creation to avoid Terraform cycles when subnets are destroyed and route tables updated.
-4. New outputs for provisioned resources. The outputs refer to individual resource types separately and should be used as much as possible for avoiding Terraform cycles in downstream consuming modules.
-5. Configurations that combine L7 Load Balancers with VM/NLB firewall route targets no longer fail because completed DHCP and route-table metadata is unavailable during subnet provisioning. The public subnet configuration schema is unchanged.
+1. Configurations that combine L7 Load Balancers with VM/NLB firewall route targets no longer fail because completed DHCP and route-table metadata is unavailable during subnet provisioning. The public subnet configuration schema is unchanged.
 
 ## Updates
 1. Route tables, customized default route tables, and subnet route-table attachments now complete in the internal `network-completion` module. Native OCI Network Firewalls and third-party firewall VMs behind private NLBs can be deployed with their routes in one Terraform apply.
@@ -15,7 +11,7 @@
 5. NLB backend `target_id` accepts an OCID, `<instance-key>`, or `<instance-key>.<vnic-key>`. Existing aliases in `instances_dependency` retain precedence, including dotted aliases, even when `private_ips_dependency` contains the same key. Other keys resolve through `private_ips_dependency`. Secondary VNIC entries supplied to the NLB must contain canonical private-IP OCIDs rather than VNIC OCIDs. Literal OCIDs and existing `ip_address` lookups remain unchanged. Route-rule `network_entity_id` likewise accepts either an OCID or resource key. Existing rules containing both a literal OCID and `network_entity_key` retain their route-table partition and literal next hop.
 
 ## Deprecation notices
-1. Route-rule `network_entity_key` is deprecated in release 0.8.5 and will be removed in the next major release. Replace it with `network_entity_id`, which accepts both literal OCIDs and resource keys.
+1. Route-rule `network_entity_key` is deprecated in the 0.9.0 development line and will be removed in the next major release. Replace it with `network_entity_id`, which accepts both literal OCIDs and resource keys.
 
 ## Upgrade notes
 1. OCI provider 7.27.0 or later is required by the root module for Private Service Access. The standalone NLB module requires OCI provider 6.23.0 or later for backend-set instant failover TCP-reset support.
@@ -25,6 +21,14 @@
 
    Do not combine these phases for an existing deployment. Before Phase 1 has populated state, Terraform can defer the new private-IP lookups and conservatively plan backend replacement and unknown route updates. Literal `ip_address` and private-IP OCID configurations remain supported and do not have to be migrated. Keep the existing root networking module address and configuration keys. The Phase 1 plan should show state moves for ten route-table collections and one attachment collection, with no infrastructure replacement. Subnet associations continue to use `route_table_key`; without a key, the subnet retains its VCN default route table. A standalone subnet `route_table_id` does not change that association.
 3. Subnets are created on the VCN default route table and completed through an attachment. Fresh deployments can have a short default-route interval; route-table reassignment and NLB/private-IP or firewall replacement can interrupt traffic.
+
+# October 06, 2026 Release Notes - 0.8.5
+
+## Fixes
+1. [Issue 99](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/99): Reserved public IPs now receive only customer-provided freeform tags instead of automatically inheriting the module tag. This avoids an attempted tag update when importing an existing reserved public IP attached to a NAT gateway, which OCI rejects because public IPs assigned to NAT gateways cannot be updated.
+2. [Issue 101](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/101): Importing a VCN DNS resolver by its OCID no longer proposes replacement solely because the OCI provider leaves the optional, replacement-triggering *scope* attribute absent from imported state. The module continues to configure resolvers with `scope = "PRIVATE"`, preserves the existing `PRIVATE` output value, and produces no infrastructure change for existing managed resolvers.
+3. Subnet route-table attachments are managed separately from subnet creation to avoid Terraform cycles when subnets are destroyed and route tables updated.
+4. New outputs for provisioned resources. The outputs refer to individual resource types separately and should be used as much as possible for avoiding Terraform cycles in downstream consuming modules.
 
 # August 31, 2026 Release Notes - 0.8.4
 
