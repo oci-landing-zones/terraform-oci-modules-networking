@@ -103,10 +103,29 @@ locals {
       nfw_key                        = nfw_key
     }
   }
+
+  network_firewall_route_targets = {
+    for nfw_key, private_ips in data.oci_core_private_ips.these-nfws-private-ips : nfw_key => {
+      id = one(private_ips.private_ips).id
+    }
+  }
 }
 
 resource "oci_network_firewall_network_firewall" "these" {
   for_each = local.one_dimension_network_firewalls != null ? length(local.one_dimension_network_firewalls) > 0 ? local.one_dimension_network_firewalls : {} : {}
+
+  depends_on = [
+    oci_network_firewall_network_firewall_policy_service.these,
+    oci_network_firewall_network_firewall_policy_service_list.these,
+    oci_network_firewall_network_firewall_policy_application.these,
+    oci_network_firewall_network_firewall_policy_application_group.these,
+    oci_network_firewall_network_firewall_policy_decryption_profile.these,
+    oci_network_firewall_network_firewall_policy_address_list.these,
+    oci_network_firewall_network_firewall_policy_decryption_rule.these,
+    oci_network_firewall_network_firewall_policy_mapped_secret.these,
+    oci_network_firewall_network_firewall_policy_url_list.these,
+    oci_network_firewall_network_firewall_policy_security_rule.these,
+  ]
 
   #Required
   compartment_id             = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : null

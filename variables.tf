@@ -111,8 +111,8 @@ variable "network_configuration" {
           freeform_tags  = optional(map(string)),
           display_name   = optional(string),
           route_rules = optional(map(object({
-            network_entity_id  = optional(string),
-            network_entity_key = optional(string),
+            network_entity_id  = optional(string), # Literal OCID or resource key.
+            network_entity_key = optional(string), # Deprecated; use network_entity_id. This attribute will be removed in the next major release.
             description        = optional(string),
             // Supported values:
             //    - "a cidr block"
@@ -131,8 +131,8 @@ variable "network_configuration" {
           freeform_tags  = optional(map(string)),
           display_name   = optional(string),
           route_rules = optional(map(object({
-            network_entity_id  = optional(string),
-            network_entity_key = optional(string),
+            network_entity_id  = optional(string), # Literal OCID or resource key.
+            network_entity_key = optional(string), # Deprecated; use network_entity_id. This attribute will be removed in the next major release.
             description        = optional(string),
             // Supported values:
             //    - "a cidr block"
@@ -462,8 +462,8 @@ variable "network_configuration" {
           freeform_tags  = optional(map(string)),
           display_name   = optional(string),
           route_rules = optional(map(object({
-            network_entity_id  = optional(string),
-            network_entity_key = optional(string),
+            network_entity_id  = optional(string), # Literal OCID or resource key.
+            network_entity_key = optional(string), # Deprecated; use network_entity_id. This attribute will be removed in the next major release.
             description        = optional(string),
             // Supported values:
             //    - "a cidr block"
@@ -482,8 +482,8 @@ variable "network_configuration" {
           freeform_tags  = optional(map(string)),
           display_name   = optional(string),
           route_rules = optional(map(object({
-            network_entity_id  = optional(string),
-            network_entity_key = optional(string),
+            network_entity_id  = optional(string), # Literal OCID or resource key.
+            network_entity_key = optional(string), # Deprecated; use network_entity_id. This attribute will be removed in the next major release.
             description        = optional(string),
             // Supported values:
             //    - "a cidr block"

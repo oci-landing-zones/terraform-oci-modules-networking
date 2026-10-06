@@ -1,80 +1,52 @@
-<!-- BEGIN_TF_DOCS -->
-# Transit routing with a DRG hub and a network virtual appliance in an attached VCN 
+# Transit routing with a DRG hub and OCI Network Firewall
 
-## Description
+This example connects three spoke VCNs and an on-premises network through a DRG.
+Traffic entering the hub VCN is routed through OCI Network Firewall.
 
-This is an example for a "***Transit routing with a DRG hub and a network virtual appliance in an attached VCN***" instantiation of the ```terraform-oci-landing-zones-networking``` networking core module.
+![Transit routing topology](diagrams/network_transit_detailed_layout_2021.png)
 
-For detailed description of the ```terraform-oci-landing-zones-networking``` networking core module please refer to the core module specific [README.md](../../README.md) and [SPEC.md](../../SPEC.md).
+The example calls the networking module directly:
 
-This example shows a DRG acting as a hub and an attached VCN with a firewall.
+```hcl
+module "terraform_oci_networking" {
+  source                = "../../"
+  network_configuration = var.network_configuration
+}
+```
 
-For a complete example documentation please access this [OCI Documentation link](https://docs.public.oneportal.content.oci.oraclecloud.com/en-us/iaas/Content/Network/Tasks/scenario_g.htm#scenario_g__onramp_example).
+[network_configuration.json](network_configuration.json) and
+[network_configuration.yaml](network_configuration.yaml) contain the same complete
+topology. Firewall routes use `network_entity_id = "HUB-NFW-KEY"`
+to reference the firewall defined in the same configuration. The module resolves its
+private-IP OCID automatically, so the full topology can be deployed in one apply.
 
-## Diagram of the provisioned networking topology
+## Deploy with Terraform
 
-![](diagrams/network_transit_detailed_layout_2021.png)
+1. Copy the authentication template:
 
-## Instantiation
+   ```shell
+   cp terraform.tfvars.template terraform.tfvars
+   ```
 
-For clarity and proper separation and isolation we've separated the input parameters into 2 files by leveraging terraform ```*.auto.tfvars``` feature:
+2. Set your OCI authentication values in `terraform.tfvars`. In
+   `network_configuration.json`, set `default_compartment_id` and adjust the
+   FastConnect provider, BGP peering addresses, CIDRs, and firewall policy for your
+   environment.
 
-- [terraform.tfvars](./terraform.tfvars.template)
+3. Run Terraform from this directory:
 
+   ```shell
+   terraform init
+   terraform plan -var-file=network_configuration.json -out=plan.out
+   terraform apply plan.out
+   ```
 
-- [network_configuration.auto.tfvars](./network_configuration.auto.tfvars)
+## Deploy with OCI Resource Manager
 
-### Using the Module with ORM**
+Use either the YAML or JSON configuration. Edit its compartment, FastConnect, and
+policy settings for your environment. Set `orm-facade` as the stack's working
+directory and set `input_config_file_url` to the URL of your edited configuration
+file. Run one plan/apply cycle.
 
-For an ad-hoc use where you can select your resources, follow these guidelines:
-1. [![Deploy_To_OCI](../../images/DeployToOCI.svg)](https://cloud.oracle.com/resourcemanager/stacks/create?zipUrl=https://github.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking/archive/refs/heads/main.zip&zipUrlVariables={"input_config_file_url":"https://raw.githubusercontent.com/oracle-quickstart/terraform-oci-cis-landing-zone-networking/main/examples/TransitRouting-DRGHub-NFW/input-configs-standards-options/network_configuration.yaml"})
-2. Accept terms,  wait for the configuration to load. 
-3. Set the working directory to “orm-facade”. 
-4. Set the stack name you prefer.
-5. Set the terraform version to 1.2.x. Click Next. 
-6. Add your json/yaml configuration files. Click Next.
-8. Un-check run apply. Click Create.
-
-## Know Issues
-
-### Limitations
-
-#### Provisioning of the Private IP Route Rules in 2 steps
-
-In order to avoid a cycle in the Terraform dependency graph, cycle created in between the folloiwng nodes: [```oci_core_subnet.these```, ```oci_core_route_table.*all*``` and ```oci_network_firewall_network_firewall.these```], the provisioning of route tables route rules that target private IPs need to be performed in 2 steps.
-
-For our specific use-case, covered in this example, those stepts will be:
-
-- STEP 1: Run this automation with ```VCN-H-INGRESS-RT-KEY``` VCN Route Table containing no route rules. 
-- STEP 2: After STEP 1 is performed succesfully perform the following:
-    - Add the following ```route_rules``` to the ```VCN-H-INGRESS-RT-KEY``` VCN Route Table:
-      ```
-      ON-PREMISES-TO-NFW-PrivateIP-KEY = {
-                  network_entity_id = "ocid1.privateip....." 
-                  description       = "Route for fwd-ing traffic that has as destination the on-premises through the NFW"
-                  destination       = "172.16.0.0/16"
-                  destination_type  = "CIDR_BLOCK"
-                }
-        VCN-A-TO-NFW-PrivateIP-KEY = {
-                  network_entity_id = "ocid1.privateip....."
-                  description       = "Route for fwd-ing traffic that has as destination the VCN-A through the NFW"
-                  destination       = "192.168.10.0/24"
-                  destination_type  = "CIDR_BLOCK"
-                }
-        VCN-B-TO-NFW-PrivateIP-KEY = {
-                  network_entity_id = "ocid1.privateip....."
-                  description       = "Route for fwd-ing traffic that has as destination the VCN-B through the NFW"
-                  destination       = "192.168.20.0/24"
-                  destination_type  = "CIDR_BLOCK"
-                }
-        VCN-C-TO-NFW-PrivateIP-KEY = {
-                  network_entity_id = "ocid1.privateip....."
-                  description       = "Route for fwd-ing traffic that has as destination the VCN-C through the NFW"
-                  destination       = "192.168.30.0/24"
-                  destination_type  = "CIDR_BLOCK"
-                }
-      ```
-    - copy the NFW private IP OCID: ```ipv4address_ocid``` from the output of the terraform apply you run in STEP 1 and replace the ```"ocid1.privateip....."``` in the above route rules with the new private ip OCID.
-    - Run ```terraform apply``` against the updated configuration.
-
-
+See the module [README](../../README.md) and [specification](../../SPEC.md) for the
+available configuration attributes.
