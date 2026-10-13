@@ -7,6 +7,21 @@
 # Modified by: Cosmin Tudor, email: cosmin.tudor@oracle.com                                               #
 # ####################################################################################################### #
 
+output "provisioned_networking_foundation_resources" {
+  description = "Provisioned VCNs, subnets, and network security groups that are available before final route table creation and attachment."
+  value = {
+    vcns = {
+      for key, value in oci_core_vcn.these : key => { id = value.id }
+    }
+    subnets = {
+      for key, value in oci_core_subnet.these : key => { id = value.id }
+    }
+    network_security_groups = {
+      for key, value in oci_core_network_security_group.these : key => { id = value.id }
+    }
+  }
+}
+
 output "provisioned_networking_resources" {
   description = "Provisioned networking resources"
   value = {
@@ -70,9 +85,9 @@ output "provisioned_networking_resources" {
         k => v if local.one_dimension_fast_connect_virtual_circuits[v.fcvc_key].show_available_fc_virtual_circuit_providers == true
       } : {} : {}
     }
-    cross_connect_groups  = oci_core_cross_connect_group.these
-    cross_connects        = oci_core_cross_connect.these
-    fc_vc_drg_attachments = local.fc_vc_drg_attachments
+    cross_connect_groups   = oci_core_cross_connect_group.these
+    cross_connects         = oci_core_cross_connect.these
+    fc_vc_drg_attachments  = local.fc_vc_drg_attachments
     private_service_access = oci_psa_private_service_access.these
 
   }
@@ -122,7 +137,8 @@ output "flat_map_of_provisioned_networking_resources" {
   )
 }
 
-# The following outputs are recommended in downstream consuming modules to avoid any potential cycles in Terraform, as they do not depend on any other resources.
+# Per-resource ID outputs omit enriched compatibility metadata. Creation dependencies still apply.
+# Use VCN, subnet, and NSG IDs for foundation consumers; route-table IDs depend on route completion.
 output "provisioned_vcn_ids" {
   description = "A map with the OCIDs of provisioned VCNs"
   value       = { for key, value in oci_core_vcn.these : key => { id = value.id } }
@@ -141,7 +157,13 @@ output "provisioned_default_security_list_ids" {
 }
 output "provisioned_route_table_ids" {
   description = "A map with the OCIDs of provisioned route tables"
-  value       = { for key, value in merge(oci_core_route_table.igw_natgw_specific_route_tables, oci_core_route_table.sgw_specific_route_tables, oci_core_route_table.lpg_specific_route_tables, oci_core_route_table.drga_specific_route_tables, oci_core_route_table.non_gw_specific_remaining_route_tables) : key => { id = value.id } }
+  value = merge(
+    module.network_completion.provisioned_igw_natgw_specific_route_table_ids,
+    module.network_completion.provisioned_sgw_specific_route_table_ids,
+    module.network_completion.provisioned_lpg_specific_route_table_ids,
+    module.network_completion.provisioned_drga_specific_route_table_ids,
+    module.network_completion.provisioned_non_gw_specific_remaining_route_table_ids
+  )
 }
 output "provisioned_network_security_group_ids" {
   description = "A map with the OCIDs of provisioned network security groups"
