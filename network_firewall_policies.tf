@@ -151,7 +151,7 @@ locals {
         key        = "${policy_key}.${url_key}"
         policy_key = policy_key
         name       = url_value.name
-        pattern    = url_value.pattern
+        patterns   = coalescelist(url_value.patterns, [url_value.pattern])
         type       = url_value.type
       }
     ]
@@ -352,14 +352,17 @@ resource "oci_network_firewall_network_firewall_policy_url_list" "these" {
   for_each = { for v in local.nfw_policy_url_lists : v.key => {
     policy_key = v.policy_key
     name       = v.name
-    pattern    = v.pattern
+    patterns   = v.patterns
     type       = v.type
   } }
   name                       = each.value.name
   network_firewall_policy_id = oci_network_firewall_network_firewall_policy.these[each.value.policy_key].id
-  urls {
-    pattern = each.value.pattern
-    type    = each.value.type
+  dynamic "urls" {
+    for_each = each.value.patterns
+    content {
+      pattern = urls.value
+      type    = each.value.type
+    }
   }
 }
 
