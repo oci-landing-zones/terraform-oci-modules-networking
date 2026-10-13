@@ -57,7 +57,6 @@ Using these modules does not require a user extensive knowledge of Terraform or 
 
 This module requires Terraform binary version 1.3.0 or greater, as it relies on Optional Object Type Attributes feature. The feature shortens the amount of input values in complex of having Terraform automatically inserting a default value for any missing optional attributes.
 
-
 ### IAM Permissions
 
 This module requires the following OCI IAM permissions:
@@ -352,7 +351,7 @@ Below are the attributes where a referring key is supported:
 *network_dependency* attribute | Attribute names in *network_configuration* where the referring key can be utilized
 --------------|-------------
 **vcns** | *vcn_id* in *inject_into_existing_vcns*, *attached_resource_key* in VCN *drg_attachments*
-**dynamic_routing_gateways** | *drg_id* in *inject_into_existing_drgs*, *network_entity_key* in *route_tables'* *route_rules*
+**dynamic_routing_gateways** | *drg_id* in *inject_into_existing_drgs*, *network_entity_id* in *route_tables'* *route_rules*
 **drg_attachments** | *drg_attachment_key*
 **drg_route_tables** | *drg_route_table_key* in VCN and non-VCN *drg_attachments*
 **local_peering_gateways** | *peer_key* in *local_peering_gateways*
@@ -373,9 +372,10 @@ Example:
 ```
 
 Attributes that support a private IP referring key:
-  - *network_entity_key* in *route_tables'* *route_rules*
-  - *reserved_ips_keys* in private *l7_load_balancers*
 
+  - *network_entity_id* in *route_tables'* *route_rules*. It accepts either a literal OCID or a resource key.
+  - *network_entity_key* in *route_tables'* *route_rules* (deprecated; will be removed in the next major release)
+  - *reserved_ips_keys* in private *l7_load_balancers*
 
 #### Wrapping Example
 Note how the *network_configuration* snippet example below refers to keys in *compartments_dependency* (*NETWORK-CMP*) and *network_dependency* (*XYZ-VCN*):
