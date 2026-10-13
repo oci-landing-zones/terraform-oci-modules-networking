@@ -1,3 +1,8 @@
+# Unreleased - 0.9.0
+
+## Updates
+1. [Issue 109](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/109): Network Firewall policy URL lists now support multiple URL patterns through the optional `patterns` list. Existing single `pattern` configurations continue to work. Each list requires `pattern` or a non-empty `patterns` list; a non-empty `patterns` list takes precedence when both are supplied.
+
 # October 06, 2026 Release Notes - 0.8.5
 
 ## Fixes
