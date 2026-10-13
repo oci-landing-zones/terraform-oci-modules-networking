@@ -1,4 +1,4 @@
-# Unreleased - 0.9.0
+# October 13, 2026 Release Notes - 0.9.0
 
 ## Fixes
 1. Configurations that combine L7 Load Balancers with VM/NLB firewall route targets no longer fail because completed DHCP and route-table metadata is unavailable during subnet provisioning. The public subnet configuration schema is unchanged.
