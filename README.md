@@ -261,7 +261,7 @@ The ```network_configuration``` is a multidimensional complex object:
             - [Terraform Resources](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_cross_connect)
       - The ```network_firewalls_configuration``` attribute can be used to inject any number of ```network_firewalls``` and/or ```network_firewall_policies```. Existing policies or newly created policies can be specified.
       Note that a network firewall policy cannot be updated when attached to a firewall. To update a policy, attach another policy to the firewall, update the original policy and attach it back. This process requires two Terraform executions. See [Change a Firewall Policy](https://docs.oracle.com/en-us/Content/network-firewall/edit-policy.htm) for details.
-      Network Firewall policy URL lists accept the existing `pattern` string or a `patterns` list, with one provider URL entry per pattern. At least one form is required. A non-empty `patterns` list takes precedence over `pattern`.
+      Network Firewall policy URL lists accept a `pattern` string or a `patterns` list, with one provider URL entry per pattern. At least one form is required. A non-empty `patterns` list takes precedence over `pattern`.
       - ```l7_load_balancers``` is a multidimensional attribute that:
         - ```compartment_id``` holds the compartment id that will be used 
         - ```display_name``` load balancer displayed name
