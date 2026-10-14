@@ -111,8 +111,8 @@ variable "network_configuration" {
           freeform_tags  = optional(map(string)),
           display_name   = optional(string),
           route_rules = optional(map(object({
-            network_entity_id  = optional(string),
-            network_entity_key = optional(string),
+            network_entity_id  = optional(string), # Literal OCID or resource key.
+            network_entity_key = optional(string), # Deprecated; use network_entity_id. This attribute will be removed in the next major release.
             description        = optional(string),
             // Supported values:
             //    - "a cidr block"
@@ -131,8 +131,8 @@ variable "network_configuration" {
           freeform_tags  = optional(map(string)),
           display_name   = optional(string),
           route_rules = optional(map(object({
-            network_entity_id  = optional(string),
-            network_entity_key = optional(string),
+            network_entity_id  = optional(string), # Literal OCID or resource key.
+            network_entity_key = optional(string), # Deprecated; use network_entity_id. This attribute will be removed in the next major release.
             description        = optional(string),
             // Supported values:
             //    - "a cidr block"
@@ -462,8 +462,8 @@ variable "network_configuration" {
           freeform_tags  = optional(map(string)),
           display_name   = optional(string),
           route_rules = optional(map(object({
-            network_entity_id  = optional(string),
-            network_entity_key = optional(string),
+            network_entity_id  = optional(string), # Literal OCID or resource key.
+            network_entity_key = optional(string), # Deprecated; use network_entity_id. This attribute will be removed in the next major release.
             description        = optional(string),
             // Supported values:
             //    - "a cidr block"
@@ -482,8 +482,8 @@ variable "network_configuration" {
           freeform_tags  = optional(map(string)),
           display_name   = optional(string),
           route_rules = optional(map(object({
-            network_entity_id  = optional(string),
-            network_entity_key = optional(string),
+            network_entity_id  = optional(string), # Literal OCID or resource key.
+            network_entity_key = optional(string), # Deprecated; use network_entity_id. This attribute will be removed in the next major release.
             description        = optional(string),
             // Supported values:
             //    - "a cidr block"
@@ -1124,9 +1124,10 @@ variable "network_configuration" {
               addresses = list(string)
             })))
             url_lists = optional(map(object({
-              name    = string,
-              pattern = string,
-              type    = string # Valid value: SIMPLE
+              name     = string,
+              pattern  = optional(string),
+              patterns = optional(list(string)),
+              type     = string # Valid value: SIMPLE
             }))),
             security_rules = optional(map(object({
               action                    = string, # Valid values: ALLOW,DROP,REJECT,INSPECT
@@ -1334,6 +1335,17 @@ variable "network_configuration" {
       }
     )))
   })
+
+  validation {
+    condition = var.network_configuration == null ? true : alltrue(flatten([
+      for category in coalesce(var.network_configuration.network_configuration_categories, {}) : [
+        for policy in coalesce(try(category.non_vcn_specific_gateways.network_firewalls_configuration.network_firewall_policies, null), {}) : [
+          for url_list in coalesce(policy.url_lists, {}) : url_list.pattern != null || try(length(url_list.patterns) > 0, false)
+        ]
+      ]
+    ]))
+    error_message = "Each Network Firewall policy URL list must specify pattern or a non-empty patterns list."
+  }
 
   validation {
     condition = var.network_configuration == null ? true : alltrue(flatten([

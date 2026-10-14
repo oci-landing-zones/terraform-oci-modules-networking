@@ -134,87 +134,71 @@
           },
           "network_firewalls_configuration": {
             "network_firewall_policies": {
-              "HUB-NFW-POLICY-KEY": {
-                "application_lists": {
-                  "hubnfw_app_list_1": {
-                    "application_list_name": "hubnfw_app_list_1",
-                    "application_values": {
-                      "hubnfw_app_list_1_1": {
-                        "maximum_port": 8080,
-                        "minimum_port": 80,
-                        "type": "TCP"
-                      }
-                    }
+              "HUB-NFW-POLICY": {
+                "address_lists": {
+                  "HUBNFW-IP-LIST": {
+                    "addresses": [
+                      "10.0.0.1"
+                    ],
+                    "name": "hubnfw-ip-list",
+                    "type": "IP"
                   }
                 },
-                "display_name": "hub_nfw_policy",
-                "ip_address_lists": {
-                  "hubnfw_ip_list": {
-                    "ip_address_list_name": "hubnfw_ip_list",
-                    "ip_address_list_value": [
-                      "10.0.0.1"
+                "application_lists": {
+                  "HUBNFW-APP-LIST": {
+                    "applications": [
+                      "HUBNFW-APP-1"
+                    ],
+                    "name": "hubnfw-app-list"
+                  }
+                },
+                "applications": {
+                  "HUBNFW-APP-1": {
+                    "icmp_type": "128",
+                    "name": "hubnfw-app-1",
+                    "type": "ICMP"
+                  }
+                },
+                "display_name": "hubnfw-policy",
+                "security_rules": {
+                  "SECURITY-RULE-A": {
+                    "action": "ALLOW",
+                    "application_lists": [],
+                    "destination_address_lists": [
+                      "HUBNFW-IP-LIST"
+                    ],
+                    "name": "security-rule-a",
+                    "source_address_lists": [],
+                    "url_lists": [
+                      "HUBNFW-URL-1"
+                    ]
+                  },
+                  "SECURITY-RULE-B": {
+                    "action": "INSPECT",
+                    "application": [
+                      "HUBNFW-APP-LIST"
+                    ],
+                    "destination_address": [],
+                    "inspection": "INTRUSION_DETECTION",
+                    "name": "security-rule-b",
+                    "source_address": [
+                      "HUBNFW-IP-LIST"
+                    ],
+                    "url_lists": [
+                      "HUBNFW-URL-2"
                     ]
                   }
                 },
-                "security_rules": {
-                  "SecurityRuleA": {
-                    "action": "ALLOW",
-                    "conditions": {
-                      "prd_cond1_A": {
-                        "applications": [],
-                        "destinations": [
-                          "hubnfw_ip_list"
-                        ],
-                        "sources": [],
-                        "urls": [
-                          "hubnfw_policy_url_1"
-                        ]
-                      }
-                    },
-                    "name": "SecurityRuleA"
-                  },
-                  "SecurityRuleB": {
-                    "action": "INSPECT",
-                    "conditions": {
-                      "prd_cond1_B": {
-                        "applications": [
-                          "hubnfw_app_list_1"
-                        ],
-                        "destinations": [],
-                        "sources": [
-                          "hubnfw_ip_list"
-                        ],
-                        "urls": [
-                          "hubnfw_policy_url_1"
-                        ]
-                      }
-                    },
-                    "inspection": "INTRUSION_DETECTION",
-                    "name": "SecurityRuleB"
-                  }
-                },
                 "url_lists": {
-                  "hubnfw_policy_url_1": {
-                    "url_list_name": "hubnfw_policy_url_1",
-                    "url_list_values": {
-                      "hubnfw_policy_url_1_1": {
-                        "pattern": "www.oracle.com",
-                        "type": "SIMPLE"
-                      },
-                      "hubnfw_policy_url_1_2": {
-                        "pattern": "www.google.com",
-                        "type": "SIMPLE"
-                      }
-                    }
+                  "HUBNFW-URL-1": {
+                    "name": "hubnfw-url-1",
+                    "pattern": "www.oracle.com",
+                    "type": "SIMPLE"
                   },
-                  "hubnfw_policy_url_2": {
-                    "url_list_name": "hubnfw_policy_url_2",
-                    "url_list_values": {
-                      "hubnfw_policy_url_2_1": {
-                        "pattern": "www.facebook.com",
-                        "type": "SIMPLE"
-                      }
-                    }
+                  "HUBNFW-URL-2": {
+                    "name": "hubnfw-url-2",
+                    "pattern": "www.google.com",
+                    "type": "SIMPLE"
                   }
                 }
               }
@@ -223,7 +207,7 @@
               "HUB-NFW-KEY": {
                 "display_name": "hub_nfw",
                 "ipv4address": "10.0.0.10",
-                "network_firewall_policy_key": "HUB-NFW-POLICY-KEY",
+                "network_firewall_policy_key": "HUB-NFW-POLICY",
                 "subnet_key": "SUBNET-H-KEY"
               }
             }
@@ -280,31 +264,56 @@
                     "description": "Route for accessing the on-premises environment through the DRG",
                     "destination": "172.16.0.0/16",
                     "destination_type": "CIDR_BLOCK",
-                    "network_entity_key": "DRG-HUB-KEY"
+                    "network_entity_id": "DRG-HUB-KEY"
                   },
                   "TO-VCN-A-KEY": {
                     "description": "Route for accessing VCN-A through the DRG",
                     "destination": "192.168.10.0/24",
                     "destination_type": "CIDR_BLOCK",
-                    "network_entity_key": "DRG-HUB-KEY"
+                    "network_entity_id": "DRG-HUB-KEY"
                   },
                   "TO-VCN-B-KEY": {
                     "description": "Route for accessing VCN-B through the DRG",
                     "destination": "192.168.20.0/24",
                     "destination_type": "CIDR_BLOCK",
-                    "network_entity_key": "DRG-HUB-KEY"
+                    "network_entity_id": "DRG-HUB-KEY"
                   },
                   "TO-VCN-C-KEY": {
                     "description": "Route for accessing VCN-c through the DRG",
                     "destination": "192.168.30.0/24",
                     "destination_type": "CIDR_BLOCK",
-                    "network_entity_key": "DRG-HUB-KEY"
+                    "network_entity_id": "DRG-HUB-KEY"
                   }
                 }
               },
               "VCN-H-INGRESS-RT-KEY": {
                 "display_name": "vcn-h-ingress-rt",
-                "route_rules": {}
+                "route_rules": {
+                  "ON-PREMISES-TO-NFW-PrivateIP-KEY": {
+                    "description": "Route for fwd-ing traffic that has as destination the on-premises through the NFW",
+                    "destination": "172.16.0.0/16",
+                    "destination_type": "CIDR_BLOCK",
+                    "network_entity_id": "HUB-NFW-KEY"
+                  },
+                  "VCN-A-TO-NFW-PrivateIP-KEY": {
+                    "description": "Route for fwd-ing traffic that has as destination the VCN-A through the NFW",
+                    "destination": "192.168.10.0/24",
+                    "destination_type": "CIDR_BLOCK",
+                    "network_entity_id": "HUB-NFW-KEY"
+                  },
+                  "VCN-B-TO-NFW-PrivateIP-KEY": {
+                    "description": "Route for fwd-ing traffic that has as destination the VCN-B through the NFW",
+                    "destination": "192.168.20.0/24",
+                    "destination_type": "CIDR_BLOCK",
+                    "network_entity_id": "HUB-NFW-KEY"
+                  },
+                  "VCN-C-TO-NFW-PrivateIP-KEY": {
+                    "description": "Route for fwd-ing traffic that has as destination the VCN-C through the NFW",
+                    "destination": "192.168.30.0/24",
+                    "destination_type": "CIDR_BLOCK",
+                    "network_entity_id": "HUB-NFW-KEY"
+                  }
+                }
               }
             },
             "subnets": {
@@ -380,19 +389,19 @@
                     "description": "Route for accessing the on-premises environment through the DRG",
                     "destination": "172.16.0.0/16",
                     "destination_type": "CIDR_BLOCK",
-                    "network_entity_key": "DRG-HUB-KEY"
+                    "network_entity_id": "DRG-HUB-KEY"
                   },
                   "TO-VCN-B-KEY": {
                     "description": "Route for accessing VCN-B through the DRG",
                     "destination": "192.168.20.0/24",
                     "destination_type": "CIDR_BLOCK",
-                    "network_entity_key": "DRG-HUB-KEY"
+                    "network_entity_id": "DRG-HUB-KEY"
                   },
                   "TO-VCN-C-KEY": {
                     "description": "Route for accessing VCN-c through the DRG",
                     "destination": "192.168.30.0/24",
                     "destination_type": "CIDR_BLOCK",
-                    "network_entity_key": "DRG-HUB-KEY"
+                    "network_entity_id": "DRG-HUB-KEY"
                   }
                 }
               }
@@ -463,19 +472,19 @@
                     "description": "Route for accessing the on-premises environment through the DRG",
                     "destination": "172.16.0.0/16",
                     "destination_type": "CIDR_BLOCK",
-                    "network_entity_key": "DRG-HUB-KEY"
+                    "network_entity_id": "DRG-HUB-KEY"
                   },
                   "TO-VCN-A-KEY": {
                     "description": "Route for accessing VCN-A through the DRG",
                     "destination": "192.168.10.0/24",
                     "destination_type": "CIDR_BLOCK",
-                    "network_entity_key": "DRG-HUB-KEY"
+                    "network_entity_id": "DRG-HUB-KEY"
                   },
                   "TO-VCN-C-KEY": {
                     "description": "Route for accessing VCN-c through the DRG",
                     "destination": "192.168.30.0/24",
                     "destination_type": "CIDR_BLOCK",
-                    "network_entity_key": "DRG-HUB-KEY"
+                    "network_entity_id": "DRG-HUB-KEY"
                   }
                 }
               }
@@ -546,19 +555,19 @@
                     "description": "Route for accessing the on-premises environment through the DRG",
                     "destination": "172.16.0.0/16",
                     "destination_type": "CIDR_BLOCK",
-                    "network_entity_key": "DRG-HUB-KEY"
+                    "network_entity_id": "DRG-HUB-KEY"
                   },
                   "TO-VCN-A-KEY": {
                     "description": "Route for accessing VCN-A through the DRG",
                     "destination": "192.168.10.0/24",
                     "destination_type": "CIDR_BLOCK",
-                    "network_entity_key": "DRG-HUB-KEY"
+                    "network_entity_id": "DRG-HUB-KEY"
                   },
                   "TO-VCN-C-KEY": {
                     "description": "Route for accessing VCN-B through the DRG",
                     "destination": "192.168.20.0/24",
                     "destination_type": "CIDR_BLOCK",
-                    "network_entity_key": "DRG-HUB-KEY"
+                    "network_entity_id": "DRG-HUB-KEY"
                   }
                 }
               }
