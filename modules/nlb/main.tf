@@ -12,7 +12,7 @@ resource "oci_network_load_balancer_network_load_balancer" "these" {
   dynamic "reserved_ips" {
     for_each = each.value.reserved_ips != null ? each.value.reserved_ips : []
     content {
-      id = each.value.id
+      id = reserved_ips.value.id
     }
   }
   is_preserve_source_destination = each.value.skip_source_dest_check

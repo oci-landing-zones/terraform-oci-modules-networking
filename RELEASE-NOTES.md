@@ -1,3 +1,8 @@
+# Unreleased - 0.9.1
+
+## Fixes
+1. [Issue 93](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/93): NLB configurations with reserved public IPs now read each reserved IP's OCID correctly instead of failing with an unsupported attribute error during planning. Inputs, resource addresses, and configurations without reserved IPs are unchanged.
+
 # October 13, 2026 Release Notes - 0.9.0
 
 ## Fixes
