@@ -7,6 +7,7 @@ resource "oci_network_load_balancer_network_load_balancer" "these" {
   compartment_id             = each.value.compartment_id != null ? (length(regexall("^ocid1.*$", each.value.compartment_id)) > 0 ? each.value.compartment_id : var.compartments_dependency[each.value.compartment_id].id) : (length(regexall("^ocid1.*$", var.nlb_configuration.default_compartment_id)) > 0 ? var.nlb_configuration.default_compartment_id : var.compartments_dependency[var.nlb_configuration.default_compartment_id].id)
   display_name               = each.value.display_name
   is_private                 = each.value.is_private
+  assigned_private_ipv4      = each.value.assigned_private_ipv4
   subnet_id                  = each.value.subnet_id != null ? (length(regexall("^ocid1.*$", each.value.subnet_id)) > 0 ? each.value.subnet_id : var.network_dependency["subnets"][each.value.subnet_id].id) : (length(regexall("^ocid1.*$", var.nlb_configuration.default_subnet_id)) > 0 ? var.nlb_configuration.default_subnet_id : var.network_dependency["subnets"][var.nlb_configuration.default_subnet_id].id)
   network_security_group_ids = each.value.network_security_group_ids != null ? [for nsg in coalesce(each.value.network_security_group_ids, []) : (length(regexall("^ocid1.*$", nsg)) > 0 ? nsg : var.network_dependency["network_security_groups"][nsg].id)] : null
   dynamic "reserved_ips" {

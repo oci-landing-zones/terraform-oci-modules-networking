@@ -1,3 +1,11 @@
+# Unreleased - 0.10.0
+
+## Updates
+1. [Issue 119](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/119): Private NLBs accept the optional per-NLB `assigned_private_ipv4` input to select an unused IPv4 address in the NLB subnet. Omitted or null values retain automatic allocation.
+
+## Upgrade notes
+1. Setting or changing `assigned_private_ipv4` on an existing NLB requires replacement under the OCI provider. Review the replacement and traffic impact before applying. The standalone NLB provider minimum remains 6.23.0.
+
 # October 13, 2026 Release Notes - 0.9.0
 
 ## Fixes
