@@ -1,6 +1,7 @@
 # Unreleased - 0.9.1
 
 ## Fixes
+1. [Issue 88](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/88): Requestor remote peering connections now infer the peer region when `peer_key` refers to an acceptor in the same module and `peer_region_name` is omitted. Explicit regions and external dependency precedence remain unchanged.
 1. [Issue 90](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/90): DNS RRsets now use their zone's resolved view ID, allowing records in existing private views supplied by OCID or through `network_dependency.dns_private_views` without an invalid-index error. Module-created private views remain supported.
 
 ## Upgrade notes
