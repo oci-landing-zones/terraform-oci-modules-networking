@@ -309,7 +309,7 @@ resource "oci_dns_rrset" "these" {
   domain          = each.value.domain
   rtype           = each.value.rtype
   zone_name_or_id = oci_dns_zone.these[each.value.zone_key].id
-  view_id         = oci_dns_view.these[each.value.view_key].id
+  view_id         = oci_dns_zone.these[each.value.zone_key].view_id
   scope           = each.value.scope
   dynamic "items" {
     for_each = each.value.items
