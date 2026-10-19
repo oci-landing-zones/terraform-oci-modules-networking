@@ -3,6 +3,9 @@
 ## Fixes
 1. [Issue 97](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/97): VCN DNS resolvers now inherit defined and freeform tags from their network configuration and category. As with other networking resources, default tags override category tags, and category tags override resolver tags when keys overlap. Existing resolver tags can change on upgrade; review any policies that use these tags for access control.
 
+## Upgrade notes
+1. Review the plan for DNS resolver replacement when upgrading: VCN tag updates can defer the resolver-ID lookup and cause Terraform to reinitialize resolver management. The OCI provider clears attached views, forwarding rules, and tags before reapplying them to the same OCI resolver. Allow for temporary DNS configuration or tag-policy disruption; an interrupted apply can leave these properties cleared. Live validation covered tag inheritance with no attached views or forwarding rules; restoration of populated resolver configurations was not tested.
+
 # October 13, 2026 Release Notes - 0.9.0
 
 ## Fixes
