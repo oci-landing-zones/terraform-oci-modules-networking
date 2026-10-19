@@ -1,3 +1,8 @@
+# Unreleased - 0.9.1
+
+## Fixes
+1. [Issue 92](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/92): DNS steering policies preserve the configured display name and pass answer pools as strings, allowing valid configurations to plan and deploy. Attachments resolve the matching policy even when the policy and zone configuration keys differ. Existing zone-based resource keys are unchanged.
+
 # October 13, 2026 Release Notes - 0.9.0
 
 ## Fixes
