@@ -1,3 +1,11 @@
+# Unreleased - 0.9.1
+
+## Fixes
+1. [Issue 90](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/90): DNS RRsets now use their zone's resolved view ID, allowing records in existing private views supplied by OCID or through `network_dependency.dns_private_views` without an invalid-index error. Module-created private views remain supported.
+
+## Upgrade notes
+1. Review DNS resolver replacement actions before applying an upgrade. VCN tag updates, including the module version tag, can defer resolver discovery until apply and propose resolver replacement. This existing dependency behavior is outside the RRset fix; do not apply an unintended resolver replacement.
+
 # October 13, 2026 Release Notes - 0.9.0
 
 ## Fixes
