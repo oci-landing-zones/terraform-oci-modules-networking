@@ -1,3 +1,8 @@
+# Unreleased - 0.9.1
+
+## Fixes
+1. [Issue 88](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/88): Requestor remote peering connections now infer the peer region when `peer_key` refers to an acceptor in the same module and `peer_region_name` is omitted. Explicit regions and external dependency precedence remain unchanged.
+
 # October 13, 2026 Release Notes - 0.9.0
 
 ## Fixes
