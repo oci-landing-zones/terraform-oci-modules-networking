@@ -60,8 +60,8 @@ locals {
         display_name   = vcn_value.dns_resolver.display_name
         rules          = vcn_value.dns_resolver.rules != null ? vcn_value.dns_resolver.rules : []
         attached_views = vcn_value.dns_resolver.attached_views
-        defined_tags   = vcn_value.dns_resolver.defined_tags
-        freeform_tags  = vcn_value.dns_resolver.freeform_tags
+        defined_tags   = merge(vcn_value.dns_resolver.defined_tags, vcn_value.category_defined_tags, vcn_value.default_defined_tags)
+        freeform_tags  = merge(vcn_value.dns_resolver.freeform_tags, vcn_value.category_freeform_tags, vcn_value.default_freeform_tags)
       }] : []
     ]) : flat_resolver.vcn_key => flat_resolver
   } : {}
