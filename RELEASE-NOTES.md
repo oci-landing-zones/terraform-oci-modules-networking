@@ -1,5 +1,8 @@
 # Unreleased - 0.9.1
 
+## Documentation
+1. Documented Network Firewall security rule ordering limitations and Console or one-rule-per-apply workarounds in [Known Issues](./README.md#issue-112-security-rule-order), with a linked note in the firewall example. Policy changes require an unattached policy. No Terraform behavior changes.
+
 ## Fixes
 1. [Issue 88](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/88): Requestor remote peering connections now infer the peer region when `peer_key` refers to an acceptor in the same module and `peer_region_name` is omitted. Explicit regions and external dependency precedence remain unchanged.
 1. [Issue 90](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/90): DNS RRsets now use their zone's resolved view ID, allowing records in existing private views supplied by OCID or through `network_dependency.dns_private_views` without an invalid-index error. Module-created private views remain supported.
