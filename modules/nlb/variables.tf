@@ -11,6 +11,7 @@ variable "nlb_configuration" {
       compartment_id             = optional(string)
       display_name               = string
       is_private                 = bool # Whether the NLB has a virtual cloud network-local (private) IP address.
+      assigned_private_ipv4      = optional(string)
       subnet_id                  = optional(string)
       network_security_group_ids = optional(list(string))
       reserved_ips = optional(list(object({ # List of objects representing a reserved IP address to be attached or that is already attached to a network load balancer.
