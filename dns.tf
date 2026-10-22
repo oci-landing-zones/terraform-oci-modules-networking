@@ -118,6 +118,7 @@ locals {
               zone_key                = zone_key
               steering_policy_key     = steering_policy_key
               domain_name             = steering_policy_value.domain_name
+              display_name            = steering_policy_value.display_name
               compartment_id          = steering_policy_value.compartment_id != null ? steering_policy_value.compartment_id : vcn_value.category_compartment_id != null ? vcn_value.category_compartment_id : vcn_value.default_compartment_id != null ? vcn_value.default_compartment_id : null
               template                = steering_policy_value.template
               answers                 = steering_policy_value.answers
@@ -406,7 +407,7 @@ resource "oci_dns_steering_policy" "these" {
       rtype = answer.value.rtype
 
       is_disabled = answer.value.is_disabled
-      pool        = [answer.value.pool]
+      pool        = answer.value.pool
     }
   }
 
@@ -447,7 +448,7 @@ resource "oci_dns_steering_policy" "these" {
 resource "oci_dns_steering_policy_attachment" "these" {
   for_each           = local.one_dimension_dns_steering_policies
   domain_name        = each.value.domain_name
-  steering_policy_id = oci_dns_steering_policy.these[each.value.steering_policy_key].id
+  steering_policy_id = oci_dns_steering_policy.these[each.key].id
   zone_id            = oci_dns_zone.these[each.value.zone_key].id
 
   display_name = each.value.display_name
