@@ -1,3 +1,22 @@
+# October 23, 2026 Release Notes - 0.9.1
+
+## Documentation
+1. Documented Network Firewall security rule ordering limitations and Console or one-rule-per-apply workarounds in [Known Issues](./README.md#issue-112-security-rule-order), with a linked note in the firewall example. Policy changes require an unattached policy. No Terraform behavior changes.
+
+## Fixes
+1. [Issue 92](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/92): DNS steering policies preserve the configured display name and pass answer pools as strings, allowing valid configurations to plan and deploy. Attachments resolve the matching policy even when the policy and zone configuration keys differ. Existing zone-based resource keys are unchanged.
+1. [Issue 119](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/119): Private NLBs accept the optional per-NLB `assigned_private_ipv4` input to select an unused IPv4 address in the NLB subnet. Omitted or null values retain automatic allocation.
+1. [Issue 88](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/88): Requestor remote peering connections now infer the peer region when `peer_key` refers to an acceptor in the same module and `peer_region_name` is omitted. Explicit regions and external dependency precedence remain unchanged.
+1. [Issue 90](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/90): DNS RRsets now use their zone's resolved view ID, allowing records in existing private views supplied by OCID or through `network_dependency.dns_private_views` without an invalid-index error. Module-created private views remain supported.
+1. [Issue 97](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/97): VCN DNS resolvers now inherit defined and freeform tags from their network configuration and category. As with other networking resources, default tags override category tags, and category tags override resolver tags when keys overlap. Existing resolver tags can change on upgrade; review any policies that use these tags for access control.
+1. [Issue 93](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/93): NLB configurations with reserved public IPs now read each reserved IP's OCID correctly instead of failing with an unsupported attribute error during planning. Inputs, resource addresses, and configurations without reserved IPs are unchanged.
+
+## Upgrade notes
+1. Review the plan for DNS resolver replacement when upgrading: VCN tag updates can defer the resolver-ID lookup and cause Terraform to reinitialize resolver management. The OCI provider clears attached views, forwarding rules, and tags before reapplying them to the same OCI resolver. Allow for temporary DNS configuration or tag-policy disruption; an interrupted apply can leave these properties cleared. Live validation covered tag inheritance with no attached views or forwarding rules; restoration of populated resolver configurations was not tested.
+1. Setting or changing `assigned_private_ipv4` on an existing NLB requires replacement under the OCI provider. Review the replacement and traffic impact before applying. The standalone NLB provider minimum remains 6.23.0.
+1. Review DNS resolver replacement actions before applying an upgrade. VCN tag updates, including the module version tag, can defer resolver discovery until apply and propose resolver replacement. This existing dependency behavior is outside the RRset fix; do not apply an unintended resolver replacement.
+
+
 # October 13, 2026 Release Notes - 0.9.0
 
 ## Fixes

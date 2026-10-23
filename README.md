@@ -261,6 +261,7 @@ The ```network_configuration``` is a multidimensional complex object:
       - The ```network_firewalls_configuration``` attribute can be used to inject any number of ```network_firewalls``` and/or ```network_firewall_policies```. Existing policies or newly created policies can be specified.
       Note that a network firewall policy cannot be updated when attached to a firewall. To update a policy, attach another policy to the firewall, update the original policy and attach it back. This process requires two Terraform executions. See [Change a Firewall Policy](https://docs.oracle.com/en-us/Content/network-firewall/edit-policy.htm) for details.
       Network Firewall policy URL lists accept a `pattern` string or a `patterns` list, with one provider URL entry per pattern. At least one form is required. A non-empty `patterns` list takes precedence over `pattern`.
+      **Known issue:** Network Firewall policy `security_rules` have ordering limitations; see [#112: Security rule order](#issue-112-security-rule-order).
       - ```l7_load_balancers``` is a multidimensional attribute that:
         - ```compartment_id``` holds the compartment id that will be used 
         - ```display_name``` load balancer displayed name
@@ -446,3 +447,6 @@ Released under the Universal Permissive License v1.0 as shown at
 ## <a name="issues">Known Issues
 
 - On some corner case situations, a ```cycle-graph``` exception might be raised when using route tables attached to GWs. This issue will be addressed in one of the next releases.
+
+- <a name="issue-112-security-rule-order"></a> **Network Firewall security rule order ([#112](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/112)).** Creating multiple rules in one apply does not guarantee their evaluation order; `before_rule` and `after_rule` targets must already exist.
+  **Workaround:** A policy can be modified only when it is not attached to a firewall. Reorder its rules in the OCI Console, or add one new rule per plan/apply cycle while retaining all existing rules in the configuration. For each new rule, set only `before_rule` or `after_rule` to an already deployed rule's `name`; omit both for the first rule. Verify the final order before attaching the policy. Changing these selectors on existing rules is currently ignored ([#111](https://github.com/oci-landing-zones/terraform-oci-modules-networking/issues/111)); use the Console to reorder existing rules.

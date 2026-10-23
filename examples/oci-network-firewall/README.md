@@ -8,6 +8,10 @@ Note that the IP addresses for the Internet hosts are fictitious, so please upda
 
 For detailed description of the ```terraform-oci-landing-zones-networking``` networking core module please refer to the core module specific [README.md](../../README.md) and [SPEC.md](../../SPEC.md).
 
+## Security rule ordering
+
+**Known issue [#112](../../README.md#issue-112-security-rule-order):** Rule order is not guaranteed when creating multiple rules in one apply. Use the OCI Console or add one rule per apply with `before_rule` or `after_rule` referring to an existing rule, as described in the linked workaround. A policy can be modified only when it is not attached to a firewall.
+
 ## Using this example
 1. Rename *terraform.tfvars.template* to *terraform.tfvars*.
 
