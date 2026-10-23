@@ -1,4 +1,4 @@
-# Unreleased - 0.9.1
+# October 23, 2026 Release Notes - 0.9.1
 
 ## Documentation
 1. Documented Network Firewall security rule ordering limitations and Console or one-rule-per-apply workarounds in [Known Issues](./README.md#issue-112-security-rule-order), with a linked note in the firewall example. Policy changes require an unattached policy. No Terraform behavior changes.
