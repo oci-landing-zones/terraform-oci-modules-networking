@@ -60,8 +60,8 @@ locals {
         display_name   = vcn_value.dns_resolver.display_name
         rules          = vcn_value.dns_resolver.rules != null ? vcn_value.dns_resolver.rules : []
         attached_views = vcn_value.dns_resolver.attached_views
-        defined_tags   = vcn_value.dns_resolver.defined_tags
-        freeform_tags  = vcn_value.dns_resolver.freeform_tags
+        defined_tags   = merge(vcn_value.dns_resolver.defined_tags, vcn_value.category_defined_tags, vcn_value.default_defined_tags)
+        freeform_tags  = merge(vcn_value.dns_resolver.freeform_tags, vcn_value.category_freeform_tags, vcn_value.default_freeform_tags)
       }] : []
     ]) : flat_resolver.vcn_key => flat_resolver
   } : {}
@@ -118,6 +118,7 @@ locals {
               zone_key                = zone_key
               steering_policy_key     = steering_policy_key
               domain_name             = steering_policy_value.domain_name
+              display_name            = steering_policy_value.display_name
               compartment_id          = steering_policy_value.compartment_id != null ? steering_policy_value.compartment_id : vcn_value.category_compartment_id != null ? vcn_value.category_compartment_id : vcn_value.default_compartment_id != null ? vcn_value.default_compartment_id : null
               template                = steering_policy_value.template
               answers                 = steering_policy_value.answers
@@ -309,7 +310,7 @@ resource "oci_dns_rrset" "these" {
   domain          = each.value.domain
   rtype           = each.value.rtype
   zone_name_or_id = oci_dns_zone.these[each.value.zone_key].id
-  view_id         = oci_dns_view.these[each.value.view_key].id
+  view_id         = oci_dns_zone.these[each.value.zone_key].view_id
   scope           = each.value.scope
   dynamic "items" {
     for_each = each.value.items
@@ -406,7 +407,7 @@ resource "oci_dns_steering_policy" "these" {
       rtype = answer.value.rtype
 
       is_disabled = answer.value.is_disabled
-      pool        = [answer.value.pool]
+      pool        = answer.value.pool
     }
   }
 
@@ -447,7 +448,7 @@ resource "oci_dns_steering_policy" "these" {
 resource "oci_dns_steering_policy_attachment" "these" {
   for_each           = local.one_dimension_dns_steering_policies
   domain_name        = each.value.domain_name
-  steering_policy_id = oci_dns_steering_policy.these[each.value.steering_policy_key].id
+  steering_policy_id = oci_dns_steering_policy.these[each.key].id
   zone_id            = oci_dns_zone.these[each.value.zone_key].id
 
   display_name = each.value.display_name
