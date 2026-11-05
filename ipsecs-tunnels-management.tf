@@ -37,7 +37,7 @@ locals {
           drg_key                        = ipsec_value.drg_key
           drg_name                       = ipsec_value.drg_name
           compartment_id                 = ipsec_value.compartment_id
-          drg_attachment                 = ipsec_tunnel_management_value.drg_attachment
+          drg_route_table_id             = ipsec_tunnel_management_value.drg_route_table_id
           phase_one_details              = ipsec_tunnel_management_value.phase_one_details
           phase_two_details              = ipsec_tunnel_management_value.phase_two_details
         } if ipsec_tunnel_management_value != null

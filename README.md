@@ -236,12 +236,12 @@ The ```network_configuration``` is a multidimensional complex object:
             - [REST API](https://docs.oracle.com/en-us/iaas/api/#/en/iaas/20160918/datatypes/UpdateIPSecConnectionTunnelDetails)
             - [Terraform Resources](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_ipsec_connection_tunnel_management)
 
-        Each ```tunnels_management.tunnel_1``` and ```tunnels_management.tunnel_2``` can optionally include ```drg_attachment``` to assign a route table to that tunnel's generated DRG attachment. Configure each tunnel independently; omitting the object leaves its attachment unmanaged by this setting.
+        Each ```tunnels_management.tunnel_1``` and ```tunnels_management.tunnel_2``` can optionally set ```drg_route_table_id``` to assign a route table to that tunnel's generated DRG attachment. Configure each tunnel independently; omitting the field leaves its attachment unmanaged by this setting.
       - ```fast_connect_virtual_circuits``` attribute can define any number(0, 1 or multiple) of OCI fast connect virtual circuits. This attribute exposes all the attributes of the corresponding OCI REST API object through the OCI Terraform provider resource. For reference, the following documentation can be used:
             - [REST API](https://docs.oracle.com/en-us/iaas/api/#/en/iaas/20160918/datatypes/CreateVirtualCircuitDetails)
             - [Terraform Resources](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_virtual_circuit)
 
-        A provisioned private virtual circuit can optionally include ```drg_attachment``` to assign its generated DRG attachment a route table. For either connection type, set ```drg_attachment.drg_route_table_id``` to a DRG route table OCID, or ```drg_attachment.drg_route_table_key``` to a table created by this module or supplied through ```network_dependency.drg_route_tables```. A supplied ID takes precedence over a key; locally managed tables take precedence over external tables with the same key. The assignment follows connection creation within the same apply. Do not also manage that generated attachment through ```dynamic_routing_gateways.drg_attachments``` or ```inject_into_existing_drgs.drg_attachments```.
+        A provisioned private virtual circuit can optionally set ```drg_route_table_id``` to assign its generated DRG attachment a route table. For either connection type, this string accepts a DRG route table OCID or a table key declared in this module or supplied through ```network_dependency.drg_route_tables```. Locally managed tables take precedence over external tables with the same key. The selector string must be known during planning; use a configured key when the table's OCID is only available after creation. A known key can resolve to a newly created local table or an external dependency whose ID is unknown until apply. The assignment follows connection creation within the same apply. Do not also manage that generated attachment through ```dynamic_routing_gateways.drg_attachments``` or ```inject_into_existing_drgs.drg_attachments```.
 
         Please note the following 2 bool attributes of a fast connect virtual circuit: ```provision_fc_virtual_circuit``` and       ```show_available_fc_virtual_circuit_providers```:
         - ```provision_fc_virtual_circuit```:
@@ -349,7 +349,7 @@ A map of objects containing the externally managed network resources this module
   }
 } 
 ```
-**Note**: All collections in *network_dependency* are optional. A collection is needed only when *network_configuration* refers to one of its resources by key. For a DRG attachment, *drg_route_table_id* takes precedence when both an ID and *drg_route_table_key* are set. If a DRG route table key exists both in the current configuration and in **drg_route_tables**, the route table created by the current configuration takes precedence. External DRG route table dependencies expose only an OCID, so attachment outputs cannot determine their display name.
+**Note**: All collections in *network_dependency* are optional. A collection is needed only when *network_configuration* refers to one of its resources by key. For VCN and explicitly declared non-VCN DRG attachments, *drg_route_table_id* takes precedence when both an ID and *drg_route_table_key* are set. If a DRG route table key exists both in the current configuration and in **drg_route_tables**, the route table created by the current configuration takes precedence. External DRG route table dependencies expose only an OCID, so attachment outputs cannot determine their display name.
 
 Below are the attributes where a referring key is supported:
 
@@ -358,7 +358,7 @@ Below are the attributes where a referring key is supported:
 **vcns** | *vcn_id* in *inject_into_existing_vcns*, *attached_resource_key* in VCN *drg_attachments*
 **dynamic_routing_gateways** | *drg_id* in *inject_into_existing_drgs*, *network_entity_id* in *route_tables'* *route_rules*
 **drg_attachments** | *drg_attachment_key*
-**drg_route_tables** | *drg_route_table_key* in VCN and non-VCN *drg_attachments*, IPSec *tunnels_management.tunnel_1/2.drg_attachment*, and private *fast_connect_virtual_circuits.drg_attachment*
+**drg_route_tables** | *drg_route_table_key* in VCN and non-VCN *drg_attachments*; *drg_route_table_id* in IPSec *tunnels_management.tunnel_1/2* and private *fast_connect_virtual_circuits*
 **local_peering_gateways** | *peer_key* in *local_peering_gateways*
 **remote_peering_connections** | *peer_key* in *remote_peering_connections*
 **dns_private_views** | *existing_view_id* in *dns_resolver's* *attached_views*.

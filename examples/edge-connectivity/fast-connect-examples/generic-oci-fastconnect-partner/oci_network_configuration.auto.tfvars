@@ -110,9 +110,7 @@ network_configuration = {
         }
         fast_connect_virtual_circuits = {
           VISON-FC-VC-1-KEY = {
-            drg_attachment = {
-              drg_route_table_key = "DRG-FASTCONNECT-RT-KEY"
-            }
+            drg_route_table_id                          = "DRG-FASTCONNECT-RT-KEY"
             type                                        = "PRIVATE",
             provision_fc_virtual_circuit                = true
             show_available_fc_virtual_circuit_providers = false

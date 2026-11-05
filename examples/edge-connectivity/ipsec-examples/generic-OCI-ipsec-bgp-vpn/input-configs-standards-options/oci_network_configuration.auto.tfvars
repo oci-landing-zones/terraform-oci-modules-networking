@@ -122,10 +122,8 @@ network_configuration = {
             static_routes = ["0.0.0.0/0"]
             tunnels_management = {
               tunnel_1 = {
-                routing = "BGP",
-                drg_attachment = {
-                  drg_route_table_key = "DRG-IPSEC-RT-KEY"
-                }
+                routing            = "BGP",
+                drg_route_table_id = "DRG-IPSEC-RT-KEY"
                 bgp_session_info = {
                   customer_bgp_asn      = "12345",
                   customer_interface_ip = "10.0.0.16/31",
@@ -135,10 +133,8 @@ network_configuration = {
                 ike_version   = "V1"
               },
               tunnel_2 = {
-                routing = "BGP",
-                drg_attachment = {
-                  drg_route_table_key = "DRG-IPSEC-RT-KEY"
-                }
+                routing            = "BGP",
+                drg_route_table_id = "DRG-IPSEC-RT-KEY"
                 bgp_session_info = {
                   customer_bgp_asn      = "12345",
                   customer_interface_ip = "10.0.0.18/31",

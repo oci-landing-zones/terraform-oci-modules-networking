@@ -857,11 +857,8 @@ variable "network_configuration" {
           freeform_tags             = optional(map(string)),
           tunnels_management = optional(object({
             tunnel_1 = optional(object({
-              routing = string,
-              drg_attachment = optional(object({
-                drg_route_table_id  = optional(string)
-                drg_route_table_key = optional(string)
-              }))
+              routing            = string,
+              drg_route_table_id = optional(string)
               bgp_session_info = optional(object({
                 customer_bgp_asn      = optional(string),
                 customer_interface_ip = optional(string),
@@ -890,11 +887,8 @@ variable "network_configuration" {
               }))
             })),
             tunnel_2 = optional(object({
-              routing = string,
-              drg_attachment = optional(object({
-                drg_route_table_id  = optional(string)
-                drg_route_table_key = optional(string)
-              }))
+              routing            = string,
+              drg_route_table_id = optional(string)
               bgp_session_info = optional(object({
                 customer_bgp_asn      = optional(string),
                 customer_interface_ip = optional(string),
@@ -926,10 +920,7 @@ variable "network_configuration" {
         })))
 
         fast_connect_virtual_circuits = optional(map(object({
-          drg_attachment = optional(object({
-            drg_route_table_id  = optional(string)
-            drg_route_table_key = optional(string)
-          }))
+          drg_route_table_id = optional(string)
           #Required
           compartment_id                              = optional(string),
           provision_fc_virtual_circuit                = bool,
@@ -1356,28 +1347,24 @@ variable "network_configuration" {
         for selector in concat(
           flatten([
             for ipsec in coalesce(try(category.non_vcn_specific_gateways.ipsecs, null), {}) : [
-              for tunnel in coalesce(ipsec.tunnels_management, {}) : try(tunnel.drg_attachment, null)
+              for tunnel in coalesce(ipsec.tunnels_management, {}) : try(tunnel.drg_route_table_id, null)
             ]
           ]),
-          [for circuit in coalesce(try(category.non_vcn_specific_gateways.fast_connect_virtual_circuits, null), {}) : circuit.drg_attachment]
-          ) : selector == null ? true : (
-          (selector.drg_route_table_id != null || selector.drg_route_table_key != null) &&
-          (selector.drg_route_table_id == null ? true : can(regex("^ocid1\\.drgroutetable\\.[^[:space:]]+$", selector.drg_route_table_id))) &&
-          (selector.drg_route_table_key == null ? true : trimspace(selector.drg_route_table_key) != "")
-        )
+          [for circuit in coalesce(try(category.non_vcn_specific_gateways.fast_connect_virtual_circuits, null), {}) : circuit.drg_route_table_id]
+        ) : selector == null ? true : trimspace(selector) != ""
       ]
     ]))
-    error_message = "Each tunnel or virtual circuit drg_attachment must specify a valid DRG route table OCID in drg_route_table_id or a non-empty drg_route_table_key."
+    error_message = "Each tunnel or virtual circuit drg_route_table_id must be null, a valid DRG route table OCID, or a non-empty route table key."
   }
 
   validation {
     condition = var.network_configuration == null ? true : alltrue(flatten([
       for category in coalesce(var.network_configuration.network_configuration_categories, {}) : [
         for circuit in coalesce(try(category.non_vcn_specific_gateways.fast_connect_virtual_circuits, null), {}) :
-        circuit.drg_attachment == null ? true : circuit.provision_fc_virtual_circuit && upper(circuit.type) == "PRIVATE"
+        circuit.drg_route_table_id == null ? true : circuit.provision_fc_virtual_circuit && upper(circuit.type) == "PRIVATE"
       ]
     ]))
-    error_message = "A virtual circuit drg_attachment is supported only when provision_fc_virtual_circuit is true and type is PRIVATE."
+    error_message = "A virtual circuit drg_route_table_id is supported only when provision_fc_virtual_circuit is true and type is PRIVATE."
   }
 }
 

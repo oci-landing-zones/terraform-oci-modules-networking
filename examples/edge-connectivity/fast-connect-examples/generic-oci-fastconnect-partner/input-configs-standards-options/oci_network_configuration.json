@@ -31,9 +31,7 @@
           },
           "fast_connect_virtual_circuits": {
             "VISON-FC-VC-1-KEY": {
-              "drg_attachment": {
-                "drg_route_table_key": "DRG-FASTCONNECT-RT-KEY"
-              },
+              "drg_route_table_id": "DRG-FASTCONNECT-RT-KEY",
               "bandwidth_shape_name": "1 Gbps",
               "cross_connect_mappings": {
                 "MAPPING-1-KEY": {
