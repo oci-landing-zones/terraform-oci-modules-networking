@@ -92,11 +92,6 @@ network_configuration = {
         dynamic_routing_gateways = {
           DRG-VISION-KEY = {
             display_name = "drg-vision"
-            default_drg_route_tables = {
-              ipsec_tunnel = {
-                drg_route_table_id = "DRG-IPSEC-RT-KEY"
-              }
-            }
             drg_route_tables = {
               DRG-IPSEC-RT-KEY = {
                 display_name = "drg-ipsec-route-table"
@@ -129,6 +124,9 @@ network_configuration = {
             tunnels_management = {
               tunnel_1 = {
                 routing = "BGP",
+                drg_attachment = {
+                  drg_route_table_key = "DRG-IPSEC-RT-KEY"
+                }
                 bgp_session_info = {
                   customer_bgp_asn      = "12345",
                   customer_interface_ip = "10.0.0.16/31",
@@ -139,6 +137,9 @@ network_configuration = {
               },
               tunnel_2 = {
                 routing = "BGP",
+                drg_attachment = {
+                  drg_route_table_key = "DRG-IPSEC-RT-KEY"
+                }
                 bgp_session_info = {
                   customer_bgp_asn      = "12345",
                   customer_interface_ip = "10.0.0.18/31",

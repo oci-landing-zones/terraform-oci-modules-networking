@@ -221,9 +221,8 @@ The ```network_configuration``` is a multidimensional complex object:
       - The ```dynamic_routing_gateways``` attribute can have any number of DRGs to be created. Each entry can configure:
         - ```remote_peering_connections```,
         - ```drg_attachments```, 
-        - ```drg_route_tables```,
-        - ```drg_route_distributions``` and
-        - ```default_drg_route_tables``` to assign a route table to generated ```ipsec_tunnel``` and private ```virtual_circuit``` attachments. ```drg_route_table_id``` accepts a DRG route table OCID or a route table key declared under the same DRG. Do not also declare the generated attachment in ```drg_attachments```.
+        - ```drg_route_tables``` and
+        - ```drg_route_distributions```.
       - The ```inject_into_existing_drgs``` attribute can inject resources in any number of existing drgs. Any number of the following attributes are supported:
         - ```remote_peering_connections```,
         - ```drg_attachments```,
@@ -236,9 +235,13 @@ The ```network_configuration``` is a multidimensional complex object:
           - OCI IPSEC Tunnel Management:
             - [REST API](https://docs.oracle.com/en-us/iaas/api/#/en/iaas/20160918/datatypes/UpdateIPSecConnectionTunnelDetails)
             - [Terraform Resources](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_ipsec_connection_tunnel_management)
+
+        Each ```tunnels_management.tunnel_1``` and ```tunnels_management.tunnel_2``` can optionally include ```drg_attachment``` to assign a route table to that tunnel's generated DRG attachment. Configure each tunnel independently; omitting the object leaves its attachment unmanaged by this setting.
       - ```fast_connect_virtual_circuits``` attribute can define any number(0, 1 or multiple) of OCI fast connect virtual circuits. This attribute exposes all the attributes of the corresponding OCI REST API object through the OCI Terraform provider resource. For reference, the following documentation can be used:
             - [REST API](https://docs.oracle.com/en-us/iaas/api/#/en/iaas/20160918/datatypes/CreateVirtualCircuitDetails)
             - [Terraform Resources](https://registry.terraform.io/providers/oracle/oci/latest/docs/resources/core_virtual_circuit)
+
+        A provisioned private virtual circuit can optionally include ```drg_attachment``` to assign its generated DRG attachment a route table. For either connection type, set ```drg_attachment.drg_route_table_id``` to a DRG route table OCID, or ```drg_attachment.drg_route_table_key``` to a table created by this module or supplied through ```network_dependency.drg_route_tables```. A supplied ID takes precedence over a key; locally managed tables take precedence over external tables with the same key. The assignment follows connection creation within the same apply. Do not also manage that generated attachment through ```dynamic_routing_gateways.drg_attachments``` or ```inject_into_existing_drgs.drg_attachments```.
 
         Please note the following 2 bool attributes of a fast connect virtual circuit: ```provision_fc_virtual_circuit``` and       ```show_available_fc_virtual_circuit_providers```:
         - ```provision_fc_virtual_circuit```:
@@ -355,7 +358,7 @@ Below are the attributes where a referring key is supported:
 **vcns** | *vcn_id* in *inject_into_existing_vcns*, *attached_resource_key* in VCN *drg_attachments*
 **dynamic_routing_gateways** | *drg_id* in *inject_into_existing_drgs*, *network_entity_id* in *route_tables'* *route_rules*
 **drg_attachments** | *drg_attachment_key*
-**drg_route_tables** | *drg_route_table_key* in VCN and non-VCN *drg_attachments*
+**drg_route_tables** | *drg_route_table_key* in VCN and non-VCN *drg_attachments*, IPSec *tunnels_management.tunnel_1/2.drg_attachment*, and private *fast_connect_virtual_circuits.drg_attachment*
 **local_peering_gateways** | *peer_key* in *local_peering_gateways*
 **remote_peering_connections** | *peer_key* in *remote_peering_connections*
 **dns_private_views** | *existing_view_id* in *dns_resolver's* *attached_views*.

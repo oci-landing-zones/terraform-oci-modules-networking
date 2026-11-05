@@ -1,3 +1,47 @@
+# Unreleased - 0.10.0
+
+## Breaking changes
+1. Removed `dynamic_routing_gateways.<key>.default_drg_route_tables`, introduced in [PR 96](https://github.com/oci-landing-zones/terraform-oci-modules-networking/pull/96). It managed discovered connection attachments rather than the DRG's defaults. Route-table assignments now belong to `ipsecs.<key>.tunnels_management.tunnel_1.drg_attachment`, `tunnel_2.drg_attachment`, or `fast_connect_virtual_circuits.<key>.drg_attachment` for a provisioned private circuit. Each object accepts a literal OCID in `drg_route_table_id` or a local/external table key in `drg_route_table_key`; the ID takes precedence. Both tunnels opt in independently. Removing the former selector without adding the connection settings stops managing those assignments.
+2. Replaced `oci_core_drg_attachment_management.default_route_table_assignments` with separate `ipsec_tunnels` and `virtual_circuits` management resources using configuration keys. Terraform plans the old management instances for destruction and creates the new instances to adopt the selected attachments at their new addresses. Apply these planned management actions; manual state removal is not required. The provider's management-resource deletion leaves the OCI attachment intact, so this migration does not require replacing the IPSec connection or FastConnect circuit. Review the upgrade plan for the expected management-resource replacement and any unrelated connection changes. Selecting a different route table changes forwarding and can interrupt traffic.
+
+## Fixes
+1. Connection-specific DRG attachment route-table assignments use keys known before connection creation, allowing the connection and its attachment routing to be configured in one apply. Changing one tunnel or circuit no longer selects every connection of the same type on the DRG.
+2. Replacing an IPSec connection or private circuit also replaces its attachment-management binding, allowing the provider to discover the new generated attachment instead of updating a stale attachment ID.
+
+## Upgrade notes
+1. Remove the old selector from each DRG and add `drg_attachment` to every tunnel or private circuit that should retain its assignment. For example, migrate an IPSec selector as follows; the paths are relative to `non_vcn_specific_gateways`:
+
+   Before:
+   ```hcl
+   dynamic_routing_gateways = {
+     DRG-KEY = {
+       default_drg_route_tables = {
+         ipsec_tunnel = { drg_route_table_id = "INGRESS-RT-KEY" }
+       }
+     }
+   }
+   ```
+
+   After, retain the existing DRG, connection, and tunnel settings and add:
+   ```hcl
+   ipsecs = {
+     VPN-KEY = {
+       tunnels_management = {
+         tunnel_1 = {
+           routing        = "BGP"
+           drg_attachment = { drg_route_table_key = "INGRESS-RT-KEY" }
+         }
+         tunnel_2 = {
+           routing        = "BGP"
+           drg_attachment = { drg_route_table_key = "INGRESS-RT-KEY" }
+         }
+       }
+     }
+   }
+   ```
+   For FastConnect, replace `default_drg_route_tables.virtual_circuit` with `fast_connect_virtual_circuits.<key>.drg_attachment`. Keep literal OCIDs in `drg_route_table_id`; move symbolic references to `drg_route_table_key`. See the updated [IPSec](./examples/edge-connectivity/ipsec-examples/generic-OCI-ipsec-bgp-vpn/) and [FastConnect](./examples/edge-connectivity/fast-connect-examples/generic-oci-fastconnect-partner/) examples.
+2. Consumers that generate the former DRG selector, including Blueprint Factory and Studio, must emit the new connection settings when adopting this version. Publish Networking first, then update the Orchestrator's Networking source and the consuming deployment's Orchestrator version together with its generated configuration. The coordinated Orchestrator and consumer release versions have not yet been selected.
+
 # October 23, 2026 Release Notes - 0.9.1
 
 ## Documentation

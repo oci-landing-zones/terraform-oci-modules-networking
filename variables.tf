@@ -774,15 +774,6 @@ variable "network_configuration" {
           display_name   = optional(string),
           freeform_tags  = optional(map(string)),
 
-          default_drg_route_tables = optional(object({
-            ipsec_tunnel = optional(object({
-              drg_route_table_id = optional(string)
-            }))
-            virtual_circuit = optional(object({
-              drg_route_table_id = optional(string)
-            }))
-          }), null)
-
           remote_peering_connections = optional(map(object({
             compartment_id   = optional(string),
             defined_tags     = optional(map(string)),
@@ -867,6 +858,10 @@ variable "network_configuration" {
           tunnels_management = optional(object({
             tunnel_1 = optional(object({
               routing = string,
+              drg_attachment = optional(object({
+                drg_route_table_id  = optional(string)
+                drg_route_table_key = optional(string)
+              }))
               bgp_session_info = optional(object({
                 customer_bgp_asn      = optional(string),
                 customer_interface_ip = optional(string),
@@ -896,6 +891,10 @@ variable "network_configuration" {
             })),
             tunnel_2 = optional(object({
               routing = string,
+              drg_attachment = optional(object({
+                drg_route_table_id  = optional(string)
+                drg_route_table_key = optional(string)
+              }))
               bgp_session_info = optional(object({
                 customer_bgp_asn      = optional(string),
                 customer_interface_ip = optional(string),
@@ -927,6 +926,10 @@ variable "network_configuration" {
         })))
 
         fast_connect_virtual_circuits = optional(map(object({
+          drg_attachment = optional(object({
+            drg_route_table_id  = optional(string)
+            drg_route_table_key = optional(string)
+          }))
           #Required
           compartment_id                              = optional(string),
           provision_fc_virtual_circuit                = bool,
@@ -1350,21 +1353,31 @@ variable "network_configuration" {
   validation {
     condition = var.network_configuration == null ? true : alltrue(flatten([
       for category in coalesce(var.network_configuration.network_configuration_categories, {}) : [
-        for drg in coalesce(try(category.non_vcn_specific_gateways.dynamic_routing_gateways, null), {}) : alltrue([
-          for selector in [
-            try(drg.default_drg_route_tables.ipsec_tunnel, null),
-            try(drg.default_drg_route_tables.virtual_circuit, null)
-            ] : selector == null ? true : try(
-            selector.drg_route_table_id != "" && (
-              length(regexall("^ocid1\\.drgroutetable\\.[^[:space:]]+$", selector.drg_route_table_id)) > 0 ||
-              contains(keys(coalesce(drg.drg_route_tables, {})), selector.drg_route_table_id)
-            ),
-            false
-          )
-        ])
+        for selector in concat(
+          flatten([
+            for ipsec in coalesce(try(category.non_vcn_specific_gateways.ipsecs, null), {}) : [
+              for tunnel in coalesce(ipsec.tunnels_management, {}) : try(tunnel.drg_attachment, null)
+            ]
+          ]),
+          [for circuit in coalesce(try(category.non_vcn_specific_gateways.fast_connect_virtual_circuits, null), {}) : circuit.drg_attachment]
+          ) : selector == null ? true : (
+          (selector.drg_route_table_id != null || selector.drg_route_table_key != null) &&
+          (selector.drg_route_table_id == null ? true : can(regex("^ocid1\\.drgroutetable\\.[^[:space:]]+$", selector.drg_route_table_id))) &&
+          (selector.drg_route_table_key == null ? true : trimspace(selector.drg_route_table_key) != "")
+        )
       ]
     ]))
-    error_message = "Each default_drg_route_tables selector must specify a non-empty drg_route_table_id containing either a valid DRG route table OCID or a route table key declared under the same DRG."
+    error_message = "Each tunnel or virtual circuit drg_attachment must specify a valid DRG route table OCID in drg_route_table_id or a non-empty drg_route_table_key."
+  }
+
+  validation {
+    condition = var.network_configuration == null ? true : alltrue(flatten([
+      for category in coalesce(var.network_configuration.network_configuration_categories, {}) : [
+        for circuit in coalesce(try(category.non_vcn_specific_gateways.fast_connect_virtual_circuits, null), {}) :
+        circuit.drg_attachment == null ? true : circuit.provision_fc_virtual_circuit && upper(circuit.type) == "PRIVATE"
+      ]
+    ]))
+    error_message = "A virtual circuit drg_attachment is supported only when provision_fc_virtual_circuit is true and type is PRIVATE."
   }
 }
 
