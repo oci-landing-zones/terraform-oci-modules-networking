@@ -1,3 +1,13 @@
+# Unreleased - 0.9.2
+
+## Breaking changes
+1. Replace `dynamic_routing_gateways.*.default_drg_route_tables` from [PR 96](https://github.com/oci-landing-zones/terraform-oci-modules-networking/pull/96) with `drg_route_table_id` on each IPSec tunnel or private FastConnect circuit. Keep the same OCID or table key, known during planning; see the updated examples.
+2. Former `default_route_table_assignments` management instances are recreated at new addresses without deleting the OCI attachments.
+
+## Fixes
+1. Route-table assignments apply only to the selected tunnel or circuit and support one apply with connection creation.
+2. Attachment management follows parent connection replacement, preventing stale attachment IDs.
+
 # October 23, 2026 Release Notes - 0.9.1
 
 ## Documentation

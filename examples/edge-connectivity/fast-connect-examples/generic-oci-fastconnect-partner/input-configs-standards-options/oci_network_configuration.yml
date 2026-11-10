@@ -11,9 +11,6 @@ network_configuration:
         dynamic_routing_gateways:
           DRG-VISION-KEY:
             display_name: drg-vision
-            default_drg_route_tables:
-              virtual_circuit:
-                drg_route_table_id: DRG-FASTCONNECT-RT-KEY
             drg_route_tables:
               DRG-FASTCONNECT-RT-KEY:
                 display_name: drg-fastconnect-route-table
@@ -25,6 +22,7 @@ network_configuration:
                   type: VCN
         fast_connect_virtual_circuits:
           VISON-FC-VC-1-KEY:
+            drg_route_table_id: DRG-FASTCONNECT-RT-KEY
             bandwidth_shape_name: 1 Gbps
             cross_connect_mappings:
               MAPPING-1-KEY:

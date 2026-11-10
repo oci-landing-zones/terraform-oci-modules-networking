@@ -54,6 +54,7 @@ locals {
           is_bfd_enabled            = fcvc_value.is_bfd_enabled
           gateway_id                = fcvc_value.gateway_id != null ? fcvc_value.gateway_id : fcvc_value.gateway_key != null ? local.provisioned_dynamic_gateways[fcvc_value.gateway_key].id : null
           gateway_key               = fcvc_value.gateway_key
+          drg_route_table_id        = fcvc_value.drg_route_table_id
           provider_service_id       = fcvc_value.provider_service_id
           provider_service_key      = fcvc_value.provider_service_key
           provider_service_key_name = fcvc_value.provider_service_key_name
@@ -90,6 +91,7 @@ locals {
       is_bfd_enabled                              = fcvc_value.is_bfd_enabled
       gateway_id                                  = fcvc_value.gateway_id
       gateway_key                                 = fcvc_value.gateway_key
+      drg_route_table_id                          = fcvc_value.drg_route_table_id
       available_provider_service_ids = [
         for fc_provider_service in data.oci_core_fast_connect_provider_services.fast_connect_provider_services[fcvc_key].fast_connect_provider_services : {
           bandwith_shape_management       = fc_provider_service.bandwith_shape_management

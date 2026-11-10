@@ -92,11 +92,6 @@ network_configuration = {
         dynamic_routing_gateways = {
           DRG-VISION-KEY = {
             display_name = "drg-vision"
-            default_drg_route_tables = {
-              virtual_circuit = {
-                drg_route_table_id = "DRG-FASTCONNECT-RT-KEY"
-              }
-            }
             drg_route_tables = {
               DRG-FASTCONNECT-RT-KEY = {
                 display_name = "drg-fastconnect-route-table"
@@ -115,6 +110,7 @@ network_configuration = {
         }
         fast_connect_virtual_circuits = {
           VISON-FC-VC-1-KEY = {
+            drg_route_table_id                          = "DRG-FASTCONNECT-RT-KEY"
             type                                        = "PRIVATE",
             provision_fc_virtual_circuit                = true
             show_available_fc_virtual_circuit_providers = false
